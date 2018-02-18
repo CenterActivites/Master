@@ -1,0 +1,14 @@
+input[type=text]
+{
+	width:11em;
+}
+
+input#w95
+{
+	width: 95%;
+}
+
+input#w40
+{
+	width: 40%;
+}

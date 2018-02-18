@@ -1,0 +1,112 @@
+#popA {
+	width:100%;
+	height:100%;
+	opacity:.95;
+	top:0;
+	left:0;
+	display:none;
+	position:fixed;
+	background-color:#313131;
+	overflow:auto
+}
+
+#popE {
+	width:100%;
+	height:100%;
+	opacity:.95;
+	top:0;
+	left:0;
+	display:none;
+	position:fixed;
+	background-color:#313131;
+	overflow:auto
+}
+
+div#popupAdd {
+	position:absolute;
+	left:50%;
+	top:17%;
+	margin-left:-202px;
+	font-family:'Raleway',sans-serif
+}
+
+div#popupEdit {
+	position:absolute;
+	left:50%;
+	top:17%;
+	margin-left:-202px;
+	font-family:'Raleway',sans-serif
+}
+
+#popformA {
+	max-width:300px;
+	min-width:250px;
+	padding:10px 50px;
+	border:2px solid gray;
+	border-radius:10px;
+	font-family:raleway;
+	background-color:rgba(179, 179, 179, 0.5);
+	text-align: right;
+}
+
+#popformE {
+	max-width:300px;
+	min-width:250px;
+	padding:10px 50px;
+	border:2px solid gray;
+	border-radius:10px;
+	font-family:raleway;
+	background-color:rgba(179, 179, 179, 0.5);
+	text-align: right;
+}
+
+.marg {
+		margin-left:10px;
+		margin-bottom:10px;
+}
+
+div#search-inventory
+{
+	float:left;
+	position:relative;
+	left: 0%;
+	margin-left:1%;
+	margin-top:1%;
+	display:block;
+	height:auto;
+	width:73%;
+	border:4px solid;
+	border-color:black;
+	background: rgba(179, 179, 179, 0.5);
+	padding:8px;
+}
+
+div#inventory-items-wrapper
+{
+	float:left;
+	position:relative;
+	left: 0%;
+	margin-left:2%;
+	display:block;
+	height:auto;
+	width:73%;
+	border:4px solid;
+	border-color:black;
+	background: rgba(179, 179, 179, 0.5);
+	padding:8px;
+}
+
+div#inven-window
+{
+	float:left;
+	position:center;
+	left: 1%;
+	margin-top:2%;
+	display:block;
+	height:auto;
+	width:68%; 
+	border:4px solid;
+	border-color:black;
+	background: rgba(179, 179, 179, 0.5);
+	padding:8px;
+}
