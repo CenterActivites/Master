@@ -1,0 +1,3 @@
+						CSS FOLDER RULES
+1. anything that ends in .css should go into this folder
+2. name of file should correspond to the screen it belongs to

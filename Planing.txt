@@ -1,0 +1,47 @@
+2/17/2018
+
+the whole group was present
+
+Capacity in Hours:
+Lam: 6
+Eric: 10
+Casey: 10 
+Pang: 12 
+Total: 38 
+
+
+tasks:
+get an environment(Kris)
+setting up the database(hours 13)
+-create tables
+-populate tables
+-fake usernames and pw
+-test/debug
+
+front end:
+login screen:
+1hr(Pang)
+
+
+road map:(Everyone)
+time: 16 hours
+uses cases
+interview users
+code the first 4 screens (8 hours)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

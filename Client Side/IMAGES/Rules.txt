@@ -1,0 +1,3 @@
+						RULES FOR IMIAGES FOLDER
+1. anything ending with a .png , .jpeg belongs in this folder
+2. name the file after the screen it affects

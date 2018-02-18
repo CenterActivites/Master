@@ -1,0 +1,3 @@
+						RULES FOR DATA BASE FOLDER
+1. Anything files that involves the data base
+	example - create tables, populates and scripts

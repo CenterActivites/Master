@@ -1,0 +1,3 @@
+						RULES FOR CLIENT SIDE FOLDER
+1. Anything that involves the client side goes into this folder
+	example - HTML, CSS , Server side Java Script, images

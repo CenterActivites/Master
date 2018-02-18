@@ -1,0 +1,3 @@
+						RULES FOR JAVASCRIPT FOLDER
+1.Any file ending in .js belongs in this fodler
+2.name the file after the HTML document it affects

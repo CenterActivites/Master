@@ -1,0 +1,3 @@
+						RULES FOR SERVER SIDE FOLDER
+1. anything that affects the server communication to the client
+	examples - python script, php script, pl/sql
