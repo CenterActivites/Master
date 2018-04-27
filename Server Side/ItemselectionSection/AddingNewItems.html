@@ -1,0 +1,78 @@
+<?php
+
+	function AddItems()
+	{
+?>
+<html>
+<body>
+    <div id="pageHeader"> Adding New Items </div>
+	<script src="Toggle.js"></script>
+   
+    <div>
+        <form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post">
+<?php
+			$all_cat = 'select cat_id, cat_name '.
+						'from Category';	
+			$all_inv_name = 'select inv_id, inv_name '.
+							'from Inventory';
+			$conn = hsu_conn_sess($_SESSION['username'], $_SESSION['password']);
+			$stmt = oci_parse($conn, $all_cat);
+			oci_execute($stmt, OCI_DEFAULT);
+			$stmt1 = oci_parse($conn, $all_inv_name);
+			oci_execute($stmt1, OCI_DEFAULT);
+?>
+			Category of Item: <select name="category" onchange="if(this.options[this.selectedIndex].value=='customOption')
+																{toggleField(this,this.nextSibling); 
+																this.selectedIndex='0';}" required >
+								<option hidden></option>
+								<option value="customOption"> New Category </option>
+<?php
+								while(oci_fetch($stmt))
+								{
+									$curr_cat_id = oci_result($stmt, "CAT_ID");
+									$curr_cat_name = oci_result($stmt, "CAT_NAME");
+?>		
+									<option value="<?= $curr_cat_id ?>"> 
+										<?= $curr_cat_name ?> 
+									</option>  
+<?php
+								}
+?>
+								</select><br />
+								<input name="category" style="display:none;" disabled="disabled" 
+										onblur="if(this.value==''){toggleField(this,this.previousSibling);}" />
+			Item Name:  <select name="inventory" required>
+									<option hidden></option>
+									<option value="customOption"> New Item </option>
+<?php
+								while(oci_fetch($stmt1))
+								{
+									$curr_inv_id = oci_result($stmt1, "INV_ID");
+									$curr_inv_name = oci_result($stmt1, "INV_NAME");
+									echo $curr_inv_name;
+?>		
+									<option value="<?= $curr_inv_id ?>"> 
+										<?= $curr_inv_name ?> 
+									</option>  
+<?php
+								}
+?>
+						</select><br />
+			Item ID: <input type = "text" name = "new_item_id" id = "new_item_id" required/><br />
+			Item Model: <input type = "text" name = "new_item_name" id = "new_item_name"/><br/> 
+			Item Size: <input type = "text" name = "new_item_size" id = "new_item_size"/>
+			<fieldset >
+				<input type="submit" name="add" id="add" value="Add" /><br />
+		</form>
+		<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post">
+				<input type="submit" name="cancel" id="cancel" value="Cancel" /><br />
+			</fieldset>
+		</form>
+    </div>
+</body>
+</html>
+
+
+<?php
+	}
+?>

@@ -24,7 +24,31 @@ prompt Populating Tables
 prompt ==========================================================
 prompt ==========================================================
 
-   
+
+
+prompt
+prompt
+prompt
+prompt
+prompt
+prompt
+prompt ==========================================================
+prompt Populating Packages
+/* ====================================================
+   insert into Packages
+   values
+   (pack_id, 'pack_name', stu_day_price, day_price, stu_weekend_price, weekend_price, stu_week_price, week_price);
+*/
+
+insert into Packages
+values
+(1, 'Surf', 12, 15, 20, 30, 30, 40);
+
+
+
+prompt
+prompt ==========================================================
+prompt Populating Category
 /* ====================================================
    insert into Category
    values
@@ -41,40 +65,44 @@ values
 
 
 
-
+prompt
+prompt ==========================================================
+prompt Populating Inventory
 /* ====================================================
    insert into Inventory
    values
-   (inv_id, 'inv_name', cat_id);
+   (inv_id, 'inv_name', cat_id, stu_day_price, day_price, stu_weekend_price, weekend_price, stu_week_price, week_price);
 */
 
 insert into Inventory
 values
-(1, 'Tent', 1);
+(1, 'Tent', 1, 10, 15, 12, 15, 15, 20);
 
 insert into Inventory
 values
-(2, 'Sleeping Bag', 1);
+(2, '0-10 degree Sleeping Bag', 1, 5, 8, 10, 15, 15, 20);
 
 insert into Inventory
 values
-(3, 'Pad', 1);
+(3, 'Sleeping Pad Foam', 1, 2, 3, 5, 8, 8, 10);
 
 insert into Inventory
 values
-(4, 'Surfboard', 2);
+(4, 'Surfboard', 2, 5, 8, 15, 20, 25, 35);
 
 insert into Inventory
 values
-(5, 'Lease', 2);
+(5, 'Lease', 2, null, null, null, null, null, null);
 
 insert into Inventory
 values
-(6, 'Men Wetsuit', 2);
+(6, 'Men Wetsuit', 2, 5, 8, 10, 15, 15, 20);
 
 
 
-
+prompt
+prompt ==========================================================
+prompt Populating Item
 /* ====================================================
    insert into Item
    values
@@ -139,73 +167,82 @@ values
 
 
 
-
+prompt
+prompt ==========================================================
+prompt Populating InvPack
 /* ====================================================
-   insert into Packages
+   insert into InvPack
    values
-   (pack_id, 'pack_name', inv_id);
+   (invpack_id, pack_id, inv_id);
 */
 
-insert into Packages
+insert into InvPack
 values
-(1, 'Surf', 4);
+(1, 1, 4);
 
-insert into Packages
+insert into InvPack
 values
-(2, 'Surf', 5);
+(2, 1, 5);
 
-insert into Packages
+insert into InvPack
 values
-(4, 'Surf', 6);
+(3, 1, 6);
 
 
 
-
+prompt
+prompt ==========================================================
+prompt Populating Customer
 /* ====================================================
    insert into Customer
    values
-   (cust_id, 'f_name', 'l_name', 'date', 'c_addr', 'c_phone', 'c_email', 'is_student', 'emerg_contact');
+   (cust_id, 'f_name', 'l_name', 'dob', 'c_addr', 'c_phone', 'c_email', 'is_student', 'emerg_contact');
 */
 
 insert into Customer
 values
-(1, 'Tom', 'Yui', '02-OCT-1996', '161 F Street Arcata CA 95521', '714-987-1235', 'tomiscool@yahoo.com', 'no', 'Amy Yui 626-854-9512');
+(1, 'Tom', 'Yui', '10/02/1995', '161 F Street Arcata CA 95521', '714-987-1235', 'tomiscool@yahoo.com', 'no', 'Amy Yui 626-854-9512');
 
 insert into Customer
 values
-(2, 'Amy', 'Yui', '10-MAY-1990', '161 F Street Arcata CA 95521', '626-854-9512', 'amyyui900@gmail.com', 'no', 'Tom Yui 714-987-1235');
+(2, 'Amy', 'Yui', '5/10/1990', '161 F Street Arcata CA 95521', '626-854-9512', 'amyyui900@gmail.com', 'no', 'Tom Yui 714-987-1235');
 
 insert into Customer
 values
-(3, 'Tom', 'Oni', '02-OCT-1996', '166 F Street Arcata CA 95521', '714-999-1235', 'tomiscool@yahoo.com', 'no', 'Amy Yui 626-854-9512');
+(3, 'Tom', 'Oni', '10/02/1995', '166 F Street Arcata CA 95521', '714-999-1235', 'tomiscool@yahoo.com', 'no', 'Amy Yui 626-854-9512');
 
 
+
+prompt
+prompt ==========================================================
+prompt Populating ItemReservation
 /* ====================================================
    insert into ItemReservation
    values
-   (rental_id, item_Backid, 'request_date', 'return_date', 'due_date', cust_id);
+   (rental_id, item_Backid, 'request_date', 'return_date', 'due_date', 'pick_up_date', cust_id);
 */
 
 insert into ItemReservation
 values
-(1, 4, '02-FEB-2018', '10-FEB-2018', '10-FEB-2018', 1);
+(1, 4, '02-FEB-2018', '10-FEB-2018', '10-FEB-2018', '02-FEB-2018', 1);
 
 insert into ItemReservation
 values
-(2, 1, '02-FEB-2018', NULL, '10-FEB-2018', 1);
+(2, 1, '02-FEB-2018', NULL, '10-FEB-2018', '02-FEB-2018', 1);
 
 insert into ItemReservation
 values
-(3, 6, '02-FEB-2018', '10-FEB-2018', '10-FEB-2018', 1);
+(3, 6, '02-FEB-2018', '10-FEB-2018', '10-FEB-2018', '02-FEB-2018', 1);
 
 insert into ItemReservation
 values
-(4, 13, '02-FEB-2018', NULL, '10-FEB-2018', 1);
+(4, 13, '02-FEB-2018', NULL, '10-FEB-2018', '02-FEB-2018', 1);
 
 
 
-
-
+prompt
+prompt ==========================================================
+prompt Populating Employee
 /* ====================================================
    insert into Employee
    values
@@ -234,8 +271,9 @@ values
 
 
 
-
-
+prompt
+prompt ==========================================================
+prompt Populating Repair
 /* ====================================================
    insert into Repair
    values
@@ -260,8 +298,9 @@ values
 
 
 
-
-
+prompt
+prompt ==========================================================
+prompt Populating Vendor
 /* ====================================================
    insert into Vendor
    values
@@ -282,25 +321,26 @@ values
 
 
 
-
-
+prompt
+prompt ==========================================================
+prompt Populating Transaction
 /* ==================================================== 
    insert into Transaction
    values
-   (trans_id, SYSDATE, 'cust_id', 'rental_id', 'trans_type'); 
+   (trans_id, SYSDATE, 'cust_id', 'trans_type'); 
 */ 
    
 insert into Transaction
 values
-(1, SYSDATE, '1', '1', 'rental');
+(1, SYSDATE, 1, 'rental');
    
 insert into Transaction
 values
-(2, SYSDATE, '1', '2', 'return');
+(2, SYSDATE, 1, 'return');
    
 insert into Transaction
 values
-(3, SYSDATE, '1', '3', 'return');
+(3, SYSDATE, 1, 'return');
 
 
 

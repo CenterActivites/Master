@@ -7,13 +7,12 @@
 <body>
     <div id="pageHeader"> Customer Transactions </div>
     <div>
-        <select size="10">
 <?php
             $username = $_SESSION['username'];
 			$password = $_SESSION['password'];
 			$conn = hsu_conn_sess($username, $password);
         
-			$select_cust = 'select time_stamp, trans_type, rental_id '.
+			$select_cust = 'select time_stamp, trans_type '.
                        'from Customer c, Transaction t '.
 					   'where c.cust_id = t.cust_id and c.cust_id = :sel_user';
 			$sel_user = $_SESSION['sel_user'];
@@ -31,16 +30,15 @@
 						{
 							$curr_time_stamp = oci_result($stmt, "TIME_STAMP");
 							$curr_trans_type = oci_result($stmt, "TRANS_TYPE");
-							$curr_rental_id = oci_result($stmt, "RENTAL_ID");
 ?>
 							<option value="<?= $curr_rental_id ?>"> <?= $curr_time_stamp ?> <?= $curr_trans_type ?> </option>
 <?php
 						}
 ?>
+						<option value="test"> test </option>
 					</select>
 			</fieldset>
-		</form>
-			<textarea rows="10" cols="60">
+		<textarea rows="10" cols="60">
 			Information about that transaction
 			.....
 			.....
@@ -52,14 +50,13 @@
 			.....
 		</textarea>
     </div>
-    <form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post">
-	    <fieldset >
+		<div>
             <input type="submit" name="viewReceipt" id="viewReceipt" value="View Receipt of Transactions" /><br />
             <input type="submit" name="mainmenu" id="mainmenu" value="Main Menu" /><br />
 			<input type="submit" name="backOnCustTran" id="backOnCustTran" value="Back" /><br />
-	    </fieldset>
+		</div>
 	</form>
-    </div>
+
 </body>
 </html>
 

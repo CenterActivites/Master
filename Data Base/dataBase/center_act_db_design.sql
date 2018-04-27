@@ -1,5 +1,23 @@
 /*--------------- Center Activities DataBase ---------------*/
 
+drop table Packages cascade constraints;
+  
+  /* Table Packages */
+  /* Purpose: To have mult items select at onces for certain packages */
+  /* Example: Surf package contains surfboard, lease, wetsuit */
+  
+  create table Packages
+  (pack_id           int,
+   pack_name         varchar2(20),
+   stu_day_price     int,
+   day_price         int,
+   stu_weekend_price int,
+   weekend_price     int,
+   stu_week_price    int,
+   week_price        int,
+   primary key       (pack_id)
+  );
+  
 drop table Category cascade constraints;
 
 /*  Table Category */
@@ -20,8 +38,14 @@ create table Category
  
 create table Inventory                    
 (inv_id              int,                  
- inv_name            varchar2(20),         
+ inv_name            varchar2(30),         
  cat_id              int,
+ stu_day_price       int,
+ day_price           int,
+ stu_weekend_price   int,
+ weekend_price       int,
+ stu_week_price      int,
+ week_price          int,
  primary key         (inv_id),
  foreign key         (cat_id)
  references          Category(cat_id)
@@ -49,19 +73,23 @@ create table Inventory
   references          Inventory(inv_id)
   );
   
-  drop table Packages cascade constraints;
+  drop table InvPack cascade constraints;
   
-  /* Table Packages */
-  /* Purpose: To have mult items select at onces for certain packages */
-  /* Example: Surf package contains surfboard, lease, wetsuit */
+  /* Table InvPack */
+  /* Purpose: For a many-to-many relation between Packages and Inventory */
+  /* Example: Package Surf can have many inventory items in it and inventory 
+			  item surfboard can be in many packages like the Surfboard package
+			  and Surf package */
   
-  create table Packages
-  (pack_id           int,
-   pack_name         varchar2(20),
-   inv_id            int,
-   primary key       (pack_id),
-   foreign key       (inv_id)
-   references         Inventory(inv_id)
+  create table InvPack
+  (invpack_id           int,
+   pack_id              int,
+   inv_id               int,
+   primary key          (invpack_id),
+   foreign key          (pack_id)
+   references           Packages(pack_id),
+   foreign key          (inv_id)
+   references           Inventory(inv_id)
   );
   
   drop table Customer cascade constraints;
@@ -75,15 +103,15 @@ create table Inventory
 
   create table Customer
   (cust_id           int,
-   f_name            varchar2(15),
-   l_name            varchar2(15),
-   c_dob             date,
+   f_name            varchar2(25),
+   l_name            varchar2(25),
+   c_dob             varchar2(10),
    c_addr            varchar2(30),
    c_phone           varchar2(12),
    c_email           varchar2(20),
    is_student        varchar2(5) check(is_student in
                           ('yes', 'no')),
-   emerg_contact     varchar2(30),
+   emerg_contact     varchar2(50),
    primary key       (cust_id)
   );
  
@@ -98,8 +126,10 @@ create table Inventory
    item_Backid       int,
    request_date      date,
    return_date       date,
+   /* Kinda realize that we need to keep the date the item is due back by and the actual date the customer 
+	  picked up the item -Lam*/
    due_date          date,
-   /* Kinda realize that we need to keep the date the item is due back by -Lam*/
+   pick_up_date      date,
    cust_id           int,
    primary key       (rental_id),
    foreign key       (item_Backid)
@@ -175,15 +205,12 @@ create table Inventory
   create table Transaction
   (trans_id 		int,
    time_stamp 		DATE DEFAULT(sysdate),
-   cust_id 		int,
-   rental_id int,
-   trans_type varchar2(10)check(trans_type in
+   cust_id 			int,
+   trans_type		varchar2(10)check(trans_type in
                           ('rental', 'return')),
    primary key (trans_id),
    foreign key (cust_id)
-   references Customer(cust_id),
-   foreign key (rental_id)
-   references ItemReservation(rental_id)
+   references Customer(cust_id)
   );  
   
   

@@ -1,12 +1,12 @@
 <?php
     function Receipt()
      {
-		if ( (! array_key_exists("item_id", $_POST)) or
+		/*if ( (! array_key_exists("item_id", $_POST)) or
          ($_POST["item_id"] == "") or
          (! isset($_POST["item_id"])) )
 		{
 			destroy_and_exit("No items reserved!");
-		}
+		}*/
 		
 		$username = $_SESSION["username"];
 		$password = $_SESSION["password"];

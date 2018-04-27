@@ -6,7 +6,6 @@
 <html>
 <body>
     <div id="pageHeader"> Item Selection </div>
-    <div>
    <div>
 <?php
         $username = $_SESSION['username'];
@@ -33,25 +32,23 @@
 							$curr_cat_name = oci_result($stmt, "CAT_NAME")
 ?>
 							<option value="<?= $curr_item_backid ?>"> 
-								<?= $curr_item_frontid ?> <?= $curr_inv_name ?> <?= $curr_cat_name ?> 
+								<?= $curr_item_frontid ?> :: <?= $curr_inv_name ?> :: <?= $curr_cat_name ?> 
 							</option>
 <?php
 						}
 ?>
 					</select>
+					Search: <input type = "text" name = "searchitem" id = "seatchitem" value ="" /><br/>
+	</div>
 			</fieldset>
-	    <fieldset >
-    </div>
-	Search: <input type = "text" name = "searchitem" id = "seatchitem" value ="" /><br/>
 	<div>
-    <form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post">
-	    <fieldset >
+	    <fieldset>
             <input type="submit" name="moreinfo" id="moreinfo" value="Item Info" /><br />
-	        <input type="submit" name="additem" id="additem" value="Add Item" /><br />
-	    </fieldset>
 	</form>
 	<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
-				<input type="submit" name="mainmenu" id="mainmenu" value="Main Menu" /><br />
+		<input type="submit" name="mainmenu" id="mainmenu" value="Main Menu" /><br />
+		<input type="submit" name="additem" id="additem" value="Add Item" /><br />
+		</fieldset>
 	</form>
     </div>
 </body>

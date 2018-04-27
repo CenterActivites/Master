@@ -5,23 +5,29 @@
         <html>
            <body>
               <div id="pageHeader"> New Customer </div>
+				<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post">
               <div>
-					Customer Name: <input type = "text" name = "custName" id = "custName" value ="" /><br/>
-					Phone Number: <input type = "text" name = "custPhone" id = "custPhone" value ="" /><br/>
-					Address: <input type = "text" name = "custAddress" id = "custAddress" value ="" /><br/>
-					......: <input type = "text" name = "random" id = "random" value ="" /><br/>
-					......: <input type = "text" name = "random" id = "random" value ="" /><br/>
-					......: <input type = "text" name = "random" id = "random" value ="" /><br/>
+					Customer Name: <input type = "text" name = "custName" id = "custName" value ="" required/>
+					Phone Number: <input type = "text" name = "custPhone" id = "custPhone" value ="" required/>
+					Address: <input type = "text" name = "custAddress" id = "custAddress" value =""required/>
+					Birthdate: <input type = "text" name = "dob" id = "dob" value ="" required/>
+					Email: <input type = "text" name = "custEmail" id = "custEmail" value ="" required/>
+					Student: <select name="isStudent" required> 
+								<option>yes</option>
+								<option>no</option>
+							</select>
+					Emergency Contact Name: <input type = "text" name = "emerName" id = "emerName" value ="" required/>
+					Emergency Contact Phone Number: <input type = "text" name = "emerPhone" id = "emerPhone" value ="" required/>
 				</div>
 			  
 			  <div>
-				 <form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post">
 	                 <fieldset >
-		                 <!-- Buttons on the add vendor page  -->
                              <input type="submit" name="continue" id="continue" value="Continue/Add" /><br />
-	                         <input type="submit" name="cancel" id="cancel" value="Cancel" /><br />
 	                 </fieldset>
 	          </form>
+			  <form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post">
+	                <input type="submit" name="cancel" id="cancel" value="Cancel" /><br />
+				</form>
               </div>
            </body>
         </html>
