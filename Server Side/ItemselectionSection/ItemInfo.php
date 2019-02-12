@@ -145,6 +145,17 @@
 														$curr_item_vin_num=$row["vin_num"];
 														$curr_item_dbw_own=$row["dbw_own"];
 														$curr_item_notes = $row["notes"];
+														
+														$item_backid = (int)$curr_item_backid;
+						
+														$number_of_use = $conn->prepare("select count(itemtran_id)
+																							from Item A, Transaction B, ItemTran C
+																							where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+														$number_of_use->bindValue(':a', $item_backid, PDO::PARAM_INT);
+														$number_of_use->execute();
+														$number_of_use = $number_of_use->fetchAll();
+														
+														$curr_number_of_use = $number_of_use[0][0];
 
 
 														if($curr_item_public == 1){
@@ -208,6 +219,10 @@
 															 <tr>
 																 <th>Owned By DBW:</th>
 																 <td class="editcol"><?= $curr_item_dbw_own?></td>
+															 </tr>
+															 <tr>
+																 <th>Number of Usage:</th>
+																 <td class="editcol"><?= $curr_number_of_use?></td>
 															 </tr>
 															 <tr>
 																 <th>Notes:</th>

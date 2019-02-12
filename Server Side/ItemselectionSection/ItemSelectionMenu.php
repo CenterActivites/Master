@@ -111,40 +111,6 @@
 		});
 	</script>
 	
-	<!-- <script type = "text/javascript">
-		$(document).ready(function(){
-			$("#dbw").click(function(){
-				if($('#dbw_value').val() == 'no')
-				{
-					$('#dbw_value').val('yes');
-					console.log($('#dbw_value').val());
-				}
-				else
-				{
-					$('#dbw_value').val('no');
-					console.log($('#dbw_value').val());
-				}
-			});
-		});
-	</script>
-	
-	<script type = "text/javascript">
-		$(document).ready(function(){
-			$("#public").click(function(){
-				if($('#public_value').val() == 'no')
-				{
-					$('#public_value').val('yes');
-					console.log($('#public_value').val());
-				}
-				else
-				{
-					$('#public_value').val('no');
-					console.log($('#public_value').val());
-				}
-			});
-		});
-	</script> -->
-	
 	<script type="text/javascript">
 	 //AJAX is asynchronous javascript
 	 //https://www.w3schools.com/xml/ajax_intro.asp
