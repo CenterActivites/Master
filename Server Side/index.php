@@ -62,7 +62,6 @@
 	require_once('/home/centerac/public_html/CustomerselectionSection/EditCustomer.php');
     require_once('/home/centerac/public_html/CustomerselectionSection/addcust.php');
 	require_once('/home/centerac/public_html/CustomerselectionSection/PastReceipt.php');
-	require_once('/home/centerac/public_html/RentalSection/NewCustomer.php');
 	require_once('/home/centerac/public_html/RentalSection/RentalItemSelection.php');
 	require_once('/home/centerac/public_html/RentalSection/CalculatePayments.php');
 ?>
@@ -1023,23 +1022,29 @@
 				}
 				elseif(isset($_POST["Addcust"]))
 				{
-					//removal of post handler from files is needed
-					//this is an input of vendors into the Database
 					//make a connection to database
 					$username = $_SESSION['username'];
 					$password = $_SESSION['password'];
 					$conn = hsu_conn_sess($username, $password);
 					
 					//set variables to the values input by user
-					$new_fname = htmlspecialchars(strip_tags($_POST["fname"]));
-					$new_lname = htmlspecialchars(strip_tags($_POST["lname"]));
+					$new_custName = htmlspecialchars(strip_tags($_POST["cust_name"]));
 					$new_dob = htmlspecialchars(strip_tags($_POST["dob"]));
 					$new_address = htmlspecialchars(strip_tags($_POST["address"]));
 					$new_phone = htmlspecialchars(strip_tags($_POST["Phone"]));
 					$new_email = htmlspecialchars(strip_tags($_POST["email"]));
 					$new_is_student = htmlspecialchars(strip_tags($_POST["is_student"]));
 					$new_is_empl = htmlspecialchars(strip_tags($_POST["empl_stat"]));
-					$new_emerg_contact = htmlspecialchars(strip_tags($_POST["emerg_contact"]));
+					$new_emerName = htmlspecialchars(strip_tags($_POST["emerName"]));
+					$new_emerPhone = htmlspecialchars(strip_tags($_POST["emerPhone"]));
+
+					//Separate the first and last name for the insert into database
+					$f_lnames = explode(" ", $new_custName);
+					$f_name = $f_lnames[0];
+					$l_name = $f_lnames[1];
+
+					//Combines the Emergency contact name and phone number
+					$emer_contract = $new_emerName . " " . $new_emerPhone;
 
 					//set up insert statement
 					$insert = $conn ->prepare("insert into Customer
@@ -1047,13 +1052,12 @@
 												values
 												(Default, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
 					//execute the statement with variables
-					$insert ->execute([$new_fname, $new_lname, $new_dob, $new_address, $new_phone, $new_email, $new_is_student, $new_is_empl, $new_emerg_contact]);
+					$insert ->execute([$f_name, $l_name, $new_dob, $new_address, $new_phone, $new_email, $new_is_student, $new_is_empl, $emer_contract]);
+					//print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+					
 					//end connection
-
-					//print $insert -> errorCode(); <======= Prints Error Code For INSERT Statement =======>
-
 					$conn = null;
-					//return to vendors page to see updates
+					
 					CustomerSelection();
 				}
 				

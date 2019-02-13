@@ -6,9 +6,9 @@
 ?>
 <html>
 <head>
-
-	<!-- JavaScript Starts here -->
 	<link rel="stylesheet" type="text/css" href="../CustomerselectionSection/cust_css/cust_selection.css"/>
+	
+	<!-- JavaScript Starts here -->
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
 	<script type="text/javascript" src="jquery.quicksearch.js"></script>  <!-- Plugin for the item Search function -->
 
@@ -93,7 +93,7 @@
 				}
 				else
 				{
-					console.log("at least the rent click is working");
+					console.log("Rental click");
 					//If a customer is selected, the hidden div will be shown
 					modal.style.display = "block";
 				}
@@ -101,7 +101,7 @@
 			
 			//Once the close/span, on the right top corner, is clicked; we re-hid the div
 			span.onclick = function(){
-				console.log("at least the close click is working");
+				console.log("Close click");
 				modal.style.display = "none";
 			};
 		});
@@ -214,12 +214,18 @@
 									
 									//First we created a bool var for later seeing is there were any rentals to be return at all
 									$if_for_ran = false;
+									$s = " and b.pick_up_date IS NOT NULL";
+									$v = "SELECT b.cust_id, f_name, l_name, c_phone, c_email, due_date
+															FROM Customer a, Reserve b
+															WHERE a.cust_id = b.cust_id and" . $s . "
+															GROUP BY b.cust_id
+															ORDER BY due_date, l_name, f_name";
 									
 									//MYSQL select query for all customers with rentals out there. We grab the following data
 									//The customer's id, first and last name, phone number, e-mail, and the due date for the rentals
 									foreach($conn->query("SELECT b.cust_id, f_name, l_name, c_phone, c_email, due_date
 															FROM Customer a, Reserve b
-															WHERE a.cust_id = b.cust_id and b.pick_up_date IS NOT NULL
+															WHERE a.cust_id = b.cust_id" . $s . "
 															GROUP BY b.cust_id
 															ORDER BY due_date, l_name, f_name") as $row)
 									{

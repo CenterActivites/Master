@@ -227,42 +227,93 @@
 								{
 									var obj = json_object[i]; //First it grabs the current item in the data
 									
-									//Sets all the item data to its corresponding fields
-									item_Backid = obj['item_Backid'];
-									inv_name = obj['inv_name'];
-									item_size = obj['item_size'];
-									item_Frontid = obj['item_Frontid'];
-									item_modeltype = obj['item_modeltype'];
+									//Then grab the is_student value to see if the customer is a student or not
+									var is_student = "<?php echo $is_student[0][0] ?>";
 									
-									
-									//Creats a new option for inserting into the "item_selection" select field
-									var opt = document.createElement('option');
-									
-									//Sees if the item_size from the item data is null or blank, if is then it sets the item_size field to "No Size"
-									if(item_size == null || item_size == "")
+									//If the customer is not a student
+									if(is_student == 'no' || is_student == 'No')
 									{
-										item_size = "No Size";
+										//Grab the item name
+										inv_name = obj['inv_name'];
+										
+										//Checks if the item is not a 'OutDoor Nation' then we continue repopulating the select. If it then we do nothing and move on to the next item
+										if(inv_name.includes("Outdoor Nation") != 1)
+										{
+											//Sets all the item data to its corresponding fields
+											item_Backid = obj['item_Backid'];
+											item_size = obj['item_size'];
+											item_Frontid = obj['item_Frontid'];
+											item_modeltype = obj['item_modeltype'];
+											
+											//Creats a new option for inserting into the "item_selection" select field
+											var opt = document.createElement('option');
+											
+											//Sees if the item_size from the item data is null or blank, if is then it sets the item_size field to "No Size"
+											if(item_size == null || item_size == "")
+											{
+												item_size = "No Size";
+											}
+											
+											//Sets the option innerHTML or text to display to the following format: "inv_name : item_size : item_Frontid"
+											opt.innerHTML = inv_name + "\xa0" + item_modeltype + " : " + item_size + " : " + item_Frontid;
+											
+											//Sets the item back id to the option value
+											opt.value = item_Backid;
+											
+											//
+											//The next following lines checks if the option that is being diplayed is already in the cart
+											//
+											
+											//Does the check here. The if statement reads if current item that is about to be displayed is also in the cart, then return true else false
+											if(item_Backid in filtered_cart_array)
+											{
+												opt.selected = 'selected'; //If true then set the option selected to true
+												delete filtered_cart_array[item_Backid]; //and delete the item from the cart display so we don't display it twice
+											}
+											
+											//Finalize the option and displays it on the "item_selection" select field
+											item_display.appendChild(opt);
+										}
 									}
-									
-									//Sets the option innerHTML or text to display to the following format: "inv_name : item_size : item_Frontid"
-									opt.innerHTML = inv_name + "\xa0" + item_modeltype + " : " + item_size + " : " + item_Frontid;
-									
-									//Sets the item back id to the option value
-									opt.value = item_Backid;
-									
-									//
-									//The next following lines checks if the option that is being diplayed is already in the cart
-									//
-									
-									//Does the check here. The if statement reads if current item that is about to be displayed is also in the cart, then return true else false
-									if(item_Backid in filtered_cart_array)
+									//If the customer is a student
+									else
 									{
-										opt.selected = 'selected'; //If true then set the option selected to true
-										delete filtered_cart_array[item_Backid]; //and delete the item from the cart display so we don't display it twice
+										//Sets all the item data to its corresponding fields
+										item_Backid = obj['item_Backid'];
+										inv_name = obj['inv_name'];
+										item_size = obj['item_size'];
+										item_Frontid = obj['item_Frontid'];
+										item_modeltype = obj['item_modeltype'];
+										
+										//Creats a new option for inserting into the "item_selection" select field
+										var opt = document.createElement('option');
+										
+										//Sees if the item_size from the item data is null or blank, if is then it sets the item_size field to "No Size"
+										if(item_size == null || item_size == "")
+										{
+											item_size = "No Size";
+										}
+										
+										//Sets the option innerHTML or text to display to the following format: "inv_name : item_size : item_Frontid"
+										opt.innerHTML = inv_name + "\xa0" + item_modeltype + " : " + item_size + " : " + item_Frontid;
+										
+										//Sets the item back id to the option value
+										opt.value = item_Backid;
+										
+										//
+										//The next following lines checks if the option that is being diplayed is already in the cart
+										//
+										
+										//Does the check here. The if statement reads if current item that is about to be displayed is also in the cart, then return true else false
+										if(item_Backid in filtered_cart_array)
+										{
+											opt.selected = 'selected'; //If true then set the option selected to true
+											delete filtered_cart_array[item_Backid]; //and delete the item from the cart display so we don't display it twice
+										}
+										
+										//Finalize the option and displays it on the "item_selection" select field
+										item_display.appendChild(opt);
 									}
-									
-									//Finalize the option and displays it on the "item_selection" select field
-									item_display.appendChild(opt);
 								}
 								
 								//Checks if the rest of the cart or the cart isn't 'undefined' or null
