@@ -19,6 +19,7 @@
 			width: 80%;
 			background-color: white;
 			border:1px solid #ddd;
+			filter: alpha(opacity=50);
 		}
 	</style>
 
@@ -381,7 +382,8 @@
 						$insert->execute();
 						//print $insert->errorCode();
 
-						//Updating the status of the item to 'Check-in'. Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, and 'Missing' = 5
+						//Updating the status of the item to 'Check-out'.
+						//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, and 'In Wash' = 9
 						$update = $conn->prepare("update Item
 													set stat_id = 3
 													where item_Backid = :item_id");
@@ -538,7 +540,8 @@
 						$insert->bindValue(':tran_id', $tran_id, PDO::PARAM_INT);
 						$insert->execute();
 
-						//Updating the status of the item to 'Check-in'. Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, and 'Missing' = 5
+						//Updating the status of the item to 'Check-in'. 
+						//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, and 'In Wash' = 9
 						$update = $conn->prepare("update Item
 													set stat_id = 4
 													where item_Backid = :item_id");
@@ -1214,7 +1217,7 @@
 						if($_SESSION['request_date'] == $curr_date)
 						{
 							//Setting up the update query
-							//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, and 'Missing' = 5
+							//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, and 'In Wash' = 9
 							$update = $conn->prepare("update Item
 										set stat_id = 3
 										where item_Backid = :item_id");

@@ -9,6 +9,29 @@
 			<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
 			
 			<!-- Start of Javacript -->
+			
+			
+			<!-- Little script that lets users know what type of tranaction that they have selected and are seeing at the moment -->
+			<script type="text/javascript">
+				$(function()
+				{
+					//Funation is called once the user have selected a timestamp
+					$('.time_stamp_select').change(function() 
+					{
+						//Grabs the text of the selected option
+						var selected_text = $("#time_stamp_select option:selected").text();
+						
+						//Split it and turns it into a object of string
+						selected_text = selected_text.split(" ");
+						
+						//Then set the first string to the div tab "item_info_label" which will be displayed for the user to see
+						document.getElementById('item_info_label').innerHTML = "Tranaction Type: " + selected_text[0];
+					});
+				});
+			</script>
+			
+			
+			
 			<script type="text/javascript">
 				$(function()
 				{
@@ -78,8 +101,19 @@
 									//Adds the new row to the table
 									tbody.appendChild(tr);
 								}
+								
+								//Little script that will populate the empty comment div with comments made about the transaction
+								if(json_object[0]['comments'] == null || json_object[0]['comments'].length == 0)
+								{
+									$('#commments_header').text("Comments about the Tranaction:");
+									$('#commments').text("No Comments were made for this Transaction");
+								}
+								else
+								{
+									$('#commments_header').text("Comments about the Tranaction:");
+									$('#commments').text(json_object[0]['comments']);
+								}
 							},
-							
 							//If there is ever a error with the AJAX call, it will logs the errors that it found with the AJAX call to the brower's console
 							error: function(XMLHttpRequest, textStatus, errorThrown) 
 							{ 
@@ -88,25 +122,6 @@
 							}
 					
 						});
-					});
-				});
-			</script>
-			
-			<!-- Little script that lets users know what type of tranaction that they have selected and are seeing at the moment -->
-			<script type="text/javascript">
-				$(function()
-				{
-					//Funation is called once the user have selected a timestamp
-					$('.time_stamp_select').change(function() 
-					{
-						//Grabs the text of the selected option
-						var selected_text = $("#time_stamp_select option:selected").text();
-						
-						//Split it and turns it into a object of string
-						selected_text = selected_text.split(" ");
-						
-						//Then set the first string to the div tab "item_info_label" which will be displayed for the user to see
-						document.getElementById('item_info_label').innerHTML = "Tranaction Type: " + selected_text[0];
 					});
 				});
 			</script>
@@ -183,11 +198,17 @@
 						</tbody>
 					</table>
 			</div>
+					<!-- Comments header and the actual comments themselves  -->
+					<div id="commments_header" style="font-size: 25px; text-align: center;"></div>
+					</br>
+					<div id="commments" style="text-align: center;"></div>
+					
+					<!-- Bottom Buttons -->
 					<div>
 						<input type="hidden" name="cust_id" id="cust_id" value="<?= $cust_id ?>"/> 
-						<input type="submit" name="viewReceipt" id="viewReceipt" value="View Receipt of Transactions" /><br />
-						<input type="submit" name="mainmenu" id="mainmenu" value="Main Menu" /><br />
-						<input type="submit" name="backOnCustTran" id="backOnCustTran" value="Back" onclick="back()"/><br />
+						<input type="submit" name="viewReceipt" id="viewReceipt" value="View Receipt of Transactions" /> &nbsp;
+						<input type="submit" name="backOnCustTran" id="backOnCustTran" value="Back" onclick="back()"/> &nbsp;
+						<input type="submit" name="mainmenu" id="mainmenu" value="Main Menu" /> &nbsp;
 					</div>
 				</form>
 
