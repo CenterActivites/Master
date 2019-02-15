@@ -6,10 +6,9 @@
         error_reporting(E_ERROR | E_PARSE);
 		
 		$usr =  "centerac_" . $usr;
-        //$connctn = new PDO("mysql:host=localhost; dbname=centerac_center_activities", $usr, $pwd);
 		try
 		{
-			$connctn = new PDO("mysql:host=localhost; dbname=centerac_center_activities", $usr, $pwd, array('charset'=>'utf8'));
+			$connctn = new PDO("mysql:host=localhost"; $database, $usr, $pwd, array('charset'=>'utf8'));
 			return $connctn;
 		}
 		catch(PDOException $ex)
