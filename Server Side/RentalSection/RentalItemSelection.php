@@ -26,8 +26,10 @@
 		$password = $_SESSION['password'];
         $conn = hsu_conn_sess($username, $password);
 		
-		//Grabs the selected customer
+		//Grabs the selected customer and their request dates for the rental
 		$sel_cust = $_SESSION['sel_user'];
+		$cust_request_date = $_SESSION['request_date'];
+		$cust_due_date = $_SESSION['due_date'];
 		
 		//MYSQl select query to see if the selected customer is a student or not
 		$is_student = $conn->prepare("SELECT is_student
@@ -37,10 +39,64 @@
 		$is_student->execute();
 		$is_student = $is_student->fetchAll();
 		
-		/*$padding_date = date('Y-m-d');
-		$padding_date = date('Y-m-d', strtotime($padding_date. ' + 2 days'));
-		if(date('D', strtotime($padding_date)) == "Sat" || date('D', strtotime($padding_date)) == "Sun")*/
-
+		//Grabbing the list of items that have been reserved already to see if the current request dates will not come into conflict with each other
+		$list_of_reserve = $conn->prepare("select B.item_Backid, request_date, due_date
+										from Item A, ItemTran B, Transaction C, Reserve E
+										where A.item_Backid = B.item_Backid and B.tran_id = C.trans_id and C.rh_id = E.rh_id and 
+												E.pick_up_date is null;");
+		$list_of_reserve->execute();
+		$list_of_reserve = $list_of_reserve->fetchAll();
+		
+		//Create a list of conflict to keep track of all reserve conflict if there are any
+		$list_of_conflicts = [];
+		
+		//Loop though the list of current reserves
+		foreach($list_of_reserve as $row)
+		{
+			//Grab item id, the reserve request date and due date
+			$item_id = $row['item_Backid'];
+			$reserve_request_date = $row['request_date'];
+			$reserve_due_date = $row['due_date'];
+			
+			//Checks if the customer's request date and the reserve request date are the same
+			if($reserve_request_date == $cust_request_date)
+			{
+				//If are then that is a conflict since the item is already been reserved by someone else
+				array_push($list_of_conflicts, $item_id);
+			}
+			
+			//Checks if the customer's request date is after the reserve request date
+			// EX: customer's request date is 01/12/2019 and the reserve request date is 01/10/2019.
+			//     Here because the customer's request date is after the reserve request date, we have to check
+			//     between the reserve due date with the 2 day needed for cleaning and the customer's request date.
+			elseif($reserve_request_date < $cust_request_date)
+			{
+				//Add the 2 days needed for cleaning
+				$pad_reserve_due_date = date('Y-m-d', strtotime($reserve_due_date. ' + 2 days'));
+				
+				//Does the check with the reserve due date with cleaning and customer's request date
+				if($pad_reserve_due_date > $cust_request_date or $pad_reserve_due_date == $cust_request_date)
+				{
+					//If there is conflict then push the item id to the conflict array
+					array_push($list_of_conflicts, $item_id);
+				}
+			}
+			
+			//If it gets to this then it means that the customer's request date is before the reserve request date
+			//Which means we need to check the customer's due date with the 2 day needed for cleaning and the reserve's request date.
+			else
+			{
+				//Add the 2 days needed for cleaning
+				$pad_cust_due_date = date('Y-m-d', strtotime($cust_due_date. ' + 2 days'));
+				
+				//Does the check with the customer's due date with cleaning and reserve's request date
+				if($pad_cust_due_date > $reserve_request_date or $pad_cust_due_date == $reserve_request_date)
+				{
+					//If there is conflict then push the item id to the conflict array
+					array_push($list_of_conflicts, $item_id);
+				}
+			}
+		}
  ?>
  
 	<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
@@ -61,6 +117,29 @@
 							if(!(strpos($row["inv_name"], "Outdoor Nation") !== false))
 							{
 								$curr_item_backid = $row["item_Backid"];
+								if(!(in_array($curr_item_backid, $list_of_conflicts)))
+								{
+									$curr_inv_name = $row["inv_name"];
+									$curr_item_size = $row["item_size"];
+									$curr_item_frontid = $row["item_Frontid"];
+									$curr_item_modeltype = $row["item_modeltype"];
+									if($curr_item_size == null)   
+									{
+										$curr_item_size = "No Size";
+									}
+?>
+									<option value="<?= $curr_item_backid ?>">
+										<?= $curr_inv_name ?> <?= $curr_item_modeltype ?> : <?= $curr_item_size ?> : <?= $curr_item_frontid ?>
+									</option>
+<?php
+								}
+							}
+						}
+						else
+						{
+							$curr_item_backid = $row["item_Backid"];
+							if(!(in_array($curr_item_backid, $list_of_conflicts)))
+							{
 								$curr_inv_name = $row["inv_name"];
 								$curr_item_size = $row["item_size"];
 								$curr_item_frontid = $row["item_Frontid"];
@@ -75,23 +154,6 @@
 								</option>
 <?php
 							}
-						}
-						else
-						{
-							$curr_item_backid = $row["item_Backid"];
-							$curr_inv_name = $row["inv_name"];
-							$curr_item_size = $row["item_size"];
-							$curr_item_frontid = $row["item_Frontid"];
-							$curr_item_modeltype = $row["item_modeltype"];
-							if($curr_item_size == null)   
-							{
-								$curr_item_size = "No Size";
-							}
-?>
-							<option value="<?= $curr_item_backid ?>">
-								<?= $curr_inv_name ?> <?= $curr_item_modeltype ?> : <?= $curr_item_size ?> : <?= $curr_item_frontid ?>
-							</option>
-<?php
 						}
 					}
 ?>
@@ -230,6 +292,10 @@
 									//Then grab the is_student value to see if the customer is a student or not
 									var is_student = "<?php echo $is_student[0][0] ?>";
 									
+									//Also grab the conflict list
+									var conflict_list = <?php echo json_encode($list_of_conflicts); ?>;
+									console.log(conflict_list[0]);
+									
 									//If the customer is not a student
 									if(is_student == 'no' || is_student == 'No')
 									{
@@ -239,8 +305,54 @@
 										//Checks if the item is not a 'OutDoor Nation' then we continue repopulating the select. If it then we do nothing and move on to the next item
 										if(inv_name.includes("Outdoor Nation") != 1)
 										{
+											item_Backid = obj['item_Backid'];
+											if(conflict_list.includes(item_Backid) === false)
+											{
+												//Sets all the item data to its corresponding fields
+												item_size = obj['item_size'];
+												item_Frontid = obj['item_Frontid'];
+												item_modeltype = obj['item_modeltype'];
+												
+												//Creats a new option for inserting into the "item_selection" select field
+												var opt = document.createElement('option');
+												
+												//Sees if the item_size from the item data is null or blank, if is then it sets the item_size field to "No Size"
+												if(item_size == null || item_size == "")
+												{
+													item_size = "No Size";
+												}
+												
+												//Sets the option innerHTML or text to display to the following format: "inv_name : item_size : item_Frontid"
+												opt.innerHTML = inv_name + "\xa0" + item_modeltype + " : " + item_size + " : " + item_Frontid;
+												
+												//Sets the item back id to the option value
+												opt.value = item_Backid;
+												
+												//
+												//The next following lines checks if the option that is being diplayed is already in the cart
+												//
+												
+												//Does the check here. The if statement reads if current item that is about to be displayed is also in the cart, then return true else false
+												if(item_Backid in filtered_cart_array)
+												{
+													opt.selected = 'selected'; //If true then set the option selected to true
+													delete filtered_cart_array[item_Backid]; //and delete the item from the cart display so we don't display it twice
+												}
+												
+												//Finalize the option and displays it on the "item_selection" select field
+												item_display.appendChild(opt);
+											}
+										}
+									}
+									//If the customer is a student
+									else
+									{
+										item_Backid = obj['item_Backid'];
+										if(conflict_list.includes(item_Backid) === false)
+										{
 											//Sets all the item data to its corresponding fields
 											item_Backid = obj['item_Backid'];
+											inv_name = obj['inv_name'];
 											item_size = obj['item_size'];
 											item_Frontid = obj['item_Frontid'];
 											item_modeltype = obj['item_modeltype'];
@@ -274,45 +386,6 @@
 											//Finalize the option and displays it on the "item_selection" select field
 											item_display.appendChild(opt);
 										}
-									}
-									//If the customer is a student
-									else
-									{
-										//Sets all the item data to its corresponding fields
-										item_Backid = obj['item_Backid'];
-										inv_name = obj['inv_name'];
-										item_size = obj['item_size'];
-										item_Frontid = obj['item_Frontid'];
-										item_modeltype = obj['item_modeltype'];
-										
-										//Creats a new option for inserting into the "item_selection" select field
-										var opt = document.createElement('option');
-										
-										//Sees if the item_size from the item data is null or blank, if is then it sets the item_size field to "No Size"
-										if(item_size == null || item_size == "")
-										{
-											item_size = "No Size";
-										}
-										
-										//Sets the option innerHTML or text to display to the following format: "inv_name : item_size : item_Frontid"
-										opt.innerHTML = inv_name + "\xa0" + item_modeltype + " : " + item_size + " : " + item_Frontid;
-										
-										//Sets the item back id to the option value
-										opt.value = item_Backid;
-										
-										//
-										//The next following lines checks if the option that is being diplayed is already in the cart
-										//
-										
-										//Does the check here. The if statement reads if current item that is about to be displayed is also in the cart, then return true else false
-										if(item_Backid in filtered_cart_array)
-										{
-											opt.selected = 'selected'; //If true then set the option selected to true
-											delete filtered_cart_array[item_Backid]; //and delete the item from the cart display so we don't display it twice
-										}
-										
-										//Finalize the option and displays it on the "item_selection" select field
-										item_display.appendChild(opt);
 									}
 								}
 								
