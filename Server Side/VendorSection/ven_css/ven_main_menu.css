@@ -1,0 +1,91 @@
+/*This is a comment, use it wisely*/
+
+body{
+  text-align: center;
+}
+
+
+#AVendor,#moreIn,#mainmenu{
+    width: 10%;
+    background-color: #008000;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 20px;
+    font-family: "Times New Roman", Times, serif;
+    text-align: center;
+    color: #EEE8AA;
+    word-wrap: break-word;
+    white-space: normal;
+    box-sizing:content-box;
+
+}
+/*CSS3 uses this . system instead of a #. Don't listen to Sharon, go to W3.org*/
+/*it also uses class and not id but as you can see you can still use both*/
+#wet_hands{
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-family: "Times New Roman", Times, serif;
+  table-layout: fixed;
+  font-size: 20px;
+  width: 100%;
+}
+
+
+#wet_hands tbody tr:hover {background-color: ddd;}
+
+#wet_hands td, #wet_hands th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 20px;
+    font-family: "Times New Roman", Times, serif;
+
+}
+
+#wet_hands tr:nth-child(even){background-color: #f2f2f2;}
+#wet_hands tr:nth-child(odd){background-color: white;}
+
+#wet_hands th {
+    font-family: "Times New Roman", Times, serif;
+    padding-top: 12px;
+    width:20%;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #008000;
+    color: #EEE8AA;
+    text-align: center;
+
+
+}
+
+table ,tr td{
+    border:1px solid black;
+	word-wrap: break-word;
+}
+tbody {
+    display:block;
+    height:100px;
+    overflow-y:scroll;
+}
+thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+thead {
+    width: 99.2%;
+}
+table {
+    width:100%;
+}
+
+#hide_me{
+  display: none;
+}
+
+#wet_hands tbody tr.highlight td { background:#89cff0; }

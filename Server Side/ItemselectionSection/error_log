@@ -1,0 +1,48 @@
+[05-Feb-2019 18:41:00 UTC] PHP Warning:  require(Spreadsheet.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[05-Feb-2019 18:41:00 UTC] PHP Warning:  require(Spreadsheet.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[05-Feb-2019 18:41:00 UTC] PHP Fatal error:  require(): Failed opening required 'Spreadsheet.php' (include_path='.:/opt/cpanel/ea-php70/root/usr/share/pear') in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[05-Feb-2019 18:41:46 UTC] PHP Warning:  require(Spreadsheet.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[05-Feb-2019 18:41:46 UTC] PHP Warning:  require(Spreadsheet.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[05-Feb-2019 18:41:46 UTC] PHP Fatal error:  require(): Failed opening required 'Spreadsheet.php' (include_path='.:/opt/cpanel/ea-php70/root/usr/share/pear') in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:39:15 UTC] PHP Warning:  require(Spreadsheet.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:39:15 UTC] PHP Warning:  require(Spreadsheet.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:39:15 UTC] PHP Fatal error:  require(): Failed opening required 'Spreadsheet.php' (include_path='.:/opt/cpanel/ea-php70/root/usr/share/pear') in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:42:41 UTC] PHP Warning:  require(vendor/autoload.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:42:41 UTC] PHP Warning:  require(vendor/autoload.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:42:41 UTC] PHP Fatal error:  require(): Failed opening required 'vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php70/root/usr/share/pear') in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:47:35 UTC] PHP Warning:  require(../vendor/autoload.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:47:35 UTC] PHP Warning:  require(../vendor/autoload.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:47:35 UTC] PHP Fatal error:  require(): Failed opening required '../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php70/root/usr/share/pear') in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:47:39 UTC] PHP Warning:  require(../vendor/autoload.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:47:39 UTC] PHP Warning:  require(../vendor/autoload.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 19:47:39 UTC] PHP Fatal error:  require(): Failed opening required '../vendor/autoload.php' (include_path='.:/opt/cpanel/ea-php70/root/usr/share/pear') in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[06-Feb-2019 20:08:31 UTC] PHP Fatal error:  Uncaught Error: Class 'SimpleExcel\SimpleExcel' not found in /home/centerac/public_html/ItemselectionSection/sampleExcel.php:4
+Stack trace:
+#0 {main}
+  thrown in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 4
+[06-Feb-2019 20:10:22 UTC] PHP Fatal error:  Uncaught Exception: File test.csv doesn't exist in /home/centerac/public_html/SimpleExcel/Parser/BaseParser.php:174
+Stack trace:
+#0 /home/centerac/public_html/SimpleExcel/Parser/CSVParser.php(38): SimpleExcel\Parser\BaseParser->isFileReady('test.csv')
+#1 /home/centerac/public_html/ItemselectionSection/sampleExcel.php(6): SimpleExcel\Parser\CSVParser->loadFile('test.csv')
+#2 {main}
+  thrown in /home/centerac/public_html/SimpleExcel/Parser/BaseParser.php on line 174
+[06-Feb-2019 20:11:57 UTC] PHP Warning:  require_once(/home/centerac/public_html/SimpleExcel/Spreadsheet/Worksheet.php): failed to open stream: No such file or directory in /home/centerac/public_html/SimpleExcel/SimpleExcel.php on line 43
+[06-Feb-2019 20:11:57 UTC] PHP Fatal error:  require_once(): Failed opening required '/home/centerac/public_html/SimpleExcel/Spreadsheet/Worksheet.php' (include_path='.:/opt/cpanel/ea-php70/root/usr/share/pear') in /home/centerac/public_html/SimpleExcel/SimpleExcel.php on line 43
+[06-Feb-2019 20:28:47 UTC] PHP Warning:  require_once(/home/centerac/public_html/SimpleExcel/.php): failed to open stream: No such file or directory in /home/centerac/public_html/SimpleExcel/SimpleExcel.php on line 43
+[06-Feb-2019 20:28:47 UTC] PHP Fatal error:  require_once(): Failed opening required '/home/centerac/public_html/SimpleExcel/.php' (include_path='.:/opt/cpanel/ea-php70/root/usr/share/pear') in /home/centerac/public_html/SimpleExcel/SimpleExcel.php on line 43
+[06-Feb-2019 20:28:51 UTC] PHP Warning:  require_once(/home/centerac/public_html/SimpleExcel/.php): failed to open stream: No such file or directory in /home/centerac/public_html/SimpleExcel/SimpleExcel.php on line 43
+[06-Feb-2019 20:28:51 UTC] PHP Fatal error:  require_once(): Failed opening required '/home/centerac/public_html/SimpleExcel/.php' (include_path='.:/opt/cpanel/ea-php70/root/usr/share/pear') in /home/centerac/public_html/SimpleExcel/SimpleExcel.php on line 43
+[08-Feb-2019 20:21:17 UTC] PHP Warning:  require_once(/home/centerac/public_html/SimpleExcel/SimpleExcel.php): failed to open stream: No such file or directory in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[08-Feb-2019 20:21:17 UTC] PHP Fatal error:  require_once(): Failed opening required '/home/centerac/public_html/SimpleExcel/SimpleExcel.php' (include_path='.:/opt/cpanel/ea-php70/root/usr/share/pear') in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 2
+[11-Feb-2019 19:21:15 UTC] PHP Fatal error:  Uncaught Error: Call to a member function query() on null in /home/centerac/public_html/ItemselectionSection/sampleExcel.php:17
+Stack trace:
+#0 {main}
+  thrown in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 17
+[11-Feb-2019 19:21:42 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/centerac/public_html/ItemselectionSection/sampleExcel.php:32
+Stack trace:
+#0 {main}
+  thrown in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 32
+[11-Feb-2019 19:21:49 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/centerac/public_html/ItemselectionSection/sampleExcel.php:32
+Stack trace:
+#0 {main}
+  thrown in /home/centerac/public_html/ItemselectionSection/sampleExcel.php on line 32

@@ -1,0 +1,12 @@
+[29-Jun-2018 00:20:58 UTC] PHP Fatal error:  Call to undefined function hsu_conn_sess() in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 6
+[29-Jun-2018 00:21:29 UTC] PHP Fatal error:  Call to undefined function hsu_conn_sess() in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 7
+[29-Jun-2018 00:25:31 UTC] PHP Fatal error:  Call to undefined function hsu_conn_sess() in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 7
+[29-Jun-2018 00:33:16 UTC] PHP Warning:  require_once(hsu_conn_sess.php): failed to open stream: No such file or directory in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 3
+[29-Jun-2018 00:33:16 UTC] PHP Fatal error:  require_once(): Failed opening required 'hsu_conn_sess.php' (include_path='.:/opt/cpanel/ea-php56/root/usr/share/pear') in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 3
+[29-Jun-2018 00:34:50 UTC] PHP Fatal error:  Call to undefined function hsu_conn_sess() in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 8
+[29-Jun-2018 00:56:14 UTC] PHP Fatal error:  Call to undefined function hsu_conn_sess() in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 6
+[29-Jun-2018 01:36:43 UTC] PHP Parse error:  syntax error, unexpected 'to' (T_STRING) in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 12
+[29-Jun-2018 22:06:09 UTC] PHP Fatal error:  Call to undefined function get_nextval() in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 50
+[29-Jun-2018 22:53:43 UTC] PHP Fatal error:  Call to undefined function hsu_conn_sess() in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 6
+[29-Jun-2018 23:19:10 UTC] PHP Fatal error:  Call to undefined function hsu_conn_sess() in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 6
+[29-Jun-2018 23:20:01 UTC] PHP Fatal error:  Call to undefined function requireonce() in /home/centerac/public_html/VendorSection/addvendor-posthandler.php on line 3

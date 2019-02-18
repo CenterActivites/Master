@@ -1,0 +1,131 @@
+
+#info_buttons{
+  border: none;
+  word-wrap: break-word;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+    text-align: center;
+    word-wrap: break-word;
+}
+th, td {
+    padding: 5px;
+    text-align: left;
+    word-wrap: break-word;
+}
+
+
+h1{
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  word-wrap: break-word;
+}
+
+#holds_item_info{
+    border: none;
+    word-wrap: break-word;
+}
+
+#Item_Status {
+    font-family: "Times New Roman", Times, serif;
+    border-collapse: collapse;
+    width: 60%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#Item_comment, #Cust_usage {
+    font-family: "Times New Roman", Times, serif;
+    border-collapse: collapse;
+    width: 38%;
+    margin-left: auto;
+    margin-right: auto;
+	margin: 8px;
+}
+
+#Item_comment tbody {
+    display:block;
+    height:370px;
+    overflow:scroll;
+    background: white;
+}
+
+#Item_comment thead {
+	display:table;
+    table-layout:fixed;
+}
+
+#Item_Status td, #Item_Status th, #Item_comment td, #Item_comment th, #Cust_usage td, #Cust_usage th{
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 17px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+#Item_Status tr:nth-child(even), #Item_comment tr:nth-child(even), #Cust_usage tr:nth-child(even){
+	background-color: #f2f2f2;
+}
+
+#Item_Status tr:nth-child(odd), #Item_comment tr:nth-child(odd), #Cust_usage tr:nth-child(odd){
+	background-color: white;
+}
+
+#Item_Status tr:hover, #Item_comment tr:hover, #Cust_usage tr:hover {
+	background-color: #ddd;
+}
+
+#Item_Status th, #Item_comment th , #Cust_usage th{
+    font-family: "Times New Roman", Times, serif;
+    padding-top: 12px;
+    width:20%;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #008000;
+    color: #EEE8AA;
+}
+
+#Item_Status td, #Item_comment td, #Cust_usage td{
+  width:30%;
+}
+
+
+
+#backoniteminfo,#editItem,#editInv,#mainmenu {
+    width: 10%;
+    background-color: #008000;
+    color: white;
+    padding: 14px 20px;
+    margin: 2px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: "Times New Roman", Times, serif;
+    text-align: center;
+    color: #EEE8AA;
+    word-wrap: break-word;
+    white-space: normal;
+    box-sizing:content-box;
+
+}
+
+#page_header{
+  word-wrap: break-word;
+  white-space: normal;
+  font-size: 25px;
+  font-family: "Times New Roman", Times, serif;
+  font-weight: bold;
+  margin-left: auto;
+  margin-right: auto;
+  border-style: double;
+}
+
+
+body{
+  text-align: center;
+}

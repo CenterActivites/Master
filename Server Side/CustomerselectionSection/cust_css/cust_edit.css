@@ -1,0 +1,59 @@
+#first_name_feild,#stu_stat_field,#dob_field,#email_field{
+  float: left;
+  width: 50%;
+  font-family: "Times New Roman", Times, serif;
+}
+
+#updateCust,#removeCust,#cancelOnEditCust {
+    width: 10%;
+    background-color: #008000;
+    color: white;
+    padding:5px;
+    margin: 2px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: "Times New Roman", Times, serif;
+    text-align: center;
+    color: #EEE8AA;
+    word-wrap: break-word;
+    white-space: normal;
+    box-sizing:content-box;
+}
+
+input[type=text], select,input[type=date] {
+    width:50%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 20px;
+    text-align: center;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+fieldset{
+  border-style: double;
+}
+
+#all_lable{
+  font-size: 20px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+#cust_address{
+  width: 50%;
+}
+
+#pageHeader{
+  border-style: double;
+  text-align: center;
+  font-size: 20px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+body{
+  text-align: center;
+}
