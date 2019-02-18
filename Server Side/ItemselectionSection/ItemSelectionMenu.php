@@ -9,7 +9,9 @@
 <head>
 	<link rel="stylesheet" type="text/css" href="../ItemselectionSection/item_css/item_selection.css"/>
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
-	<script type="text/javascript" src="jquery.quicksearch.js"></script>  <!-- Plugin for the item Search function -->
+	<script type="text/javascript" src="jquery.quicksearch.js"></script>  
+	
+	<!-- Plugin for the item Search function -->
 	<script type="text/javascript">
 		$(function ()
 		{
@@ -17,6 +19,7 @@
 		});
 	</script>
 
+	<!-- Hidden item id button. Used for keeping track of the selected item id -->
 	<script type="text/javascript">
 		$(function(){
 			$('<input>').attr({
@@ -26,29 +29,8 @@
 			}).appendTo('#button');
 		});
 	</script>
-	
-	<!-- <script type="text/javascript">
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'dbw_value',
-				name: 'dbw_value',
-				value: "no"
-			}).appendTo('#button');
-		});
-	</script>
-	
-	<script type="text/javascript">
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'public_value',
-				name: 'public_value',
-				value: 'no'
-			}).appendTo('#button');
-		});
-	</script> -->
 
+	<!-- Little script for if the user didn't select an item, they get the "please select an item" alert -->
 	<script type="text/javascript">
 		function is_blank(){
 			if(document.getElementById('item_id').value.length == 0){
@@ -58,26 +40,7 @@
 		}
 	</script>
 
-	<script type="text/javascript">
-
-		$(document).ready(function(){
-			$("#item").click(function(){
-				var item_num = $("#item").val();
-				$("#item_id").val(item_num);
-			});
-		});
-
-	</script>
-
-	<script type="text/javascript">
-	// count items that are ready in database
-	$(document).ready(function(){
-		var stuff = $("#item option").length;
-		//console.log(stuff);
-	});
-
-	</script>
-
+	<!-- Little script for storing the item id into the hidden item id button everytime a item is selected -->
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$("#table_div").click(function(){
@@ -211,74 +174,74 @@
 				<div id="table_div" >
 
 					<table id="table_info" class = "fixed" >
-					<thead>
-						<tr>
-							<th id = "hide_me"> </th>
-							<th id ="th_front">Front Id</th>
-							<th>Item Size</th>
-							<th>Model</th>
-							<th>Item Name</th>
-							<th>Public Use</th>
-							<th>Status</th>
-							<th>Usage</th>
-						</tr>
-					</thead>
-				<tbody id='empty'>
+						<thead>
+							<tr>
+								<th id = "hide_me"> </th>
+								<th id ="th_front">Front Id</th>
+								<th>Item Size</th>
+								<th>Model</th>
+								<th>Item Name</th>
+								<th>Public Use</th>
+								<th>Status</th>
+								<th>Usage</th>
+							</tr>
+						</thead>
+						<tbody id='empty'>
 <?php
-					//query for item information
-					foreach($conn->query("SELECT item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
-											FROM Item A, Inventory B, Category C, Status D
-											WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id
-											ORDER BY inv_name, item_modeltype") as $row)
-					{
-						$curr_item_backid = $row["item_Backid"];
-						$curr_item_size = $row["item_size"];
-						$curr_inv_name = $row["inv_name"];
-						$curr_item_name = $row["item_modeltype"];
-						$curr_item_frontid = $row["item_Frontid"];
-						$curr_pub_use = $row["public"];
-						$curr_stat_info = $row["stat_name"];
+							//query for item information
+							foreach($conn->query("SELECT item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
+													FROM Item A, Inventory B, Category C, Status D
+													WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id
+													ORDER BY inv_name, item_modeltype") as $row)
+							{
+								$curr_item_backid = $row["item_Backid"];
+								$curr_item_size = $row["item_size"];
+								$curr_inv_name = $row["inv_name"];
+								$curr_item_name = $row["item_modeltype"];
+								$curr_item_frontid = $row["item_Frontid"];
+								$curr_pub_use = $row["public"];
+								$curr_stat_info = $row["stat_name"];
 
-						$item_backid = (int)$curr_item_backid;
-						
-						$number_of_use = $conn->prepare("select count(itemtran_id)
-															from Item A, Transaction B, ItemTran C
-															where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
-						$number_of_use->bindValue(':a', $item_backid, PDO::PARAM_INT);
-						$number_of_use->execute();
-						$number_of_use = $number_of_use->fetchAll();
-						
-						$curr_number_of_use = $number_of_use[0][0];
-						
-						if($curr_pub_use == "1"){
-							$curr_pub_use = "Yes";
-						}
-						else{
-							$curr_pub_use = "No";
-						}
-						
-						if($curr_item_size == NULL)
-						{
-							$curr_item_size = "";
-						}
+								$item_backid = (int)$curr_item_backid;
+								
+								$number_of_use = $conn->prepare("select count(itemtran_id)
+																	from Item A, Transaction B, ItemTran C
+																	where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+								$number_of_use->bindValue(':a', $item_backid, PDO::PARAM_INT);
+								$number_of_use->execute();
+								$number_of_use = $number_of_use->fetchAll();
+								
+								$curr_number_of_use = $number_of_use[0][0];
+								
+								if($curr_pub_use == "1"){
+									$curr_pub_use = "Yes";
+								}
+								else{
+									$curr_pub_use = "No";
+								}
+								
+								if($curr_item_size == NULL)
+								{
+									$curr_item_size = "";
+								}
 ?>
 
 
-						<tr id='table_row_info'>
-							<td id = "hide_me"><input id ="radio_in" type="radio"  name="item_id[]" value = "<?= $curr_item_backid ?>"/><lable class="zombie" for="radio_in"> </lable></td>
-							<td id = 'td_front'><?= $curr_item_frontid?></td>
-							<td><?= $curr_item_size ?></td>
-							<td><?= $curr_item_name ?></td>
-							<td><?= $curr_inv_name ?></td>
-							<td><?=$curr_pub_use?></td>
-							<td id='status_stuff'><?=$curr_stat_info?></td>
-							<td><?=$curr_number_of_use?></td>
-						</tr>
+								<tr id='table_row_info'>
+									<td id = "hide_me"><input id ="radio_in" type="radio"  name="item_id[]" value = "<?= $curr_item_backid ?>"/><lable class="zombie" for="radio_in"> </lable></td>
+									<td id = 'td_front'><?= $curr_item_frontid?></td>
+									<td><?= $curr_item_size ?></td>
+									<td><?= $curr_item_name ?></td>
+									<td><?= $curr_inv_name ?></td>
+									<td><?=$curr_pub_use?></td>
+									<td id='status_stuff'><?=$curr_stat_info?></td>
+									<td><?=$curr_number_of_use?></td>
+								</tr>
 <?php
-					}
+							}
 ?>
-				</tbody>
-			</table>
+						</tbody>
+					</table>
 				</div>
 			</fieldset>
 			<fieldset id="search_fieldset">
