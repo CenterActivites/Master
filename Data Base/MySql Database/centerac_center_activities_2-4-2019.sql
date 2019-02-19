@@ -1072,8 +1072,13 @@ CREATE TABLE `Vendor` (
 --
 
 INSERT INTO `Vendor` (`ven_id`, `ven_name`, `ven_phone`, `ven_address`) VALUES
-(2, 'Center Activities', '(707) 826-3357', '1 Harpst St, Arcata, CA 95521'),
-(3, 'Humboldt Bay Aquatic Center', '911', '921 Waterfront Dr, Eureka, CA 95501');
+(4, 'Costco', '(707) 441-8750', '1006 W Wabash Ave Eureka, Ca 95501'),
+(5, ' Recreational Equipment, Inc. (REI Online) ', ' 1-(800) 426-484', ' 85 Rossanley Drive Medford, OR 97501 '),
+(8, 'Liberty Mountain(Online)', '1-(800) 366-2666', '680 Fairfield Rd Montoursville, PA 17754'),
+(9, 'Pacific Outfitters', '(707) 822-0321', '737 G Street Arcata, Ca 95521'),
+(10, 'Amazon (Online)', '1-(800) 280-4331', '990 Beecher Street San Leandro, Ca 94577'),
+(11, 'Hyside (Online)', '1-(800) 868-5987', '12100 Sierra Way Kernville, Ca 93238'),
+(12, 'Northwest River Supplies (NRS Online)', '(877) 677-4327', '2009 S. Main Street Moscow, ID 83843');
 
 --
 -- Indexes for dumped tables
