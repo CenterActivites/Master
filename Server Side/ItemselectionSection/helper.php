@@ -1,6 +1,6 @@
 <?php
 		//                                                     !!!!!!!!!!!!!!!!!!!DO NOT PUSH THIS FILE TO GITHUB!!!!!!!!!!!!!!!!!!!!
-	$connctn = new PDO("mysql:host=localhost; dbname=centerac_center_activities", "centerac_test", "Testing123+", array('charset'=>'utf8'));
+	$connctn = new PDO("mysql:host=localhost"; $DB, $USER, $PASS, array('charset'=>'utf8'));
 
 	$connctn->query("SET CHARACTER SET utf8");
 	//sets the incoming stat_id to this var
