@@ -1,6 +1,6 @@
 <?php
 	require_once '../PHPExcel-1.8/Classes/PHPExcel.php';
-	$connctn = new PDO("mysql:host=localhost; dbname=centerac_center_activities", "centerac_test", "Testing123+", array('charset'=>'utf8'));
+	$connctn = new PDO("mysql:host=localhost", $DB, $user, $pass, array('charset'=>'utf8'));
 	$connctn->query("SET CHARACTER SET utf8");
 
 	$objPHPExcel = new PHPExcel();
