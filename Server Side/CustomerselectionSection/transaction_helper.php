@@ -21,7 +21,7 @@
 		$int_cust_id = (int)$cust_id;
 		$int_trans_id = (int)$trans_id;
 		
-		$transaction = $connctn->prepare("SELECT inv_name, item_modeltype, item_size, item_Frontid
+		$transaction = $connctn->prepare("SELECT inv_name, item_modeltype, item_size, item_Frontid, comments
 											FROM Transaction b, ItemTran c, Item d, Inventory e
 											WHERE b.trans_id = c.tran_id and c.item_Backid = d.item_Backid 
 													and d.inv_id = e.inv_id and b.cust_id = :a and b.trans_id = :z"); 

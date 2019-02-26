@@ -7,7 +7,7 @@
 <html>
 	<head>
 
-		
+		<link rel="stylesheet" type="text/css" href="../VendorSection/ven_css/ven_main_menu.css"/>
 
 		<script type="text/javascript">
 			$(function(){
@@ -56,17 +56,33 @@
 					var table2 = document.getElementById('vendor_info').rows[1].cells.item(2).innerHTML;
 					var table3 = document.getElementById('vendor_info').rows[1].cells.item(0).innerHTML;
 					$("#ven_names").val(table3);
-				  $("#ven_phone").val(table);
+					$("#ven_phone").val(table);
 					$("#ven_address").val(table2);
 					$("#ven_id").val(ven_id);
 				});
 		</script>
+		
+<?php
+		$lvl_access = strip_tags($_SESSION['lvl_access']);
+		if($lvl_access == "4" || $lvl_access == "3" || $lvl_access == "2")
+		{
+			$lvl_2 = "type = 'submit'";	
+			$disabled_2="";
+		}
+		else
+		{
+			$lvl_2 = "type = 'hidden'";
+			$disabled_2="disabled";
+		}
+?>
 
 	</head>
 	<body>
-	    <div id="pageHeader"> Vendor Information </div>
+	    <fieldset id='fieldset_label' style="margin-left:auto; margin-right:auto; border:none;">
+			<label id='header_for_table' style="font-size: 30px;">Vendor Information</label>
+		</fieldset> </br>
 				 <form method ="post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="ven_table_form">
-					 <fieldset>
+					 <fieldset style="border:none;">
 						 <table name="vendor_info" id="vendor_info" required >
 							 <tr>
 								 <th>
@@ -105,16 +121,15 @@
 				 </form>
 		<div>
 	    <form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id="ven_info_form">
-		    <fieldset >
-	            <input type="submit" name="back" id="back" value="Back" /><br />
-		        	<input type="submit" name="editVen" id="editVen" value="Edit Vendor" /><br />
-	            <input type="submit" name="mainmenu" id="mainmenu" value="Main Menu" /><br />
+		    <fieldset style="border:none;">
+	            <input type="submit" name="back" id="back" value="Back" /> &nbsp;&nbsp;
+		        <input <?= $lvl_2 ?> name="editVen" id="editVen" value="Edit Vendor" <?= $disabled_2 ?>/>
 		    </fieldset>
 		  </form>
 	  </div>
 	</body>
 </html>
 <?php
-			$conn = null;
+	$conn = null;
 	}
 ?>

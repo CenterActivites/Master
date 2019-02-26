@@ -4,6 +4,7 @@ table, th, td {
     text-align: center;
     word-wrap: break-word;
 }
+
 th, td {
     text-align: left;
     word-wrap: break-word;
@@ -43,11 +44,6 @@ th, td {
     text-align: center;
     background-color: #008000;
     color: #EEE8AA;
-}
-
-#pageHeader{
-  border-style: double;
-  text-align: center;
 }
 
 

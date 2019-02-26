@@ -40,7 +40,7 @@
 		}
 	</script>
 
-	<!-- Little script for storing the item id into the hidden item id button everytime a item is selected -->
+	<!-- Little script that save the item id to the hidden button we created a few lines up  -->
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$("#table_div").click(function(){
@@ -52,6 +52,29 @@
 		});
 	</script>
 
+	<!-- Hover function for the selects -->
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("select").hover(function(){
+				$(this).attr('size', 
+			  $('option').length);
+			}, function() {
+				$(this).attr('size', 1);
+			});
+		});
+	</script>
+	
+	<!-- Little script to disable the 'enter' button from submitting the form -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+		  $(window).keydown(function(event){
+			if(event.keyCode == 13) {
+			  event.preventDefault();
+			  return false;
+			}
+		  });
+		});
+	</script>
 
 	<script type="text/javascript">
 	//this script goes off when a table row is clicked it checks the radio button
@@ -61,8 +84,7 @@
 				});
 			});
 	</script>
-
-
+	
 	<script type = "text/javascript">
 		// this script calls a CSS class named .highlight in the CSS file
 		// So that when a click happens It hightlights the row letting the user know that they've selected it.
@@ -158,6 +180,70 @@
 			 });
 		 });
 	</script>
+	
+	<!-- Little script that save the Public Value to a hidden input field -->
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			$('#public').change(function()
+			{
+				var box_value = $(this).val();
+				$('#public_hidden').val(box_value);
+				console.log("Public Hidden value changed to :" + box_value);
+			});
+		});
+	</script>
+	
+	<!-- Little script that save the DBW Value to a hidden input field -->
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			$('#dbw').change(function()
+			{
+				var box_value = $(this).val();
+				$('#dbw_hidden').val(box_value);
+				console.log("DBW Hidden value changed to :" + box_value);
+			});
+		});
+	</script>
+	
+	<!-- Little script that save the Status Value to a hidden input field -->
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			$('#change').change(function()
+			{
+				var box_value = $(this).val();
+				$('#status_hidden').val(box_value);
+				console.log("Status Hidden value changed to :" + box_value);
+			});
+		});
+	</script>
+
+<?php
+	$lvl_access = strip_tags($_SESSION['lvl_access']);
+	if($lvl_access == "4" || $lvl_access == "3")
+	{
+		$lvl_3 = "type = 'submit'";
+		$disabled_3="";
+	}
+	else
+	{
+		$lvl_3 = "type = 'hidden'";
+		$disabled_3="disabled";
+	}
+	
+	if($lvl_access == "4" || $lvl_access == "3" || $lvl_access == "2")
+	{
+		$lvl_2 = "type = 'submit'";	
+		$disabled_2="";
+	}
+	else
+	{
+		$lvl_2 = "type = 'hidden'";
+		$disabled_2="disabled";
+	}
+?>
 
 </head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -167,8 +253,8 @@
 		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="inv">
 			<fieldset id="form_feildset">
 				<legend style="font-size: 35px; text-align:center;"> Select An Item </legend>
-				<fieldset id=fieldset_lable>
-					<label id=header_for_table>Item Selection</label>
+				<fieldset id='fieldset_label'>
+					<label id='header_for_table'>Item Selection</label>
 				</fieldset>
 			</br>
 				<div id="table_div" >
@@ -245,74 +331,117 @@
 				</div>
 			</fieldset>
 			<fieldset id="search_fieldset">
-				<label id="search_lable">Search:</label> <input type = "text" name = "searchItem" id = "searchItem" placeholder="Search for Items..." /> </br>
+		</form>
+				<label id="search_lable">Search: </label> 
+				<input type = "text" name = "searchItem" id = "searchItem" placeholder="Search for Items..." /> </br>
 				</br>
+		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="inv">
+				<label id="search_lable">Sort By: </label>
+				</br>
+				</br>
+				
+				<table id="search_table">
+					<!-- Searchable functionals for a more narrower search in a table for styling purposes -->
+					
+					<tr>
+						<th>Status</th>
+						<th>DBW</th> 
+						<th>Public</th>
+						<th>Location</th>
+					</tr>
+					<tr>
+						<!-- A status select where users can select a certain status of the items they just want to see -->
+						<td>
+							<div class="select_status">
+								<select id='change'>
+									<option value=0 selected="selected"> None </option>
+<?php
+									//Query for status name
+									foreach($conn->query("SELECT * FROM Status") as $row)
+									{
+										$curr_stat_name = $row['stat_name'];
+										$curr_stat_id = $row['stat_id'];
+?>
+										<option value="<?= $curr_stat_id ?>">		<!-- Pushing the fetch information to the screen -->
+											<?= $curr_stat_name ?>
+										</option>
+<?php
+									}
+?>
+								</select>
+							</div>
+						</td>
 
-				<label id="search_lable">Sort By:</label>
-				<select id='change'>
-					<option value=0 selected="selected"> None </option>
-<?php
-						//Query for status name
-						foreach($conn->query("SELECT * FROM Status") as $row)
-						{
-							$curr_stat_name = $row['stat_name'];
-							$curr_stat_id = $row['stat_id'];
-?>
-							<option value="<?= $curr_stat_id ?>">		<!-- Pushing the fetch information to the screen -->
-								<?= $curr_stat_name ?>
-							</option>
-<?php
-						}
-?>
-				</select> 
-				</br>
-				DBW: <select id="dbw"> 
-						<option value="none" selected="selected">
-							Include both
-						</option>
-						<option value="yes">
-							Is DBW
-						</option>
-						<option value="no">
-							Non DBW
-						</option>
-					</select>
-				Public: <select id="public">
-						<option value="none" selected="selected">
-							Include both
-						</option>
-						<option value="yes">
-							Is Public
-						</option>
-						<option value="no">
-							Not Public
-						</option>
-					</select>
-				Location: <select id="location">
-						<option value="none" selected="selected">
-							Both
-						</option>
-						<option value="ca">
-							Center Activites
-						</option>
-						<option value="hbac">
-							Humboldt Bay Aquatic Center
-						</option>
-					</select>
+						<!-- A DBW search where users can see either only DBW items, non-DBW items, or both DBW and non-DBW items -->
+						<td>
+							<div class="select">
+								<select id="dbw"> 
+									<option value="none" selected="selected">
+										Include both
+									</option>
+									<option value="yes">
+										Is DBW
+									</option>
+									<option value="no">
+										Non DBW
+									</option>
+								</select>
+							</div>
+						</td>
+
+						<!-- A public search where users can see either only items rentable to the public, non-public-rentable items, or both public-rentable and non-public-rentable items -->
+						<td>
+							<div class="select">
+								<select id="public">
+									<option value="none" selected="selected">
+										Include both
+									</option>
+									<option value="yes">
+										Is Public
+									</option>
+									<option value="no">
+										Not Public
+									</option>
+								</select>
+							</div>
+						</td>
+
+						<!-- A simple location search select where user can see items according to one location to another, or all locations -->
+						<td>
+							<div class="select">
+								<select id="location">
+									<option value="none" selected="selected">
+										Both
+									</option>
+									<option value="ca">
+										Center Activites
+									</option>
+									<option value="hbac">
+										Humboldt Bay Aquatic Center
+									</option>
+								</select>
+							</div>
+						</td>
+					</tr>
+				</table>
 
 		 	</fieldset>
 		</form>
 		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="button">
-				<fieldset id="button_feildset">
-				<input type="submit" name="mainmenu" id="mainmenu" value="Main Menu" /> &nbsp;&nbsp;
+			<!-- Following are just buttons -->
+			<fieldset id="button_feildset">
 				<input type="submit" name="moreinfo" id="moreinfo" value="Item Info" onclick="return is_blank()" /> &nbsp;&nbsp;
-				<input type="submit" name="additem" id="additem" value="Add Item" /> &nbsp;&nbsp;
-				<input type="submit" name="addinventory" id="addinventory" value="Add Inventory" /><br /> &nbsp;&nbsp;
-				</fieldset>
+				<input <?= $lvl_2 ?> name="additem" id="additem" value="Add Item" <?= $disabled_2 ?>/> &nbsp;&nbsp;
+				<input <?= $lvl_3 ?> name="addinventory" id="addinventory" value="Add Inventory" <?= $disabled_3 ?>/> &nbsp;&nbsp;
+			</fieldset>
 		</form>
 		
-		<form action="../ItemselectionSection/sampleExcel.php">
-			<input type="submit" value="Download Excel" />
+		<!-- Button for downloading a excel sheet of the current item list in the table -->
+		<form method= "post" action="../ItemselectionSection/ExcelPrint.php">
+			<input type="hidden" id="status_hidden" name="status_hidden" value="0"/>
+			<input type="hidden" id="dbw_hidden" name="dbw_hidden" value="none"/>
+			<input type="hidden" id="public_hidden" name="public_hidden" value="none"/>
+			<input type="submit" id="excel_download" id="excel_download" value="Download Excel" />
 		</form>
 		
     </div>

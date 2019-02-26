@@ -105,13 +105,41 @@
 								//Little script that will populate the empty comment div with comments made about the transaction
 								if(json_object[0]['comments'] == null || json_object[0]['comments'].length == 0)
 								{
-									$('#commments_header').text("Comments about the Tranaction:");
-									$('#commments').text("No Comments were made for this Transaction");
+									//We empty the table of previous item information from last timestamp tranaction
+									$('#comment_table').empty();
+								
+									var comment_table = document.getElementById('comment_table');
+									
+									//Create a new row for the table that will contain all the new item information
+									var th = document.createElement('tr');
+									var td = document.createElement('tr');
+									
+									//Set the item information to the row in the correct order according to the set columns
+									th.innerHTML = "<th>" + "Comments about the Tranaction:" + "</th>";
+									td.innerHTML = "<td>" + "No Comments were made for this Transaction" + "</td>";
+									
+									//Adds the new row to the table
+									comment_table.appendChild(th);
+									comment_table.appendChild(td);
 								}
 								else
 								{
-									$('#commments_header').text("Comments about the Tranaction:");
-									$('#commments').text(json_object[0]['comments']);
+									//We empty the table of previous item information from last timestamp tranaction
+									$('#comment_table').empty();
+									
+									var comment_table = document.getElementById('comment_table');
+									
+									//Create a new row for the table that will contain all the new item information
+									var th = document.createElement('tr');
+									var td = document.createElement('tr');
+									
+									//Set the item information to the row in the correct order according to the set columns
+									th.innerHTML = "<th>" + "Comments about the Tranaction:" + "</th>";
+									td.innerHTML = "<td>" + json_object[0]['comments'] + "</td>";
+									
+									//Adds the new row to the table
+									comment_table.appendChild(th);
+									comment_table.appendChild(td);
 								}
 							},
 							//If there is ever a error with the AJAX call, it will logs the errors that it found with the AJAX call to the brower's console
@@ -131,9 +159,8 @@
 			<div id="pageHeader" style="font-size: 35px; text-align: center;"> Customer Transactions </div>
 			<div>
 				<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
-					<fieldset>
-						<legend> TimeStamps: </legend>
-
+					<fieldset style="border: none;">
+						<legend style="font-size: 20px;"> TimeStamps: </legend>
 							<!-- TimeStamp Select Table -->
 							<select name="time_stamp_select" id="time_stamp_select" size="6" class="time_stamp_select">
 <?php
@@ -149,7 +176,7 @@
 								$trans = $connctn->prepare("SELECT trans_id, time_stamp, trans_type
 															FROM Transaction
 															WHERE cust_id = :a
-															ORDER BY time_stamp");
+															ORDER BY time_stamp desc");
 															
 								$trans->bindValue(':a', $cust_id, PDO::PARAM_INT);
 								$trans->execute();
@@ -169,10 +196,14 @@
 									
 									//Format the timestamp that was given from the database into a more readable timestamp
 									$curr_time_stamp = date('h:i a F d, Y', strtotime($curr_time_stamp));
+									if($curr_trans_type == "return")
+									{
+										$curr_trans_type = $curr_trans_type . "&nbsp;&nbsp;";
+									}
 ?>
 									<!-- Display the fields -->
 									<option value="<?= $curr_trans_id ?>">
-										<?= $curr_trans_type ?> : <?= $curr_time_stamp ?> 
+										<?= $curr_trans_type ?> &nbsp; : &nbsp; <?= $curr_time_stamp ?> 
 									</option>
 <?php
 								}
@@ -180,11 +211,15 @@
 								$connctn = null;
 ?>
 							</select>
+							
+						<!-- Comments header and the actual comments themselves  -->
+						<table id="comment_table">
+						</table>
 					</fieldset>
 					
 					<!-- Item Information Table -->
 					<div id='item_info_label' style="font-size: 25px; text-align: center;"></div>
-					<table id='cust_table_info'>
+					<table id='tran_infor_table'>
 						<thead>
 							<tr>
 								<th>Front Id</th>
@@ -198,17 +233,12 @@
 						</tbody>
 					</table>
 			</div>
-					<!-- Comments header and the actual comments themselves  -->
-					<div id="commments_header" style="font-size: 25px; text-align: center;"></div>
-					</br>
-					<div id="commments" style="text-align: center;"></div>
 					
 					<!-- Bottom Buttons -->
 					<div>
 						<input type="hidden" name="cust_id" id="cust_id" value="<?= $cust_id ?>"/> 
 						<input type="submit" name="viewReceipt" id="viewReceipt" value="View Receipt of Transactions" /> &nbsp;
 						<input type="submit" name="backOnCustTran" id="backOnCustTran" value="Back" onclick="back()"/> &nbsp;
-						<input type="submit" name="mainmenu" id="mainmenu" value="Main Menu" /> &nbsp;
 					</div>
 				</form>
 

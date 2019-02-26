@@ -50,7 +50,7 @@ h1{
 #Item_comment tbody {
     display:block;
     height:370px;
-    overflow:scroll;
+    overflow-y:scroll;
     background: white;
 }
 

@@ -7,6 +7,32 @@
 				<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 				<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 				
+				<!-- CSS trick to get the print to only print the receipt and nothing else -->
+				<style>
+					@media print {
+					  body * {
+						visibility: hidden;
+					  }
+					  #section_to_print, #section_to_print * {
+						visibility: visible;
+					  }
+					   #no_print {
+						visibility: hidden;
+					  }
+					  #section_to_print {
+						position: absolute;
+						left: 150;
+						top: 75;
+						width: 60%
+					  }
+					}
+					
+					.background
+					{
+						visibility: hidden;
+					}
+				</style>
+				
 				<!-- Printing script for the print receipt button -->
 				<script type="text/javascript">
 					function myFunction() 
@@ -25,9 +51,11 @@
 				$password = $_SESSION["password"];
 				$conn = hsu_conn_sess($username, $password);
 				
+				//Grab the customer and transaction id
 				$cust_id = (int)$_POST['cust_id'];
 				$tran_id = (int)$_POST['time_stamp_select'];
 				
+				//Grab all needed information using we just grab from the database
 				$type_tran = $conn->prepare("SELECT trans_type, time_stamp, rh_id
 												FROM Transaction
 												WHERE trans_id = :tran_id");
@@ -47,7 +75,7 @@
 					//Returns tranaction receipt
 ?>
 					<!-- Most of the following code is just "style" purposes for receipt -->
-					<div class="container">
+					<div class="container" id="section_to_print">
 						<div class="row">
 							<div class="well col-xs-10 col-sm-10 col-md-6 col-xs-offset-1 col-sm-offset-1 col-md-offset-3">
 								<div class="row">
@@ -144,7 +172,7 @@
 					$reserve_his_infor = $reserve_his_infor->fetchAll();
 ?>
 					<!-- Styling and structure are basically the same as the return tranaction receipt -->
-					<div class="container">
+					<div class="container" id="section_to_print">
 						<div class="row">
 							<div class="well col-xs-10 col-sm-10 col-md-6 col-xs-offset-1 col-sm-offset-1 col-md-offset-3">
 								<div class="row">
@@ -235,8 +263,8 @@
 											</tr>
 										</tbody>
 									</table>
-									<button type="button" class="btn btn-success btn-lg btn-block" onclick="myFunction()">
-										Print Receipt <span class="glyphicon glyphicon-chevron-right"></span>
+									<button type="button" class="btn btn-success btn-lg btn-block" id="no_print" onclick="myFunction()">
+										Print Receipt <span id="no_print" class="glyphicon glyphicon-chevron-right"></span>
 									</button>
 								</div>
 							</div>
@@ -245,10 +273,6 @@
 <?php
 				}
 ?>
-
-				<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
-					<input type="submit" name="mainmenu" id="mainmenu" value="Main Menu" /><br />
-				</form>
 			</body>
 		</html>
 <?php

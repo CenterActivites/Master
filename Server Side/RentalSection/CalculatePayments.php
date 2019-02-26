@@ -1,8 +1,10 @@
-<?php
+﻿<?php
 	function CalPay()
 	{
 ?>
 <html>
+	<link rel="stylesheet" type="text/css" href="../RentalSection/rental_css.css"/>
+
 <body>
 <?php
 	//setting up the mysql connection
@@ -233,44 +235,81 @@
 	$_SESSION['receipt_prices'] = $receipt_prices;
 	
 ?>
-    <div id="pageHeader"> Calculate Payments </div>
-		<!-- TODO: Need to get the deposit price for each item from Briget -->
-        Deposit Amount: <output name="deposit" for="deposit"></output>
-		</br>
-		Total Cost of Rental: <output name="totalCost" for="totalCost"><?= $total_price  ?></output> <!-- prints the total price to the screen. Figured that we don't have to do taxs because the machine that handles the money tranaction will do the tax part for us. --> 
-
-    <div>
-		<h3>Please Read the following policy to customer.</h3>
-		<!-- Rental Policy, for the user to read to the customer -->
-		<p>
-			A. Rental equipment should be inspected by the renter for damage, missing parts and cleanliness before it is rented. Equipment
-				should be returned in the same condition as it was received. Renters returning equipment that is damaged,
-				has missing parts, or is in unsatisfactory condition, will be charged the amount necessary to restore the
-				equipment to its original condition. Rental equipment is due back by noon of the last day of the rental period, or 24 hours
-				from the time of rental for daily rentals. If equipment is returned after the rental period, the renter will be charged an additional
-				daily rental fee. No refunds will be given for equipment returned early (prior to the last day of the agreed upon rental period.)
-				24 hour cancellation notice is required in order to receive a refund, and a 25% service charge will be deducted from the refund
-				amount.
-			B. I agree to the conditions set forth herein, and understand that I am using the above rental equipment at my own risk; I have
-				examined the equipment and take full responsibility for its safe and proper use. I further agree to release, indemnify and hold
-				harmless the State of California, Humboldt State University, the University Center, the Center Activities Program, their directors,
-				officers, employees and agents (hereinafter, “Releasees”) from any liability for property damage, personal injury or death that
-				may occur if myself or any user of the rented equipment whether caused by the negligence of Releasees, or otherwise. I hereby
-				assume full responsibility for risk of bodily injury, death or property damage and will hold the Releasees harmless from any and
-				all liability which may arise in connection with this rental agreement.
-			C. I understand this is a binding contract which shall serve as a release and assumption of risk that shall likewise be binding on
-				my heirs, executors, and administrators and on all members of my family (including minors.)
-
-		</p>
-    </div>
-	<div>
+	<fieldset id='fieldset_label' style="border:none; text-align:center;">
+		<label id='header_for_table' style="text-align:center; font-size: 20px"> Calculate Payments </label>
+	</fieldset>
+	</br></br>
+	
     <form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post">
-	    <fieldset >
-            <input type="submit" name="finalize" id="finalize" value="Finalize" /><br />
-	        <input type="submit" name="cancelFinal" id="cancelFinal" value="Cancel" /><br />
-	    </fieldset>
+		<table id="calculated_amounts">
+			<tr>
+				<th>
+					Deposit Amount:
+				</th>
+				<td>
+					<!-- TODO:: Once we get the deposit information we need from Susan or Bridget, we will do the calculations to display the deposit -->
+					<output name="deposit" for="deposit"></output>
+				</td>
+			</tr>
+			
+			<tr>
+				<th>
+					Total Cost of Rental:
+				</th>
+				<td>
+					<!-- prints the total price to the screen --> 
+					<output name="totalCost" for="totalCost"><?= $total_price  ?></output>
+				</td>
+			</tr>
+			
+			<tr>
+				<th>
+					Tax: (Change the tax rate if needed)
+				</th>
+				<td>
+					<input name="tax_input" id="tax_input" value="8.5"> %</input>
+				</td>
+			</tr>
+		
+		</table>
+
+		</br></br>
+		<div>
+			<h3 style="margin-left:35px;">Please Read the Following Policy to Customer</h3>
+			<!-- Rental Policy, for the user to read to the customer -->
+			<p id="rental_policy_1" style="padding-left:15px; padding-right:15px;">
+				&nbsp;&nbsp;&nbsp;&nbsp;  A. Rental equipment should be inspected by the renter for damage, missing parts and cleanliness before it is rented. Equipment
+					should be returned in the same condition as it was received. Renters returning equipment that is damaged,
+					has missing parts, or is in unsatisfactory condition, will be charged the amount necessary to restore the
+					equipment to its original condition. Rental equipment is due back by noon of the last day of the rental period, or 24 hours
+					from the time of rental for daily rentals. If equipment is returned after the rental period, the renter will be charged an additional
+					daily rental fee. No refunds will be given for equipment returned early (prior to the last day of the agreed upon rental period.)
+					24 hour cancellation notice is required in order to receive a refund, and a 25% service charge will be deducted from the refund
+					amount.
+			</p>
+			<p id="rental_policy_2" style="padding-left:15px; padding-right:15px;">
+				&nbsp;&nbsp;&nbsp;&nbsp;  B. I agree to the conditions set forth herein, and understand that I am using the above rental equipment at my own risk; I have
+					examined the equipment and take full responsibility for its safe and proper use. I further agree to release, indemnify and hold
+					harmless the State of California, Humboldt State University, the University Center, the Center Activities Program, their directors,
+					officers, employees and agents (hereinafter, “Releasees”) from any liability for property damage, personal injury or death that
+					may occur if myself or any user of the rented equipment whether caused by the negligence of Releasees, or otherwise. I hereby
+					assume full responsibility for risk of bodily injury, death or property damage and will hold the Releasees harmless from any and
+					all liability which may arise in connection with this rental agreement.
+			</p>
+			<p id="rental_policy_3" style="padding-left:15px; padding-right:15px;">
+				&nbsp;&nbsp;&nbsp;&nbsp;  C. I understand this is a binding contract which shall serve as a release and assumption of risk that shall likewise be binding on
+					my heirs, executors, and administrators and on all members of my family (including minors.)
+
+			</p>
+		</div>
+		<div>
+			<fieldset style="border:none;">
+				<input type="submit" name="finalize" id="finalize" value="Finalize" />
+				&nbsp;&nbsp;
+				<input type="submit" name="cancelFinal" id="cancelFinal" value="Cancel" />
+			</fieldset>
 	</form>
-    </div>
+		</div>
 </body>
 </html>
 

@@ -17,15 +17,15 @@
 			margin: 0px auto;
 			text-align: centered;
 			width: 80%;
-			background-color: white;
-			border:1px solid #ddd;
-			filter: alpha(opacity=50);
+			background-color: #f2f2f2;
+			border:1.5px solid #008000;
+			opacity: 0.98;
+			height: auto;
 		}
 	</style>
 
     <title> Center Activities </title>
     <meta charset="utf-8" />
-
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	<script type="text/javascript" src="jquery.backstretch.min.js"></script>
 	<script type="text/javascript">
@@ -40,7 +40,7 @@
 	require_once('hsu_conn_sess.php');
 	require_once('HomePage.php');
     require_once('Login.php');
-	require_once('MainMenu.php'); //added the require for main menu back up here because as long everything is in the
+	require_once('NavBar.php'); //added the require for main menu back up here because as long everything is in the
 			                      //php function nothing unwanted html will show on the correct page
     require_once('/home/centerac/public_html/VendorSection/MainVendor.php');  //Since the files are under a subdirectory, the require_once
 				                                                                  //statement have to look like this
@@ -52,8 +52,8 @@
 	require_once('/home/centerac/public_html/ItemTranSection/Items_to_return.php');
 	require_once('/home/centerac/public_html/ItemTranSection/Receipt.php');
 	require_once('/home/centerac/public_html/ItemselectionSection/ItemSelectionMenu.php');
-	require_once('/home/centerac/public_html/ItemselectionSection/AddingNewItems.php');
-    require_once('/home/centerac/public_html/ItemselectionSection/AddingNewItems2.php');
+	require_once('/home/centerac/public_html/ItemselectionSection/AddingNewInventory.php');
+    require_once('/home/centerac/public_html/ItemselectionSection/AddingNewItems.php');
 	require_once('/home/centerac/public_html/ItemselectionSection/ItemInfo.php');
 	require_once('/home/centerac/public_html/ItemselectionSection/EditItem.php');
     require_once('/home/centerac/public_html/ItemselectionSection/editinventory.php');
@@ -65,6 +65,11 @@
 	require_once('/home/centerac/public_html/CustomerselectionSection/PastReceipt.php');
 	require_once('/home/centerac/public_html/RentalSection/RentalItemSelection.php');
 	require_once('/home/centerac/public_html/RentalSection/CalculatePayments.php');
+	require_once('/home/centerac/public_html/EmployeeSection/EmployeeSelectionMain.php');
+	require_once('/home/centerac/public_html/EmployeeSection/EmployeeInfor.php');
+	require_once('/home/centerac/public_html/EmployeeSection/EmployeeAction.php');
+	require_once('/home/centerac/public_html/EmployeeSection/EditEmployee.php');
+    require_once('/home/centerac/public_html/EmployeeSection/addempl.php');
 ?>
 
 
@@ -81,20 +86,28 @@
 	elseif($_SESSION['next_page'] == "MainMenu")
 	{
 
-		$username = htmlspecialchars($_POST["username"]);	//We grab the username and password the user input and logs the user in with the inputs
-		$password = htmlspecialchars($_POST["password"]);
+		$empl_user = htmlspecialchars($_POST["username"]);	//We grab the username and password the user input and logs the user in with the inputs
+		$empl_pass = htmlspecialchars($_POST["password"]);
 
+		//We grab the username and password the user input and logs the user in with the inputs
+		$username = "test";
+		$password = "Testing123+";
 		//PDO Connection to the Database
 		$_SESSION['username'] = $username;
 		$_SESSION['password'] = $password;
+		
+		$_SESSION['empl_user'] = $empl_user;
+		$_SESSION['empl_pass'] = $empl_pass;
+		
 		$conn = hsu_conn_sess($username, $password); //Here we call the function 'hsu_conn_sess' which will does the connection to nrs-projects
 
-		mainmenu();
+		NavBar();
 ?>
 		<div class="background">
 <?php
-			HomePage();
+			
 			$_SESSION['next_page'] = "HomePage";
+			HomePage();
 ?>
 		</div>
 <?php
@@ -115,44 +128,49 @@
 	    }
 		else
 		{
-			mainmenu();
+			NavBar();
 
 ?>
 			<div class="background">
 <?php
 				if(isset($_POST["AVendor"])) //LogOut Button. When pressed logs the user out and set the next_page back to mainmenu
 				{
-					AddVendor();
 					$_SESSION['next_page'] = "Vendor_buttons";
+					AddVendor();
 				}
 				elseif(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 				{
-					HomePage();
 					$_SESSION['next_page'] = "HomePage";
+					HomePage();
 				}
 				elseif(isset($_POST["ViewVen"])) //View/Edit Vendors Button. Send users to the vendor's section where they can add/view/edit vendors
 				{
-					Vendor();
 					$_SESSION['next_page'] = "Vendor_buttons";
+					Vendor();
 				}
 				elseif(isset($_POST["Cust"])) //View/Edit Customer Button. Send users to the customer's section where they can add/view/edit customer
 				{
-					CustomerSelection();
 					$_SESSION['next_page'] = "Customer_Section";
+					CustomerSelection();
 				}
 				elseif(isset($_POST['ReturnI'])) //ReturnItem Button. Sends users to the Return Item section where users can return/view items
 												//that are rented out under their name.
 				{
+					$_SESSION['next_page'] = "ReturnItem_buttons";
 					$_SESSION['itemReturn'] = "Yes";
 					CustomerSelection();
 					$_SESSION['itemReturn'] = "No";
-					$_SESSION['next_page'] = "ReturnItem_buttons";
 				}
 				elseif(isset($_POST['ViewInv'])) //ReturnItem Button. Sends users to the Return Item section where users can return/view items
 												//that are rented out under their name.
 				{
-					Itemselection();
 					$_SESSION['next_page'] = "ItemSelection_buttons";
+					Itemselection();
+				}
+				elseif(isset($_POST["Empl"])) //Employee button, sends users to employee section.
+				{
+					$_SESSION['next_page'] = "Employee";
+					Employee();
 				}
 				elseif (isset($_POST["AddVendor"]))
 				{
@@ -259,7 +277,7 @@
 	    }
 		else
 		{
-			mainmenu();
+			NavBar();
 
 ?>
 			<div class="background">
@@ -297,6 +315,11 @@
 				{
 					Itemselection();
 					$_SESSION['next_page'] = "ItemSelection_buttons";
+				}
+				elseif(isset($_POST["Empl"])) //Employee button, sends users to employee section.
+				{
+					Employee();
+					$_SESSION['next_page'] = "Employee";
 				}
 				elseif($_POST['which_table'] == "Late")
 				{
@@ -424,43 +447,48 @@
 	    }
 		else
 		{
-			mainmenu();
+			NavBar();
 ?>
 			<div class="background">
 <?php
 				if(isset($_POST["AVendor"])) //LogOut Button. When pressed logs the user out and set the next_page back to mainmenu
 				{
-					AddVendor();
 					$_SESSION['next_page'] = "Vendor_buttons";
+					AddVendor();
 				}
 				elseif(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 				{
-					HomePage();
 					$_SESSION['next_page'] = "HomePage";
+					HomePage();
 				}
 				elseif(isset($_POST["ViewVen"])) //View/Edit Vendors Button. Send users to the vendor's section where they can add/view/edit vendors
 				{
-					Vendor();
 					$_SESSION['next_page'] = "Vendor_buttons";
+					Vendor();
 				}
 				elseif(isset($_POST["Cust"])) //View/Edit Customer Button. Send users to the customer's section where they can add/view/edit customer
 				{
-					CustomerSelection();
 					$_SESSION['next_page'] = "Customer_Section";
+					CustomerSelection();
 				}
 				elseif(isset($_POST['ReturnI'])) //ReturnItem Button. Sends users to the Return Item section where users can return/view items
 												//that are rented out under their name.
 				{
+					$_SESSION['next_page'] = "ReturnItem_buttons";
 					$_SESSION['itemReturn'] = "Yes";
 					CustomerSelection();
 					$_SESSION['itemReturn'] = "No";
-					$_SESSION['next_page'] = "ReturnItem_buttons";
 				}
 				elseif(isset($_POST['ViewInv'])) //ReturnItem Button. Sends users to the Return Item section where users can return/view items
 												//that are rented out under their name.
 				{
-					Itemselection();
 					$_SESSION['next_page'] = "ItemSelection_buttons";
+					Itemselection();
+				}
+				elseif(isset($_POST["Empl"])) //Employee button, sends users to employee section.
+				{
+					$_SESSION['next_page'] = "Employee";
+					Employee();
 				}
 				elseif(isset($_POST["select"]) or isset($_POST["cancelOnReceipt"])) //After finding the customer, the "select" button push the user onto the next page
 																					//which is the item check-in page where the user will select which item they are returning today														   //Also when the cancel button on the Receipt page is press, the screen will move back to the item check-in																	   //part of the return section
@@ -610,53 +638,58 @@
 	    }
 		else
 		{
-			mainmenu();
+			NavBar();
 ?>
 			<div class="background">
 <?php
 				if(isset($_POST["AVendor"])) //LogOut Button. When pressed logs the user out and set the next_page back to mainmenu
 				{
-					AddVendor();
 					$_SESSION['next_page'] = "Vendor_buttons";
+					AddVendor();
 				}
 				elseif(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 				{
-					HomePage();
 					$_SESSION['next_page'] = "HomePage";
+					HomePage();
 				}
 				elseif(isset($_POST["ViewVen"])) //View/Edit Vendors Button. Send users to the vendor's section where they can add/view/edit vendors
 				{
-					Vendor();
 					$_SESSION['next_page'] = "Vendor_buttons";
+					Vendor();
 				}
 				elseif(isset($_POST["Cust"])) //View/Edit Customer Button. Send users to the customer's section where they can add/view/edit customer
 				{
-					CustomerSelection();
 					$_SESSION['next_page'] = "Customer_Section";
+					CustomerSelection();
 				}
 				elseif(isset($_POST['ReturnI'])) //ReturnItem Button. Sends users to the Return Item section where users can return/view items
 												//that are rented out under their name.
 				{
+					$_SESSION['next_page'] = "ReturnItem_buttons";
 					$_SESSION['itemReturn'] = "Yes";
 					CustomerSelection();
 					$_SESSION['itemReturn'] = "No";
-					$_SESSION['next_page'] = "ReturnItem_buttons";
 				}
 				elseif(isset($_POST['ViewInv'])) //ReturnItem Button. Sends users to the Return Item section where users can return/view items
 												//that are rented out under their name.
 				{
-					Itemselection();
 					$_SESSION['next_page'] = "ItemSelection_buttons";
+					Itemselection();
+				}
+				elseif(isset($_POST["Empl"])) //Employee button, sends users to employee section.
+				{
+					$_SESSION['next_page'] = "Employee";
+					Employee();
 				}
 				elseif(isset($_POST["addinventory"])) //Add Item button on the Item Selection Main Menu page. Pushes users to the add item
 													//page
 				{
-					AddItems();
+					AddInventory();
 				}
 				elseif(isset($_POST["additem"])) //Add Item button on the Item Selection Main Menu page. Pushes users to the add item
 												//page
 				{
-					AddItems2();
+					AddItems();
 				}
 				elseif(isset($_POST["moreinfo"])) //Update button/Cancel button on Edit Vendor page/More Infor. Button
 												  //Pushes users to the More Infor. for Vendors page
@@ -899,43 +932,48 @@
 	    }
 		else
 		{
-			mainmenu();
+			NavBar();
 ?>
 			<div class="background">
 <?php
 				if(isset($_POST["AVendor"])) //LogOut Button. When pressed logs the user out and set the next_page back to mainmenu
 				{
-					AddVendor();
 					$_SESSION['next_page'] = "Vendor_buttons";
+					AddVendor();
 				}
 				elseif(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 				{
-					HomePage();
 					$_SESSION['next_page'] = "HomePage";
+					HomePage();
 				}
 				elseif(isset($_POST["ViewVen"])) //View/Edit Vendors Button. Send users to the vendor's section where they can add/view/edit vendors
 				{
-					Vendor();
 					$_SESSION['next_page'] = "Vendor_buttons";
+					Vendor();
 				}
 				elseif(isset($_POST["Cust"])) //View/Edit Customer Button. Send users to the customer's section where they can add/view/edit customer
 				{
-					CustomerSelection();
 					$_SESSION['next_page'] = "Customer_Section";
+					CustomerSelection();
 				}
 				elseif(isset($_POST['ReturnI'])) //ReturnItem Button. Sends users to the Return Item section where users can return/view items
 												//that are rented out under their name.
 				{
+					$_SESSION['next_page'] = "ReturnItem_buttons";
 					$_SESSION['itemReturn'] = "Yes";
 					CustomerSelection();
 					$_SESSION['itemReturn'] = "No";
-					$_SESSION['next_page'] = "ReturnItem_buttons";
 				}
 				elseif(isset($_POST['ViewInv'])) //ReturnItem Button. Sends users to the Return Item section where users can return/view items
 												//that are rented out under their name.
 				{
-					Itemselection();
 					$_SESSION['next_page'] = "ItemSelection_buttons";
+					Itemselection();
+				}
+				elseif(isset($_POST["Empl"])) //Employee button, sends users to employee section.
+				{
+					$_SESSION['next_page'] = "Employee";
+					Employee();
 				}
 				elseif(isset($_POST["custInfo"]) or isset($_POST["backOnCustTran"]) or isset($_POST["cancelOnEditCust"])) //Select button on the main customer/Back button on view transaction
 																													   // Cancel/Update Customer button on the Customer Edit Page
@@ -1067,7 +1105,6 @@
 				
 				
 				
-				
 				//======================================================================
 				//Rental Section
 				//======================================================================
@@ -1124,8 +1161,9 @@
 						$insert->bindValue(':total_price', $total_price, PDO::PARAM_INT);
 						$insert->bindValue(':cust_id', $sel_cust, PDO::PARAM_INT);
 						$insert->execute();
+						//print "Insert to Reserve History: " . $insert->errorCode();
+						//echo "</br>";
 						$rh_id = $conn->lastInsertId();
-						//print $insert->errorCode();
 						
 						//Insert statement for Item Reservation
 						$insert = $conn->prepare("insert into Reserve
@@ -1141,9 +1179,10 @@
 						$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
 						$insert->execute();
 						//print "Insert to Reserve: " . $insert->errorCode();
+						//echo "</br>";
 						$_SESSION['rental_id'] = $conn->lastInsertId();
 
-						//Insert statement for Item Reservation
+						//Insert statement for Transaction
 						$insert = $conn->prepare("insert into Transaction
 													(time_stamp, cust_id, trans_type, comments, rh_id)
 													values
@@ -1154,6 +1193,7 @@
 						$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
 						$insert->execute();
 						//print "Insert to Transaction: " . $insert->errorCode();
+						//echo "</br>";
 						$tran_id = $conn->lastInsertId();
 					}
 					else
@@ -1170,8 +1210,9 @@
 						$insert->bindValue(':total_price', $total_price, PDO::PARAM_INT);
 						$insert->bindValue(':cust_id', $sel_cust, PDO::PARAM_INT);
 						$insert->execute();
+						//print "Insert to Reserve History: " . $insert->errorCode();
+						//echo "</br>";
 						$rh_id = $conn->lastInsertId();
-						//print $insert->errorCode();
 						
 						//Insert statement for Item Reservation
 						$insert = $conn->prepare("insert into Reserve
@@ -1185,9 +1226,11 @@
 						$insert->bindValue(':cust_id', $sel_cust, PDO::PARAM_INT);
 						$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
 						$insert->execute();
+						//print "Insert to Reserve: " . $insert->errorCode();
+						//echo "</br>";
 						$_SESSION['rental_id'] = $conn->lastInsertId();
 
-						//Insert statement for Item Reservation
+						//Insert statement for Item Transaction
 						$insert = $conn->prepare("insert into Transaction
 													(time_stamp, cust_id, trans_type, comments, rh_id)
 													values
@@ -1197,6 +1240,8 @@
 						$insert->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
 						$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
 						$insert->execute();
+						//print "Insert to Transaction: " . $insert->errorCode();
+						//echo "</br>";
 						$tran_id = $conn->lastInsertId();
 					}
 
@@ -1260,48 +1305,6 @@
 					
 					RentalItemSelect();
 				}
-				elseif(isset($_POST["continue"])) //Continue button on the Adding new Customer page
-				{
-				   //PDO connection to the database
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
-
-					//Here we grab all the customer's information for new account
-					$new_custName = htmlspecialchars(strip_tags($_POST["custName"]));
-					$new_custPhone = htmlspecialchars(strip_tags($_POST["custPhone"]));
-					$new_custAddress = htmlspecialchars(strip_tags($_POST["custAddress"]));
-					$new_stu_id = htmlspecialchars(strip_tags($_POST["dob"]));
-					$new_isStudent = htmlspecialchars(strip_tags($_POST["isStudent"]));
-					$new_isEmployee = htmlspecialchars(strip_tags($_POST["isEmpl"]));
-					$new_custEmail = htmlspecialchars(strip_tags($_POST["custEmail"]));
-					$new_emerName = htmlspecialchars(strip_tags($_POST["emerName"]));
-					$new_emerPhone = htmlspecialchars(strip_tags($_POST["emerPhone"]));
-
-					//Separate the first and last name for the insert into database
-					$f_lnames = explode(" ", $new_custName);
-					$f_name = $f_lnames[0];
-					$l_name = $f_lnames[1];
-
-					//Combines the Emergency contact name and phone number
-					$emer_contract = $new_emerName . " " . $new_emerPhone;
-
-					//Insert statement for new customer
-					$insert = $conn->prepare("insert into Customer
-												(f_name, l_name, c_stu_id, c_addr, c_phone, c_email, is_student, is_employee, emerg_contact)
-												values
-												(?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-					$insert->execute([$f_name, $l_name, $new_stu_id, $new_custAddress, $new_custPhone, $new_custEmail, $new_isStudent, $new_isEmployee, $emer_contract]); //execute the insert
-					//print $insert->errorCode();
-
-					//Grabbing the auto id and setting it into sel_user in SESSION
-					$_SESSION['sel_user'] = $conn->lastInsertId();
-
-					//remember to close the PDO connection
-					$conn = null;
-					RentalItemSelect();
-				}
 				elseif(isset($_POST["calPay"])) //Continue to Payments button. Pushes users to the CalculatePayments page.
 				{
 				   //PDO connection to the database
@@ -1329,6 +1332,183 @@
 					 //back to the main section menu.
 				{
 					CustomerSelection();
+				}
+?>
+			</div>
+<?php
+		}
+	}
+	
+	//======================================================================
+	//Employee Section
+	//======================================================================
+
+	elseif($_SESSION['next_page'] == "Employee")
+	{
+	    if(isset($_POST["LogOut"]))
+	    {
+		    login();
+			$_SESSION['next_page'] = "MainMenu";
+	    }
+		else
+		{
+			NavBar();
+?>
+			<div class="background">
+<?php
+				if(isset($_POST["AVendor"])) //LogOut Button. When pressed logs the user out and set the next_page back to mainmenu
+				{
+					$_SESSION['next_page'] = "Vendor_buttons";
+					AddVendor();
+				}
+				elseif(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
+				{
+					$_SESSION['next_page'] = "HomePage";
+					HomePage();
+				}
+				elseif(isset($_POST["ViewVen"])) //View/Edit Vendors Button. Send users to the vendor's section where they can add/view/edit vendors
+				{
+					$_SESSION['next_page'] = "Vendor_buttons";
+					Vendor();
+				}
+				elseif(isset($_POST["Cust"])) //View/Edit Customer Button. Send users to the customer's section where they can add/view/edit customer
+				{
+					$_SESSION['next_page'] = "Customer_Section";
+					CustomerSelection();
+				}
+				elseif(isset($_POST['ReturnI'])) //ReturnItem Button. Sends users to the Return Item section where users can return/view items
+												//that are rented out under their name.
+				{
+					$_SESSION['next_page'] = "ReturnItem_buttons";
+					$_SESSION['itemReturn'] = "Yes";
+					CustomerSelection();
+					$_SESSION['itemReturn'] = "No";
+				}
+				elseif(isset($_POST['ViewInv'])) //ReturnItem Button. Sends users to the Return Item section where users can return/view items
+												//that are rented out under their name.
+				{
+					$_SESSION['next_page'] = "ItemSelection_buttons";
+					Itemselection();
+				}
+				elseif(isset($_POST["Empl"])) //Employee button, sends users to employee section.
+				{
+					$_SESSION['next_page'] = "Employee";
+					Employee();
+				}
+				elseif(isset($_POST["emplInfo"]) or isset($_POST["backOnCustTran"]) or isset($_POST["cancelOnEditEmpl"])) //Select button on the main customer/Back button on view transaction
+																													   // Cancel/Update Customer button on the Customer Edit Page
+																													   // Pushs user to the the Customer's Information Page
+				{
+					if(isset($_POST["emplInfo"]))
+					{
+						$_SESSION['empl_id'] = strip_tags($_POST['empl_id']);
+					}
+					EmployeeInfo();
+				}
+				elseif(isset($_POST["removeEmpl"])) //The remove customer button on the edit customer view
+				{
+					$username = $_SESSION['username'];
+					$password = $_SESSION['password'];
+					$conn = hsu_conn_sess($username, $password);
+					$empl_id = $_SESSION['empl_id'];
+
+					$delete = $conn ->prepare("DELETE FROM Employee
+												WHERE empl_id = '$empl_id'");
+
+					$delete -> execute();
+
+					$conn = null;
+					Employee();
+				}
+				elseif(isset($_POST["updateEmpl"])) //Here for the update button on the edit customer view
+				{
+					$username = $_SESSION['username'];
+					$password = $_SESSION['password'];
+					$conn = hsu_conn_sess($username, $password);
+					$empl_id = $_SESSION['empl_id'];
+					$empl_fname = strip_tags($_POST['empl_fname']);
+					$empl_lname = strip_tags($_POST['empl_lname']);
+					$phone_num = strip_tags($_POST['phone_num']);
+					$empl_email = strip_tags($_POST['empl_email']);
+					$title = strip_tags($_POST['title']);
+					$access_lvl = strip_tags($_POST['access_lvl']);
+
+
+					$update = $conn ->prepare("UPDATE Employee
+												SET empl_fname = '$empl_fname',
+													empl_lname = '$empl_lname',
+													phone_num = '$phone_num',
+													empl_email = '$empl_email',
+													title = '$title',
+													access_lvl = '$access_lvl'
+												WHERE empl_id = '$empl_id'");
+
+					$update ->execute();
+
+
+					$conn = null;
+					//next inserts
+					EmployeeInfo();
+
+				}
+				/*elseif(isset($_POST["viewAct"])) //View Actions button on Customer Information page
+																													  //PrintReceipt/Cancel buttons Receipt page.
+																													  //Pushs users to the View Transaction Page for customers
+				{
+					EmployeeAction();
+				}*/
+				elseif(isset($_POST["editEmpl"])) //Edit Customer button. Pushs users to the edit customer page.
+				{
+					EditEmployee();
+				}
+				elseif(isset($_POST["newEmpl"]))
+				{
+					addempl();
+				}
+				elseif(isset($_POST["Addempl"]))
+				{
+					//make a connection to database
+					$username = $_SESSION['username'];
+					$password = $_SESSION['password'];
+					$conn = hsu_conn_sess($username, $password);
+					
+					//set variables to the values input by user
+					$new_emplName = htmlspecialchars(strip_tags($_POST["empl_name"]));
+					$new_phone = htmlspecialchars(strip_tags($_POST["Phone"]));
+					$new_email = htmlspecialchars(strip_tags($_POST["email"]));
+					$access_lvl_granted = htmlspecialchars(strip_tags($_POST["access_lvl"]));
+					$title = htmlspecialchars(strip_tags($_POST["title"]));
+
+					//Separate the first and last name for the insert into database
+					$f_lnames = explode(" ", $new_emplName);
+					$f_name = $f_lnames[0];
+					$l_name = $f_lnames[1];
+					
+					//Combines the Emergency contact name and phone number
+					$emer_contract = $new_emerName . " " . $new_emerPhone;
+
+					//set up insert statement
+					$insert = $conn->prepare("insert into Employee
+												(empl_id, empl_fname, empl_lname, phone_num, title, access_lvl, empl_email)
+												values
+												(Default, ?, ?, ?, ?, ?, ?)");
+					//execute the statement with variables
+					$insert ->execute([$f_name, $l_name, $new_phone, $title, $access_lvl_granted, $new_email]);
+					//print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+					//echo "\nPDO::errorInfo():\n";
+					//print_r($insert->errorInfo());
+					
+					//end connection
+					$conn = null;
+					
+					Employee();
+				}
+
+				else //A "catch all" thing where if there was ever a time a button has not been press and the page somehow moves on,
+					 //We just move on back the main section page
+					 //back to the main section menu.
+				{
+					Employee();
 				}
 ?>
 			</div>

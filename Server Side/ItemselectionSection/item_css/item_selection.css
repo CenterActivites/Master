@@ -21,7 +21,7 @@
 input[type=text]{
     width:15%;
     padding: 12px 20px;
-    margin-right: 20%
+    margin-right: 20%;
     margin: 8px 0;
     display: inline-block;
     border: 1px solid #ccc;
@@ -38,13 +38,14 @@ input[type=text]{
 #search_lable{
   font-family: "Times New Roman", Times, serif;
   font-size: 30px;
+  float: left;
 }
 
 body{
     text-align: center;
 }
 
-#addinventory,#additem,#moreinfo,#mainmenu {
+#addinventory,#additem,#moreinfo, #excel_download {
     background-color: #008000;
     color: white;
     padding: 14px 20px;
@@ -63,38 +64,64 @@ body{
     white-space: normal;
 }
 
-table ,tr td{
+
+#addinventory:hover ,#additem:hover ,#moreinfo:hover , #excel_download:hover
+{
+	background-color: #006400;
+}
+
+#table_div{
+	width:100%;
+	height:100%;
+	overflow:hidden;
+}
+
+#table_info table , tr td{
     border:1px solid black;
 }
 
-tbody {
+#table_info table{
+   overflow:hidden;
+}
+
+#table_info tbody {
     display:block;
     height:475px;
-    overflow:scroll;
+    overflow-y:scroll;
+	overflow-x:hidden;
     background: white;
 }
-thead, tbody tr {
+#table_info thead, tbody tr {
     display:table;
     width:100%;
     table-layout:fixed;
 }
-thead {
-    width: 98.9%;
-      box-sizing:content-box;
+#table_info thead {
+    width: 99%;
+    box-sizing:content-box;
 }
-table {
+#table_info table {
     width:100%;
 }
 
-#table_info th {
+#table_info th{
     font-family: "Times New Roman", Times, serif;
     padding-top: 12px;
     width: 15%;
     padding-bottom: 12px;
-    text-align: left;
     background-color: #008000;
     color: #EEE8AA;
     text-align: center;
+}
+
+#search_table th {
+    font-family: "Times New Roman", Times, serif;
+    padding-top: 12px;
+    width: 100%;
+    padding-bottom: 12px;
+    text-align: center;
+	background-color: #008000;
+    color: #EEE8AA;
 }
 
 #table_info td, #table_info th {
@@ -103,9 +130,20 @@ table {
     text-align: center;
     font-size: 17px;
     font-family: "Times New Roman", Times, serif;
-
 }
 
+#table_info td {
+    margin:15%;
+}
+
+#search_table td {
+	width: 100%;
+    padding: 8px;
+    text-align: center;
+    font-size: 17px;
+    font-family: "Times New Roman", Times, serif;
+	border:none;
+}
 
 #table_info tr:nth-child(even){background-color: #f2f2f2;}
 #table_info tr:nth-child(odd){background-color: white;}
@@ -126,49 +164,72 @@ table {
   box-sizing:content-box;
 }
 
-#change{
-  width:20%;
-  padding: 12px 20px;
-  margin-right: 30%;
-  margin: 8px 0;
-  display: inline-block;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  box-sizing: border-box;
-  font-family: "Times New Roman", Times, serif;
-  font-size: 20px;
-  text-align: center;
-  vertical-align:top;
-  display: table-cell;
-  margin-right: 60%;
+#search_table {
+	width:100%;
+	padding-left:auto;
+	padding-right:auto;
+	margin-left:auto;
+	margin-right:auto;
 }
 
-
-/*style="overflow-y:scroll; height:500px;" class="creeper"
-
-
-#table_info{
-  text-align: center;
-  font-family: "Times New Roman", Times, serif;
-  table-layout: fixed;
-  font-size: 20px;
+/* Reset Select */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  outline: 0;
+  box-shadow: none;
+  border: 0 !important;
+  background: white;
+  background-image: none;
+}
+/* Custom Select */
+.select, .select_status {
+  position: relative;
+  display: block;
   width: 100%;
+  height: 3.5em;
+  background: white;
+  overflow: hidden;
+  border-radius: .25em;
+  border-color:#008000;
+}
+select {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0 0 0 .5em;
+  color: black;
+  cursor: pointer;
+  text-align: center;
+  font-size: 15px;
+}
+select::-ms-expand {
+  display: none;
+}
+/* Arrow */
+.select::after, .select_status::after {
+  content: '\25BC';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 1em;
+  background: white;
+  pointer-events: none;
+}
+/* Transition */
+.select:hover, .select_status:hover{
+  color: ddd;
 }
 
-
-
-
-#form_div{
-  box-sizing:content-box;
-  word-wrap: break-word;
-  white-space: normal;
-  box-sizing:content-box;
+.select_status:hover{
+  height: 11em;
 }
-*/
 
-/*#table_div { 
-	display:block;
-    height:475px;
-    overflow:scroll;
-    background: white;
-}*/
+.select::after, .select_status::after {
+  -webkit-transition: .25s all ease;
+  -o-transition: .25s all ease;
+  transition: .25s all ease;
+}

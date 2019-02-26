@@ -150,8 +150,10 @@
         $conn = hsu_conn_sess($username, $password);
  ?>
 		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id='button' >
-			<fieldset>
-				<legend> Select A Customer </legend>
+			<fieldset style="border:none">
+				<fieldset id='fieldset_label' style="background-color: #D3D3D3;">
+					<label id='header_for_table' style="padding-left: 5%; font-size: 20px"> Select A Customer </label>
+				</fieldset>
 					<div id='table_div'>
 						<!-- Customer table creation starts here -->
 						<table id='cust_table_info'>
@@ -214,18 +216,12 @@
 									
 									//First we created a bool var for later seeing is there were any rentals to be return at all
 									$if_for_ran = false;
-									$s = " and b.pick_up_date IS NOT NULL";
-									$v = "SELECT b.cust_id, f_name, l_name, c_phone, c_email, due_date
-															FROM Customer a, Reserve b
-															WHERE a.cust_id = b.cust_id and" . $s . "
-															GROUP BY b.cust_id
-															ORDER BY due_date, l_name, f_name";
 									
 									//MYSQL select query for all customers with rentals out there. We grab the following data
 									//The customer's id, first and last name, phone number, e-mail, and the due date for the rentals
 									foreach($conn->query("SELECT b.cust_id, f_name, l_name, c_phone, c_email, due_date
 															FROM Customer a, Reserve b
-															WHERE a.cust_id = b.cust_id" . $s . "
+															WHERE a.cust_id = b.cust_id and b.pick_up_date IS NOT NULL
 															GROUP BY b.cust_id
 															ORDER BY due_date, l_name, f_name") as $row)
 									{
@@ -296,10 +292,12 @@
 			</div>
 		</div>
 			
-	    <fieldset>
+	    <fieldset style="border:none;">
 		
 			<!-- The Search bar -->
 			<label id='search_lable'>Search:</label> <input type = "text" name = "searchCust" id = "searchCust" placeholder="Search for names..." /> <br/>   <!-- Search bar -->
+			</br>
+			</br>
 <?php
 				//Again since both Item Return and Customer section both uses this page, there will some buttons that will only appear in Customer and some will only appear in Item Return 
 				if($_SESSION["itemReturn"] != "Yes")
@@ -319,10 +317,6 @@
 ?>
 	
 		</form>
-			<!-- This is a different form because we want the main menu button to sent the user back to the main menu instead of going to the next page of the section -->
-			<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" > 
-				<input type="submit" name="mainmenu" id="mainmenu" value="Main Menu" />
-			</form>
 		</fieldset>
 </div>
 </body>

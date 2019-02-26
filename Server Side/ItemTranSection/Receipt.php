@@ -7,6 +7,7 @@
 				<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 				<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 				
+				<!-- CSS trick to get the print to only print the receipt and nothing else -->
 				<style>
 					@media print {
 					  body * {
@@ -24,6 +25,11 @@
 						top: 75;
 						width: 60%
 					  }
+					}
+
+					.background
+					{
+						visibility: hidden;
 					}
 				</style>
 				
@@ -155,6 +161,13 @@
 					$items_to_rent = $_SESSION['array_of_items'];
 					$total_price = $_SESSION['total_price'];
 					$receipt_prices = $_SESSION['receipt_prices'];
+					
+					//Grabbing the tax rate that was entered if at all by the user. Default value is 8.5%
+					$tax_rate = htmlspecialchars(strip_tags($_POST["tax_input"]));
+					
+					//Do the calculations for the tax amount and the total price with taxs
+					$tax_amount = (int)$total_price * ((float)$tax_rate / 100);
+					$total_price_with_tax = (float)$total_price + (float)$tax_amount;
 ?>
 					<!-- Styling and structure are basically the same as the return tranaction receipt -->
 					<div class="container" id="section_to_print">
@@ -235,14 +248,14 @@
 														<strong>$<?= $total_price ?></strong>
 													</p>
 													<p>
-														<strong>$0</strong>
+														<strong>$<?= round($tax_amount, 2) ?></strong>
 													</p>
 												</td>
 											</tr>
 											<tr>
 												<td></td>
 												<td class="text-right"><h4><strong>Total:</strong></h4></td>
-												<td class="text-center text-danger"><h4><strong>$<?= $total_price ?></strong></h4></td>
+												<td class="text-center text-danger"><h4><strong>$<?= round($total_price_with_tax, 2) ?></strong></h4></td>
 											</tr>
 										</tbody>
 									</table>

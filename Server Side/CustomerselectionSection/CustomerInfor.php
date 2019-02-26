@@ -20,84 +20,93 @@
 				$("#cust_id").val(cust_id_infor);
 			});
 		</script>
+		
+<?php
+		$lvl_access = strip_tags($_SESSION['lvl_access']);
+		if($lvl_access == "4" || $lvl_access == "3")
+		{
+			$lvl_3 = "type = 'submit'";
+			$disabled_3="";
+		}
+		else
+		{
+			$lvl_3 = "type = 'hidden'";
+			$disabled_3="disabled";
+		}
+?>
 	</head>
 	<body>
-	    <div id="pageHeader"> Customer Information </div>
-	   		<div id='area_for_cust_info'>
-				</br>
-					<feildset id="cust_info_feild">
-						<table id='cust_info_table'>
+	    <fieldset id='fieldset_label' style="text-align: center; border:none;">
+			<label id='header_for_table' style="font-size: 20px"> Customer Information </label>
+		</fieldset>
+		<table id='cust_info_table'>
 <?php
-							$username = strip_tags($_SESSION['username']);  //We grab the username and password the user input and logs the user in with the inputs
-							$password = strip_tags($_SESSION['password']);
-							$conn = hsu_conn_sess($username, $password);
+			$username = strip_tags($_SESSION['username']);  //We grab the username and password the user input and logs the user in with the inputs
+			$password = strip_tags($_SESSION['password']);
+			$conn = hsu_conn_sess($username, $password);
 
-							foreach($conn->query("SELECT f_name, l_name, c_phone, c_email, emerg_contact, c_addr, is_student, c_stu_id, is_employee
-													FROM Customer
-													WHERE cust_id = '$cust_id'") as $row)
-							{
-								$curr_cust_fname = $row["f_name"];
-								$curr_cust_lname =$row["l_name"];
-								$curr_cust_student=$row["is_student"];
-								$curr_cust_stu_id=$row["c_stu_id"];
-								$curr_cust_phone =$row["c_phone"];
-								$curr_cust_email =$row["c_email"];
-								$curr_cust_emergcontact=$row["emerg_contact"];
-								$curr_cust_address=$row["c_addr"];
-								$curr_cust_employee=$row["is_employee"];
+			foreach($conn->query("SELECT f_name, l_name, c_phone, c_email, emerg_contact, c_addr, is_student, c_stu_id, is_employee
+									FROM Customer
+									WHERE cust_id = '$cust_id'") as $row)
+			{
+				$curr_cust_fname = $row["f_name"];
+				$curr_cust_lname =$row["l_name"];
+				$curr_cust_student=$row["is_student"];
+				$curr_cust_stu_id=$row["c_stu_id"];
+				$curr_cust_phone =$row["c_phone"];
+				$curr_cust_email =$row["c_email"];
+				$curr_cust_emergcontact=$row["emerg_contact"];
+				$curr_cust_address=$row["c_addr"];
+				$curr_cust_employee=$row["is_employee"];
 ?>
-								<tr>
-									<th>Customer First Name:</th>
-									<td class="editcol"><?=$curr_cust_fname ?></td>
-								</tr>
-								<tr>
-									<th>Customer Last Name:</th>
-									<td class="editcol"><?=$curr_cust_lname ?></td>
-								</tr>
-								<tr>
-									<th>Customer Student Status:</th>
-									<td class="editcol"><?=$curr_cust_student?></td>
-								</tr>
-								<tr>
-									<th>Student ID:</th>
-									<td class="editcol"><?= $curr_cust_stu_id?></td>
-								</tr>
-								<tr>
-									 <th>Customers Phone Number</th>
-									 <td class="editcol"><?= $curr_cust_phone?></td>
-								</tr>
-								<tr>
-									<th>Customer Email:</th>
-									<td class="editcol"><?= $curr_cust_email?></td>
-								</tr>
-								<tr>
-									<th>Customer's Address:</th>
-									 <td class="editcol"><?= $curr_cust_address?></td>
-								</tr>
-								<tr>
-									 <th>Emergency Contact Number:</th>
-									 <td class="editcol"><?= $curr_cust_emergcontact?></td>
-								</tr>
-								<tr>
-									<th>Employee Of Center Activities:</th>
-									<td class="editcol"><?= $curr_cust_employee?></td>
-								</tr>
+				<tr>
+					<th>Customer First Name:</th>
+					<td class="editcol"><?=$curr_cust_fname ?></td>
+				</tr>
+				<tr>
+					<th>Customer Last Name:</th>
+					<td class="editcol"><?=$curr_cust_lname ?></td>
+				</tr>
+				<tr>
+					<th>Customer Student Status:</th>
+					<td class="editcol"><?=$curr_cust_student?></td>
+				</tr>
+				<tr>
+					<th>Student ID:</th>
+					<td class="editcol"><?= $curr_cust_stu_id?></td>
+				</tr>
+				<tr>
+					<th>Customers Phone Number</th>
+					<td class="editcol"><?= $curr_cust_phone?></td>
+				</tr>
+				<tr>
+					<th>Customer Email:</th>
+					<td class="editcol"><?= $curr_cust_email?></td>
+				</tr>
+				<tr>
+					<th>Customer's Address:</th>
+					<td class="editcol"><?= $curr_cust_address?></td>
+				</tr>
+				<tr>
+					<th>Emergency Contact Number:</th>
+					<td class="editcol"><?= $curr_cust_emergcontact?></td>
+				</tr>
+				<tr>
+					<th>Employee Of Center Activities:</th>
+					<td class="editcol"><?= $curr_cust_employee?></td>
+				</tr>
 <?php
-            }
+			}
 ?>
-						</table>
-					</feildset>
-			</div>
-			</br>
-		<div>
-			<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id="button">
-				<fieldset >
-					<input type="submit" name="viewTran" id="viewTran" value="View Transactions" /><br />
-					<input type="submit" name="editCust" id="editCust" value="Edit Customer" /><br />
-					<input type="submit" name="back" id="back" value="Back" /><br />
-				</fieldset>
-			</form>
-	    </div>
+		</table>
+		</br>
+		<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id="button">
+			<fieldset style="border:none">
+				<input type="submit" name="viewTran" id="viewTran" value="View Transactions" /><br />
+				<input <?= $lvl_3 ?> name="editCust" id="editCust" value="Edit Customer"  <?= $disabled_3 ?>/><br />
+				<input type="submit" name="back" id="back" value="Back" /><br />
+			</fieldset>
+		</form>
 
 			<script type="text/javascript">
 			//Just an FYI, I did get carried away with jquery object creation.

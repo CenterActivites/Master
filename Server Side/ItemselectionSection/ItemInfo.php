@@ -112,6 +112,31 @@
 			}).appendTo('#button');
 		});
 	</script>
+	
+<?php
+	$lvl_access = strip_tags($_SESSION['lvl_access']);
+	if($lvl_access == "4" || $lvl_access == "3")
+	{
+		$lvl_3 = "type = 'submit'";
+		$disabled_3="";
+	}
+	else
+	{
+		$lvl_3 = "type = 'hidden'";
+		$disabled_3="disabled";
+	}
+	
+	if($lvl_access == "4" || $lvl_access == "3" || $lvl_access == "2")
+	{
+		$lvl_2 = "type = 'submit'";	
+		$disabled_2="";
+	}
+	else
+	{
+		$lvl_2 = "type = 'hidden'";
+		$disabled_2="disabled";
+	}
+?>
 
 </head>
 <body>
@@ -253,25 +278,30 @@
 						</thead>
 						<tbody id="comment_tbody">
 <?php
+							//$any_comments is to check if there is any comments have been made about the item
+							$any_comments = false;
 							foreach($comments as $row)
 							{
-								echo "<tr>";
-								echo "<td>";
-								echo $row['time_stamp'];
-								echo "</td>";
-								echo "<td>";
-								echo $row['comments'];
-								echo "</td>";
-								echo "</tr>";
+								if($row['comments'] != "")
+								{
+									echo "<tr>";
+									echo "<td>";
+									echo $row['time_stamp'];
+									echo "</td>";
+									echo "<td>";
+									echo $row['comments'];
+									echo "</td>";
+									echo "</tr>";
+									
+									//If there is any comments, then this is true
+									$any_comments = true;
+								}
 							}
-							for($i = 0; $i < 25; $i++)
+							if($any_comments == false)
 							{
 								echo "<tr>";
-								echo "<td>";
-								echo "asdfasdf";
-								echo "</td>";
-								echo "<td>";
-								echo "asdfasdfasd";
+								echo "<td colspan='2'>";
+								echo "No comments were ever made about this item";
 								echo "</td>";
 								echo "</tr>";
 							}
@@ -329,10 +359,9 @@
 	<div id = "button_div">
     <form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id="button">
 	    <fieldset id="info_buttons">
-			<input type="submit" name="mainmenu" id="mainmenu" value="Main Menu" />
+			<input <?= $lvl_2 ?> name="editItem" id="editItem" value="Edit Item" <?= $disabled_2 ?>/>
+			<input <?= $lvl_3 ?> name="editInv" id="editInv" value="Edit Inventory" <?= $disabled_3 ?>/><br />
             <input type="submit" name="backoniteminfo" id="backoniteminfo" value="Back" /><br />
-			<input type="submit" name="editItem" id="editItem" value="Edit Item" />
-			<input type="submit" name="editInv" id="editInv" value="Edit Inventory" /><br />
 	    </fieldset>
 	</form>
     </div>

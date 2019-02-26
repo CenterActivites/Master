@@ -5,24 +5,13 @@
   display: none;
 }
 
-table ,tr td
+tr td
 {
     border:1px solid black;
 }
 tbody {
     display:block;
-    overflow:scroll;
     background: white;
-}
-thead, tbody tr 
-{
-    display:table;
-    width:100%;
-    table-layout:fixed;
-}
-thead 
-{
-    width: 99%;
 }
 table 
 {

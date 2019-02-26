@@ -81,19 +81,6 @@
 		});
 	</script>
 
-	<!-- Search functionalities for both tables -->
-	<script type="text/javascript">
-		$(function ()
-		{
-			$('input#searchCust_late').quicksearch('#cust_table_info_late tbody tr');
-		});
-		
-		$(function ()
-		{
-			$('input#searchCust_pick').quicksearch('#cust_table_info_pick tbody tr');
-		});
-	</script>
-
 </head>
 <body>
     <div id="pageHeader" style="font-size: 35px; text-align: center;"> Home Page </div>
@@ -108,8 +95,10 @@
  ?>
 		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id='button' >
 			<div id='table_div'>
-				<fieldset>
-					<legend style="text-align: center;"> Late Rentals </legend>
+				<fieldset style="border: none;">
+					<fieldset id='fieldset_label' style="background-color: #D3D3D3;">
+						<label id='header_for_table' style="padding-left: 5%; font-size: 20px"> Late Rentals </label>
+					</fieldset>
 						<!-- First table creation. The Late rental table, used for seeing which customer has rentals that are overdue -->
 						<table id='cust_table_info_late'>
 							<thead>
@@ -172,17 +161,14 @@
 ?>
 							</tbody>
 						</table>
-						
-					<!-- Search bar -->
-					<label id='search_lable'>Search:</label> <input type = "text" name = "searchCust_late" id = "searchCust_late" placeholder="Search for names..." /> <br/>   
 				</fieldset>
 
 				</br>
-				</br>
-				</br>
 			
-				<fieldset>
-					<legend style="text-align: center;"> Pick Ups </legend>
+				<fieldset style="border: none;">
+					<fieldset id='fieldset_label' style="background-color: #D3D3D3;">
+						<label id='header_for_table' style="padding-left: 5%; font-size: 20px"> Pick Ups </label>
+					</fieldset>
 						<!-- Second table creation. The Pick-Up table for user to see which customer's reserve rental is coming up to be picked up -->
 						<table id='cust_table_info_pick'>
 							<thead>
@@ -241,7 +227,11 @@
 ?>
 							</tbody>
 						</table>
-					<label id='search_lable'>Search:</label> <input type = "text" name = "searchCust_pick" id = "searchCust_pick" placeholder="Search for names..." /> <br/>   <!-- Search bar -->
+					
+					</br>
+					</br>
+					</br>
+						
 					<input type="submit" name="select" id="select" value="Select"/><br />
 				</fieldset>
 			</div>

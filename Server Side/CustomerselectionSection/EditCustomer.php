@@ -37,7 +37,9 @@
 
 </head>
 <body>
-    <div id="pageHeader"> Edit <?= $cust_fname ?> <?= $cust_lname ?>'s Information</div>
+	<fieldset id='fieldset_label' style="border:none; text-align: center;">
+		<label id='header_for_table' style="font-size: 25px">  Edit <?= $cust_fname ?> <?= $cust_lname ?>'s Information </label>
+	</fieldset>
 	</br>
     <div id ='edit_cust'>
 				<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id="edit_cust_form">
@@ -59,7 +61,7 @@
 																<option value = "Yes"> Yes </option>
 														</select>
 					</fieldset></br>
-					<fieldset id='dob_field'>
+					<fieldset id='stu_id_field'>
 						<lable id='all_lable'>Student ID:</lable></br><input type = "text" name = "cust_stu_id" id = "cust_stu_id" value ="" /><br/>
 					</fieldset>
 					<fieldset id='phone_num_field'>
@@ -70,7 +72,8 @@
 					</fieldset>
 					<fieldset id='emerg_contact_field'>
 						<lable id='all_lable'>Emergency Contact Number:</lable></br><input type = "text" name = "emerg_contact" id = "emerg_contact" value ="" /><br/>
-					</fieldset></br>
+					</fieldset>
+					</br></br></br></br></br></br></br></br></br></br></br></br></br></br>
 					<fieldset id='address_field'>
 						<lable id='all_lable'>Address:</lable></br><input type = "text" name = "cust_address" id = "cust_address" value ="" /><br/>
 					</fieldset>
@@ -78,11 +81,11 @@
 
 				</br>
 
-					<feildset id='buttons'>
+				<fieldset id='buttons' style="border:none;">
 					<input type="submit" name="updateCust" id="updateCust" value="Update Customer" />
 					<input type="submit" name="removeCust" id="removeCust" value="Remove Customer" onclick="return remove()" /><br />
 					<input type="submit" name="cancelOnEditCust" id="cancelOnEditCust" value="Cancel" onclick="back()"/><br />
-				</feildset>
+				</fieldset>
 			</form>
 		</div>
 

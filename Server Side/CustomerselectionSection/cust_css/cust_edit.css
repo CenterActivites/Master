@@ -1,11 +1,22 @@
-#first_name_feild,#stu_stat_field,#dob_field,#email_field{
+#first_name_feild,#stu_stat_field,#stu_id_field,#email_field{
   float: left;
-  width: 50%;
+  width: 35%;
   font-family: "Times New Roman", Times, serif;
+  margin-left: 5%;
+  margin-bottom: 2%;
+}
+
+
+#last_name_field,#empl_stat_field,#phone_num_field,#emerg_contact_field{
+  float: right;
+  width: 35%;
+  font-family: "Times New Roman", Times, serif;
+  margin-right: 5%;
+  margin-bottom: 2%;
 }
 
 #updateCust,#removeCust,#cancelOnEditCust {
-    width: 10%;
+    width: 9%;
     background-color: #008000;
     color: white;
     padding:5px;
@@ -43,8 +54,10 @@ fieldset{
   font-family: "Times New Roman", Times, serif;
 }
 
-#cust_address{
-  width: 50%;
+#address_field{
+  width: 87%;
+  margin-right: 5%;
+  margin-left: 5%;
 }
 
 #pageHeader{
