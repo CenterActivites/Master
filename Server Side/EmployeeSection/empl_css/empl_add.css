@@ -1,0 +1,76 @@
+input[type=text], select {
+    width:30%;
+    padding: 10px 10px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 15px;
+    text-align: center;
+    word-wrap: break-word;
+    white-space: normal;
+	margin: 5px;
+}
+
+#input_label{
+	word-wrap: break-word;
+}
+
+#email{
+	width:60%;
+}
+
+table {
+	width:85%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table td{
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 17px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+#Addempl,#cancel {
+    width: 25%;
+    background-color: #008000;
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 20px;
+    font-family: "Times New Roman", Times, serif;
+    color: #EEE8AA;
+    word-wrap: break-word;
+    white-space: normal;
+	margin: 10px;
+}
+
+#Addempl{
+	margin-top: 20px;
+}
+
+#pageHeader{
+  background-color: #008000;
+  color: white;
+  width: 80%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 20px;
+  font-family: "Times New Roman", Times, serif;
+  color: #EEE8AA;
+  word-wrap: break-word;
+  box-sizing:content-box;
+  margin-top: 10px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+body{
+  text-align: center;
+}
