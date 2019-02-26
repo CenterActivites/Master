@@ -90,8 +90,8 @@
 		$empl_pass = htmlspecialchars($_POST["password"]);
 
 		//We grab the username and password the user input and logs the user in with the inputs
-		$username = "test";
-		$password = "Testing123+";
+		$username = $name;
+		$password = $password;
 		//PDO Connection to the Database
 		$_SESSION['username'] = $username;
 		$_SESSION['password'] = $password;
