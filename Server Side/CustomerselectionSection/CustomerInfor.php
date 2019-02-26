@@ -21,19 +21,6 @@
 			});
 		</script>
 		
-<?php
-		$lvl_access = strip_tags($_SESSION['lvl_access']);
-		if($lvl_access == "4" || $lvl_access == "3")
-		{
-			$lvl_3 = "type = 'submit'";
-			$disabled_3="";
-		}
-		else
-		{
-			$lvl_3 = "type = 'hidden'";
-			$disabled_3="disabled";
-		}
-?>
 	</head>
 	<body>
 	    <fieldset id='fieldset_label' style="text-align: center; border:none;">
@@ -103,7 +90,7 @@
 		<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id="button">
 			<fieldset style="border:none">
 				<input type="submit" name="viewTran" id="viewTran" value="View Transactions" /><br />
-				<input <?= $lvl_3 ?> name="editCust" id="editCust" value="Edit Customer"  <?= $disabled_3 ?>/><br />
+				<input type="submit" name="editCust" id="editCust" value="Edit Customer" /><br />
 				<input type="submit" name="back" id="back" value="Back" /><br />
 			</fieldset>
 		</form>
