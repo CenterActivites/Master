@@ -90,8 +90,6 @@
 		$empl_pass = htmlspecialchars($_POST["password"]);
 
 		//We grab the username and password the user input and logs the user in with the inputs
-		$username = $name;
-		$password = $password;
 		//PDO Connection to the Database
 		$_SESSION['username'] = $username;
 		$_SESSION['password'] = $password;
@@ -180,17 +178,27 @@
 					$username = $_SESSION['username'];
 					$password = $_SESSION['password'];
 					$conn = hsu_conn_sess($username, $password);
+					
 					//set variables to the values input by user
 					$new_ven_name = htmlspecialchars(strip_tags($_POST["venName"]));
 					$new_ven_phone = htmlspecialchars(strip_tags($_POST["venPhone"]));
-					$new_ven_address = htmlspecialchars(strip_tags($_POST["venLoc"]));
+					$new_ven_street_address = htmlspecialchars(strip_tags($_POST["venStreet"]));
+					$new_ven_city = htmlspecialchars(strip_tags($_POST["venCity"]));
+					$new_ven_state = htmlspecialchars(strip_tags($_POST["venState"]));
+					$new_ven_zip = htmlspecialchars(strip_tags($_POST["venZIP"]));
+					
 					//set up insert statement
 					$insert = $conn ->prepare("insert into Vendor
-												(ven_id, ven_name, ven_phone, ven_address)
+												(ven_id, ven_name, ven_phone, ven_street_address, ven_city, ven_state, ven_zip_code)
 												values
-												(Default, ?, ?, ?)");
+												(Default, ?, ?, ?, ?, ?, ?)");
 					//execute the statement with variables
-					$insert ->execute([$new_ven_name, $new_ven_phone, $new_ven_address]);
+					$insert ->execute([$new_ven_name, $new_ven_phone, $new_ven_street_address, $new_ven_city, $new_ven_state, $new_ven_zip]);
+					/*
+					echo "\nPDO::errorInfo():\n";
+					print_r($insert->errorInfo());*/
+					
+					
 					//end connection
 					$conn = null;
 					//return to vendors page to see updates
@@ -211,17 +219,26 @@
 					$new_ven_name = htmlspecialchars(strip_tags($_POST["ven_name_edit"]));
 					$new_ven_phone = htmlspecialchars(strip_tags($_POST["ven_phone_edit"]));
 					$new_ven_address = htmlspecialchars(strip_tags($_POST["ven_loc_edit"]));
-					$ven_id = htmlspecialchars(strip_tags($_POST["change_ven_id"]));
-
+					
+					$new_ven_city = htmlspecialchars(strip_tags($_POST["ven_city"]));
+					$new_ven_state = htmlspecialchars(strip_tags($_POST["ven_state"]));
+					$new_ven_zip = htmlspecialchars(strip_tags($_POST["ven_zip"]));
+					
+					$ven_id = $_SESSION['ven_id'];
 
 					$update = $conn ->prepare("UPDATE Vendor
 												SET ven_name = '$new_ven_name',
 													ven_phone = '$new_ven_phone',
-													ven_address = '$new_ven_address'
+													ven_street_address = '$new_ven_address',
+													ven_city = '$new_ven_city',
+													ven_state = '$new_ven_state',
+													ven_zip_code = '$new_ven_zip'
 												WHERE ven_id = '$ven_id'");
 
 					$update ->execute();
-
+					/*print $update -> errorCode();
+					echo "\nPDO::errorInfo():\n";
+					print_r($update->errorInfo());*/
 					$conn = null;
 
 					Vendor();
@@ -231,7 +248,7 @@
 					$username = $_SESSION['username'];
 					$password = $_SESSION['password'];
 					$conn = hsu_conn_sess($username, $password);
-					$ven_id = htmlspecialchars(strip_tags($_POST["change_ven_id"]));
+					$ven_id = $_SESSION['ven_id'];
 
 					$remove = $conn -> prepare("DELETE FROM Vendor
 												WHERE ven_id = '$ven_id'");

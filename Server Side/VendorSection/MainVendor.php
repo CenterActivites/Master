@@ -115,18 +115,22 @@
                 <tbody>
 <?php
 
-				foreach($conn->query("SELECT ven_id, ven_name, ven_phone, ven_address
+				foreach($conn->query("SELECT ven_id, ven_name, ven_phone, ven_street_address, ven_city, ven_state, ven_zip_code
 							FROM Vendor") as $row)
 				{
 					$cur_ven_name = $row["ven_name"];
 					$cur_ven_id = $row["ven_id"];
 					$cur_ven_phone = $row["ven_phone"];
-					$cur_ven_address = $row["ven_address"];
+					$cur_ven_street_address = $row["ven_street_address"];
+					$cur_ven_city = $row["ven_city"];
+					$cur_ven_state = $row["ven_state"];
+					$cur_ven_zip = $row["ven_zip_code"];
 ?>
 					<tr>
 					  <td><?=$cur_ven_name?></td>
 					  <td><?=$cur_ven_phone?></td>
-					  <td><?=$cur_ven_address?></td>
+					  <td> <?=$cur_ven_street_address?>&nbsp;<?=$cur_ven_city?>,&nbsp;<?=$cur_ven_state?>
+									&nbsp;<?=$cur_ven_zip?> </td>
 					  <td id = "hide_me"><input id ="radio_in" type="radio"  name="item_id[]" value = "<?= $cur_ven_id ?>"/></td>
 					</tr>
 <?php

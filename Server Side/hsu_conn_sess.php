@@ -10,7 +10,7 @@
 		$empl_user = $_SESSION['empl_user'];
 		$empl_pass = $_SESSION['empl_pass'];
 		
-		$connctn = new PDO("mysql:host=localhost; dbname=centerac_center_activities", $usr, $pwd, array('charset'=>'utf8'));
+		$connctn = new PDO("mysql:host=localhost", $DB, $usr, $pwd, array('charset'=>'utf8'));
 			
 		$Can_access = $connctn->prepare("SELECT empl_id
 									FROM Employee

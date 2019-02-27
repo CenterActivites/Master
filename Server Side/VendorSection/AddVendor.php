@@ -32,7 +32,7 @@
 								Vendor:
 							</th>
 							<td>
-								<input type = "text" name = "venName" id = "venName" value ="" placeholder="Vendor Name"/>
+								<input type = "text" name = "venName" id = "venName" value ="" maxlength="50" placeholder="Vendor Name"/>
 							</td>
 						</tr>
 						
@@ -41,16 +41,43 @@
 								Phone Number:
 							</th>
 							<td>
-								<input type = "text" name = "venPhone" id = "venPhone" value ="" placeholder="Vendor Phone Number"/>
+								<input type = "text" name = "venPhone" id = "venPhone" value ="" maxlength="16" placeholder="Vendor Phone Number"/>
 							</td>
 						</tr>
 						
 						<tr>
 							<th>
-								Location: 
+								Street Address: 
 							</th>
 							<td>
-								<input type = "text" name = "venLoc" id = "venLoc" value ="" placeholder="Vendor Location"/>
+								<input type = "text" name = "venStreet" id = "venStreet" value ="" maxlength="50" placeholder="Street Address"/>
+							</td>
+						</tr>
+						
+						<tr>
+							<th>
+								City: 
+							</th>
+							<td>
+								<input type = "text" name = "venCity" id = "venCity" value ="" maxlength="30" placeholder="City"/>
+							</td>
+						</tr>
+						
+						<tr>
+							<th>
+								State: 
+							</th>
+							<td>
+								<input type = "text" name = "venState" id = "venState" value ="" maxlength="13" placeholder="State"/>
+							</td>
+						</tr>
+						
+						<tr>
+							<th>
+								ZIP Code: 
+							</th>
+							<td>
+								<input type = "text" name = "venZIP" id = "venZIP" value ="" maxlength="10" placeholder="ZIP Code"/>
 							</td>
 						</tr>
 						
