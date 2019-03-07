@@ -7,10 +7,12 @@
 		$cust_lname = strip_tags($_POST['cust_lname']);
 		$cust_phone = strip_tags($_POST['cust_phone']);
 		$cust_email = strip_tags($_POST['cust_email']);
-		$cust_emerg_contact = strip_tags($_POST['cust_emerg_contact']);
 		$cust_address = strip_tags($_POST['cust_address']);
-		$cust_is_student = strip_tags($_POST['cust_is_student']);
+		$cust_city = strip_tags($_POST['cust_city']);
+		$cust_state = strip_tags($_POST['cust_state']);
+		$cust_zip = strip_tags($_POST['cust_zip']);
 		$cust_stu_id = strip_tags($_POST['cust_stu_id']);
+		$cust_driver_id = strip_tags($_POST['cust_driver_id']);
 		$is_employee = strip_tags($_POST['cust_is_employee']);
 ?>
 <html>
@@ -44,16 +46,16 @@
     <div id ='edit_cust'>
 				<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id="edit_cust_form">
 					<fieldset id='first_name_feild'>
-						<lable id='all_lable'>First Name:</lable></br><input type = "text" name = "cust_fname" id = "cust_fname" value ="" /><br/>
+						<lable id='all_lable'>First Name:</lable></br><input type = "text" name = "cust_fname" id = "cust_fname" value ="" maxlength="25"/><br/>
 					</fieldset>
 					<fieldset id='last_name_field'>
-						<lable id='all_lable'>Last Name:</lable></br><input type = "text" name = "cust_lname" id = "cust_lname" value ="" /><br/>
+						<lable id='all_lable'>Last Name:</lable></br><input type = "text" name = "cust_lname" id = "cust_lname" value ="" maxlength="25"/><br/>
 					</fieldset></br>
-					<fieldset id='stu_stat_field'>
-						<lable id='all_lable'>Student Status:</lable></br><select name = "is_student" id="is_student" size="1" required>
-																<option value = "No"> No </option>
-																<option value = "Yes"> Yes </option>
-														</select><br/>
+					<fieldset id='driver_id_field'>
+						<lable id='all_lable'>Driver License:</lable></br><input type = "text" name = "driver_id" id = "driver_id" value ="" maxlength="8"/><br/>
+					</fieldset>
+					<fieldset id='stu_id_field'>
+						<lable id='all_lable'>Student ID:</lable></br><input type = "text" name = "cust_stu_id" id = "cust_stu_id" value ="" maxlength="10"/><br/>
 					</fieldset>
 					<fieldset id='empl_stat_field'>
 						<lable id='all_lable'>Employee Status:</lable></br><select name = "empl_stat" id="empl_stat" size="1" required>
@@ -61,21 +63,27 @@
 																<option value = "Yes"> Yes </option>
 														</select>
 					</fieldset></br>
-					<fieldset id='stu_id_field'>
-						<lable id='all_lable'>Student ID:</lable></br><input type = "text" name = "cust_stu_id" id = "cust_stu_id" value ="" /><br/>
-					</fieldset>
 					<fieldset id='phone_num_field'>
-						<lable id='all_lable'>Phone Number:</lable></br><input type = "text" name = "cust_phone" id = "cust_phone" value ="" /><br/>
+						<lable id='all_lable'>Phone Number:</lable></br><input type = "text" name = "cust_phone" id = "cust_phone" value ="" maxlength="12"/><br/>
 					</fieldset></br>
 					<fieldset id='email_field'>
-						<lable id='all_lable'>Email Address:</lable></br><input type = "text" name = "cust_email" id = "cust_email" value ="" /><br/>
+						<lable id='all_lable'>Email Address:</lable></br><input type = "text" name = "cust_email" id = "cust_email" value ="" maxlength="50"/><br/>
 					</fieldset>
-					<fieldset id='emerg_contact_field'>
-						<lable id='all_lable'>Emergency Contact Number:</lable></br><input type = "text" name = "emerg_contact" id = "emerg_contact" value ="" /><br/>
+					<fieldset id='street_address'>
+						<lable id='all_lable'>Address:</lable></br><input type = "text" name = "cust_address" id = "cust_address" value ="" maxlength="100"/><br/>
 					</fieldset>
 					</br></br></br></br></br></br></br></br></br></br></br></br></br></br>
+					
 					<fieldset id='address_field'>
-						<lable id='all_lable'>Address:</lable></br><input type = "text" name = "cust_address" id = "cust_address" value ="" /><br/>
+						<div id="city">
+							<lable id='all_lable'>City:</lable></br><input type = "text" name = "cust_city" id = "cust_city" value ="" maxlength="30"/>
+						</div>
+						<div id="state">
+							<lable id='all_lable'>State:</lable></br><input type = "text" name = "cust_state" id = "cust_state" value ="" maxlength="13"/>
+						</div>
+						<div id="zip">
+							<lable id='all_lable'>ZIP Code:</lable></br><input type = "text" name = "cust_zip" id = "cust_zip" value ="" maxlength="13"/>
+						</div>
 					</fieldset>
 
 
@@ -112,29 +120,27 @@
 		</script>
 
 		<script type="text/javascript">
-			$(document).ready(function(){
-				var stu_stat = "<?php echo $cust_is_student?>";
-					$("#is_student").val(stu_stat);
-			});
-		</script>
-
-
-		<script type="text/javascript">
 			var cust_fname = "<?php echo $cust_fname ?>";
 			var cust_lname = "<?php echo $cust_lname ?>";
 			var cust_phone = "<?php echo $cust_phone ?>";
 			var cust_email = "<?php echo $cust_email ?>";
-			var cust_emerg_contact = "<?php echo $cust_emerg_contact ?>";
 			var cust_address = "<?php echo $cust_address ?>";
 			var cust_stu_id = "<?php echo $cust_stu_id ?>";
+			var cust_driver_id = "<?php echo $cust_driver_id ?>";
+			var cust_city = "<?php echo $cust_city ?>";
+			var cust_state = "<?php echo $cust_state ?>";
+			var cust_zip = "<?php echo $cust_zip ?>";
 
 			$("#cust_fname").val(cust_fname);
 			$("#cust_lname").val(cust_lname);
 			$("#cust_phone").val(cust_phone);
 			$("#cust_email").val(cust_email);
-			$("#emerg_contact").val(cust_emerg_contact);
 			$("#cust_address").val(cust_address);
 			$("#cust_stu_id").val(cust_stu_id);
+			$("#driver_id").val(cust_driver_id);
+			$("#cust_city").val(cust_city);
+			$("#cust_state").val(cust_state);
+			$("#cust_zip").val(cust_zip);
 		</script>
 
 

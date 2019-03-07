@@ -934,7 +934,9 @@
 <?php
 		}
     }
-
+	
+	
+	
 
 	//======================================================================
 	//Customer Selection Section
@@ -1022,35 +1024,63 @@
 					$username = $_SESSION['username'];
 					$password = $_SESSION['password'];
 					$conn = hsu_conn_sess($username, $password);
-					$cust_id = strip_tags($_POST['cust_id']);
+					$cust_id = (int)strip_tags($_POST['cust_id']);
 					$cust_fname = strip_tags($_POST['cust_fname']);
 					$cust_lname = strip_tags($_POST['cust_lname']);
 					$cust_phone = strip_tags($_POST['cust_phone']);
 					$cust_email = strip_tags($_POST['cust_email']);
-					$cust_emerg_contact = strip_tags($_POST['emerg_contact']);
 					$cust_address = strip_tags($_POST['cust_address']);
-					$cust_is_student = strip_tags($_POST['is_student']);
-					$cust_is_empl = strip_tags($_POST["empl_stat"]);
 					$cust_stu_id = strip_tags($_POST['cust_stu_id']);
+					$driver_id = strip_tags($_POST['driver_id']);
+					$cust_city = strip_tags($_POST['cust_city']);
+					$cust_state = strip_tags($_POST['cust_state']);
+					$cust_zip = strip_tags($_POST["cust_zip"]);
+					$cust_is_empl = strip_tags($_POST["empl_stat"]);
 
+					if($cust_stu_id == "")
+					{
+						$cust_is_student = "No";
+					}
+					else
+					{
+						$cust_is_student = "Yes";
+					}
 
 					$update = $conn ->prepare("UPDATE Customer
-												SET f_name = '$cust_fname',
-													l_name = '$cust_lname',
-													c_stu_id= '$cust_stu_id',
-													c_addr = '$cust_address',
-													c_phone = '$cust_phone',
-													c_email = '$cust_email',
-													is_student = '$cust_is_student',
-													is_employee = '$cust_is_empl',
-													emerg_contact = '$cust_emerg_contact'
-												WHERE cust_id = '$cust_id'");
-
+												SET f_name = :a,
+													l_name = :b,
+													c_stu_id= :c,
+													c_driver_id = :d,
+													c_street_addr = :f,
+													c_city = :g,
+													c_state = :h,
+													c_zip_code = :i,
+													c_phone = :j,
+													c_email = :k,
+													is_student = :l,
+													is_employee = :m
+												WHERE cust_id = :n");
+					$update -> bindValue(':a', $cust_fname, PDO::PARAM_STR);
+					$update -> bindValue(':b', $cust_lname, PDO::PARAM_STR);
+					$update -> bindValue(':c', $cust_stu_id, PDO::PARAM_STR);
+					$update -> bindValue(':d', $driver_id, PDO::PARAM_STR);
+					$update -> bindValue(':f', $cust_address, PDO::PARAM_STR);
+					$update -> bindValue(':g', $cust_city, PDO::PARAM_STR);
+					$update -> bindValue(':h', $cust_state, PDO::PARAM_STR);
+					$update -> bindValue(':i', $cust_zip, PDO::PARAM_STR);
+					$update -> bindValue(':j', $cust_phone, PDO::PARAM_STR);
+					$update -> bindValue(':k', $cust_email, PDO::PARAM_STR);
+					$update -> bindValue(':l', $cust_is_student, PDO::PARAM_STR);
+					$update -> bindValue(':m', $cust_is_empl, PDO::PARAM_STR);
+					$update -> bindValue(':n', $cust_id, PDO::PARAM_INT);
 					$update ->execute();
+					
+					/*print $update -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+					echo "\nPDO::errorInfo():\n";
+					print_r($update->errorInfo());*/
 
-
-					$conn = null;
-					//next inserts
+					$conn = null;	
+					
 					CustomerInfo();
 
 				}
@@ -1087,31 +1117,43 @@
 					
 					//set variables to the values input by user
 					$new_custName = htmlspecialchars(strip_tags($_POST["cust_name"]));
-					$new_dob = htmlspecialchars(strip_tags($_POST["dob"]));
-					$new_address = htmlspecialchars(strip_tags($_POST["address"]));
-					$new_phone = htmlspecialchars(strip_tags($_POST["Phone"]));
+					$new_address = htmlspecialchars(strip_tags($_POST["street_address"]));
+					$new_phone = htmlspecialchars(strip_tags($_POST["phone"]));
 					$new_email = htmlspecialchars(strip_tags($_POST["email"]));
 					$new_is_student = htmlspecialchars(strip_tags($_POST["is_student"]));
 					$new_is_empl = htmlspecialchars(strip_tags($_POST["empl_stat"]));
-					$new_emerName = htmlspecialchars(strip_tags($_POST["emerName"]));
-					$new_emerPhone = htmlspecialchars(strip_tags($_POST["emerPhone"]));
+					$new_city = htmlspecialchars(strip_tags($_POST["city"]));
+					$new_state = htmlspecialchars(strip_tags($_POST["state"]));
+					$new_zip = htmlspecialchars(strip_tags($_POST["zip"]));
+					
+					//checks which id was entered. Student or Driver License
+					if(isset($_POST["stu_id"]))
+					{
+						$new_stu_id = htmlspecialchars(strip_tags($_POST["stu_id"]));
+						$new_drive_id = "";
+					}
+					else
+					{
+						$new_drive_id = htmlspecialchars(strip_tags($_POST["drive_id"]));
+						$new_stu_id = "";
+					}
 
 					//Separate the first and last name for the insert into database
 					$f_lnames = explode(" ", $new_custName);
 					$f_name = $f_lnames[0];
 					$l_name = $f_lnames[1];
-
-					//Combines the Emergency contact name and phone number
-					$emer_contract = $new_emerName . " " . $new_emerPhone;
-
+					
 					//set up insert statement
 					$insert = $conn ->prepare("insert into Customer
-												(cust_id, f_name, l_name, c_stu_id, c_addr, c_phone, c_email, is_student, is_employee, emerg_contact)
+												(cust_id, f_name, l_name, c_stu_id, c_driver_id, c_street_addr, c_city, c_state, c_zip_code, c_phone, c_email, is_student, is_employee)
 												values
-												(Default, ?, ?, ?, ?, ?, ?, ?, ?, ? )");
+												(Default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 					//execute the statement with variables
-					$insert ->execute([$f_name, $l_name, $new_dob, $new_address, $new_phone, $new_email, $new_is_student, $new_is_empl, $emer_contract]);
-					//print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+					$insert ->execute([$f_name, $l_name, $new_stu_id, $new_drive_id, $new_address, $new_city, $new_state, $new_zip, $new_phone, $new_email, $new_is_student, $new_is_empl]);
+					
+					/*print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+					echo "\nPDO::errorInfo():\n";
+					print_r($insert->errorInfo());*/
 					
 					//end connection
 					$conn = null;
@@ -1212,6 +1254,7 @@
 						//print "Insert to Transaction: " . $insert->errorCode();
 						//echo "</br>";
 						$tran_id = $conn->lastInsertId();
+						
 					}
 					else
 					{
@@ -1355,6 +1398,8 @@
 <?php
 		}
 	}
+	
+	
 	
 	//======================================================================
 	//Employee Section
