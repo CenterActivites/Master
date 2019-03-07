@@ -1,6 +1,6 @@
 <?php
 		//                                                     !!!!!!!!!!!!!!!!!!!DO NOT PUSH THIS FILE TO GITHUB!!!!!!!!!!!!!!!!!!!!
-	$connctn = new PDO("mysql:host=localhost"; $DB, $USER, $PASS, array('charset'=>'utf8'));
+	$connctn = new PDO("mysql:host=localhost; dbname=centerac_center_activities", "centerac_test", "Testing123+", array('charset'=>'utf8'));
 
 	$connctn->query("SET CHARACTER SET utf8");
 	//sets the incoming stat_id to this var
@@ -34,6 +34,7 @@
 		$public_val = "";
 	}
 
+	$display = array();
 	//so, if the selection vlaue = 0 I want the information to remain uncahnged.
 	if($stat_val [0] == '0')
 	{
@@ -44,8 +45,30 @@
 
 		$select_item->execute();
 		$display_array = $select_item->fetchAll();
+		foreach($display_array as $row)
+		{
+			
+			$number_of_use = $connctn->prepare("select count(itemtran_id)
+												from Item A, Transaction B, ItemTran C
+												where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+			$number_of_use->bindValue(':a', $row['item_Backid'], PDO::PARAM_INT);
+			$number_of_use->execute();
+			$number_of_use = $number_of_use->fetchAll();
+			$curr_number_of_use = $number_of_use[0][0];
+			
+			$array = [
+				"item_Backid" => $row["item_Backid"],
+				"item_size" => $row["item_size"],
+				"inv_name" => $row["inv_name"],
+				"item_modeltype" => $row["item_modeltype"],
+				"item_Frontid" => $row["item_Frontid"],
+				"public" => $row["public"],
+				"stat_name" => $row["stat_name"],
+				"usage" => $curr_number_of_use
+			];
+			$display[] = $array;
+		}
 		$connctn = null; //Also remember to close the Database Connection
-		print json_encode($display_array); //Returns the data back to the AJAX call in JSON format
 	}
 	//else lets change that information according to the value of the status. 1-5
 	else
@@ -60,7 +83,30 @@
 		$select_item->bindValue(':a', $int_value_stat, PDO::PARAM_INT);
 		$select_item->execute();
 		$display_array = $select_item->fetchAll();
+		foreach($display_array as $row)
+		{
+			
+			$number_of_use = $connctn->prepare("select count(itemtran_id)
+												from Item A, Transaction B, ItemTran C
+												where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+			$number_of_use->bindValue(':a', $row['item_Backid'], PDO::PARAM_INT);
+			$number_of_use->execute();
+			$number_of_use = $number_of_use->fetchAll();
+			$curr_number_of_use = $number_of_use[0][0];
+			
+			$array = [
+				"item_Backid" => $row["item_Backid"],
+				"item_size" => $row["item_size"],
+				"inv_name" => $row["inv_name"],
+				"item_modeltype" => $row["item_modeltype"],
+				"item_Frontid" => $row["item_Frontid"],
+				"public" => $row["public"],
+				"stat_name" => $row["stat_name"],
+				"usage" => $curr_number_of_use
+			];
+			$display[] = $array;
+		}
 		$connctn = null;
-		print json_encode($display_array);
 	}
+	echo json_encode($display); //Returns the data back to the AJAX call in JSON format
  ?>

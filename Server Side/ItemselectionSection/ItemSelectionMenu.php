@@ -96,91 +96,6 @@
 		});
 	</script>
 	
-	<script type="text/javascript">
-	 //AJAX is asynchronous javascript
-	 //https://www.w3schools.com/xml/ajax_intro.asp
-		 $(function(){
-			 $('#change, #dbw, #public').change(function(){
-				 $.ajax({
-					 // this section of the script
-					 //1. finds where the helper file is located
-					 url: "../ItemselectionSection/helper.php", //The file where the php select query is at
-					 // 2. defines the type of call we're using to contact the server
-					 type: "post",
-					 // 3. gets the data from the the section of the web page we want
-					 data:{
-						'stat_id':$('#change').val(),
-						'dbw':$('#dbw').val(),
-						'public':$('#public').val()
-					 },
-					 //4. sends the data gathered to this success function after it has quereied
-					 success:function(data){
-						 console.log("Item data: " + data);//displaying current data gathered from query to see if data was processed.
-						 var json_object = JSON.parse(data);
-
-						 $('#empty').empty();
-
-						 var tbody = document.getElementById('empty'); //Grabs the "tbody" select tag
-						 //we loop through the entirety of the json object array
-						 for(var i = 0; i < json_object.length; i++){
-								 var info = json_object[i];
-								 item_Backid = info['item_Backid'];
-								 item_size = info['item_size'];
-								 item_Frontid = info['item_Frontid'];
-								 inv_name = info['inv_name'];
-								 item_modeltype = info['item_modeltype'];
-								 pub_use = info['public'];
-								 stat_info = info['stat_name'];
-
-								 if(pub_use == 1){
-									pub_use = "Yes";
-								 }
-								 else{
-									pub_use = "No";
-								 }
-
-								 if(item_modeltype == null || item_modeltype == " ")
-								 {
-									item_modeltype = " ";
-								 }
-								 
-								 if(item_size == null)
-								 {
-									item_size = "";
-								 }
-
-								 var tr = document.createElement('tr');
-
-								 tr.innerHTML = "<td id='hide_me'>" + "<input id ='radio_in' type='radio' name='item_id[]' value = '"+item_Backid+"'/>" +"</td>" + "<td>" + item_Frontid + "</td>"  + "<td>" + item_size + "</td>"
-																 +"<td>"+item_modeltype+"</td>" + "<td>"+inv_name+"</td>" + "<td>"+pub_use+"</td>" + "<td>"+stat_info+"</td>";
-
-								 tbody.appendChild(tr);
-						 }
-
-						 //this script goes off when a table row is clicked it checks the radio button
-						 $(document).ready(function(){
-							 $("#table_info tbody tr").click(function(){
-									 $(this).find('td input:radio').prop('checked',true);
-								 });
-							 });
-
-							 // this script calls a CSS class named .highlight in the CSS file
-							 // So that when a click happens It hightlights the row letting the user know that they've selected it.
-							 $(document).ready(function(){
-								 $("#table_info tbody tr").click(function(){
-									 $("#table_info tbody tr").removeClass("highlight");
-									 $(this).addClass("highlight");
-								 });
-							 });
-
-							 //this resets the search functioallity after the table is refilled
-						 $('input#searchItem').quicksearch('#table_info tbody tr'); //On key search for customer names here
-					 }
-				 });
-			 });
-		 });
-	</script>
-	
 	<!-- Little script that save the Public Value to a hidden input field -->
 	<script type="text/javascript">
 		$(document).ready(function()
@@ -219,8 +134,96 @@
 			});
 		});
 	</script>
+		
+	<script type="text/javascript">
+	 //AJAX is asynchronous javascript
+	 //https://www.w3schools.com/xml/ajax_intro.asp
+		 $(function(){
+			 $('#change, #dbw, #public').change(function(){
+				 $.ajax({
+					 // this section of the script
+					 //1. finds where the helper file is located
+					 url: "../ItemselectionSection/helper.php", //The file where the php select query is at
+					 // 2. defines the type of call we're using to contact the server
+					 type: "post",
+					 // 3. gets the data from the the section of the web page we want
+					 data:{
+						'stat_id':$('#change').val(),
+						'dbw':$('#dbw').val(),
+						'public':$('#public').val()
+					 },
+					 //4. sends the data gathered to this success function after it has quereied
+					 success:function(data){
+						 console.log("Item data: " + data);//displaying current data gathered from query to see if data was processed.
+						 var json_object = JSON.parse(data);
+
+						 $('#empty').empty();
+						 
+						 var tbody = document.getElementById('empty'); //Grabs the "tbody" select tag
+						 //we loop through the entirety of the json object array
+						 for(var i = 0; i < json_object.length; i++){
+								 var info = json_object[i];
+								 item_Backid = info['item_Backid'];
+								 item_size = info['item_size'];
+								 item_Frontid = info['item_Frontid'];
+								 inv_name = info['inv_name'];
+								 item_modeltype = info['item_modeltype'];
+								 pub_use = info['public'];
+								 stat_info = info['stat_name'];
+								 usage = info['usage'];
+
+								 if(pub_use == 1){
+									pub_use = "Yes";
+								 }
+								 else{
+									pub_use = "No";
+								 }
+
+								 if(item_modeltype == null || item_modeltype == " ")
+								 {
+									item_modeltype = " ";
+								 }
+								 
+								 if(item_size == null)
+								 {
+									item_size = "";
+								 }
+
+								 var tr = document.createElement('tr');
+
+								 tr.innerHTML = "<td id='hide_me'>" + "<input id ='radio_in' type='radio' name='item_id[]' value = '"+item_Backid+"'/>" +"</td>" + "<td>" + item_Frontid + "</td>"  + "<td>" + item_size + "</td>"
+																 +"<td>"+item_modeltype+"</td>" + "<td>"+inv_name+"</td>" + "<td>"+pub_use+"</td>" + "<td>"+stat_info+"</td>" + "<td>"+usage+"</td>";
+
+								 tbody.appendChild(tr);
+						 }
+
+						 //this script goes off when a table row is clicked it checks the radio button
+						 $(document).ready(function(){
+							 $("#table_info tbody tr").click(function(){
+									 $(this).find('td input:radio').prop('checked',true);
+								 });
+							 });
+
+							 // this script calls a CSS class named .highlight in the CSS file
+							 // So that when a click happens It hightlights the row letting the user know that they've selected it.
+							 $(document).ready(function(){
+								 $("#table_info tbody tr").click(function(){
+									 $("#table_info tbody tr").removeClass("highlight");
+									 $(this).addClass("highlight");
+								 });
+							 });
+
+							 //this resets the search functioallity after the table is refilled
+						 $('input#searchItem').quicksearch('#table_info tbody tr'); //On key search for customer names here
+					 }
+				 });
+			 });
+		 });
+	</script>
 
 <?php
+	//Access level view check. Only users who have level 3 and 4 can add new Inventory includes new prices.
+	//Level 2 and up can only add new items
 	$lvl_access = strip_tags($_SESSION['lvl_access']);
 	if($lvl_access == "4" || $lvl_access == "3")
 	{
@@ -263,7 +266,7 @@
 						<thead>
 							<tr>
 								<th id = "hide_me"> </th>
-								<th id ="th_front">Front Id</th>
+								<th id ="th_front">Item Id</th>
 								<th>Item Size</th>
 								<th>Model</th>
 								<th>Item Name</th>
@@ -311,8 +314,6 @@
 									$curr_item_size = "";
 								}
 ?>
-
-
 								<tr id='table_row_info'>
 									<td id = "hide_me"><input id ="radio_in" type="radio"  name="item_id[]" value = "<?= $curr_item_backid ?>"/><lable class="zombie" for="radio_in"> </lable></td>
 									<td id = 'td_front'><?= $curr_item_frontid?></td>
@@ -427,21 +428,22 @@
 
 		 	</fieldset>
 		</form>
+		
 		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="button">
 			<!-- Following are just buttons -->
 			<fieldset id="button_feildset">
 				<input type="submit" name="moreinfo" id="moreinfo" value="Item Info" onclick="return is_blank()" /> &nbsp;&nbsp;
 				<input <?= $lvl_2 ?> name="additem" id="additem" value="Add Item" <?= $disabled_2 ?>/> &nbsp;&nbsp;
 				<input <?= $lvl_3 ?> name="addinventory" id="addinventory" value="Add Inventory" <?= $disabled_3 ?>/> &nbsp;&nbsp;
-			</fieldset>
 		</form>
 		
 		<!-- Button for downloading a excel sheet of the current item list in the table -->
 		<form method= "post" action="../ItemselectionSection/ExcelPrint.php">
-			<input type="hidden" id="status_hidden" name="status_hidden" value="0"/>
-			<input type="hidden" id="dbw_hidden" name="dbw_hidden" value="none"/>
-			<input type="hidden" id="public_hidden" name="public_hidden" value="none"/>
-			<input type="submit" id="excel_download" id="excel_download" value="Download Excel" />
+				<input type="hidden" id="status_hidden" name="status_hidden" value="0"/>
+				<input type="hidden" id="dbw_hidden" name="dbw_hidden" value="none"/>
+				<input type="hidden" id="public_hidden" name="public_hidden" value="none"/>
+				<input type="submit" id="excel_download" id="excel_download" value="Download Excel" />
+			</fieldset>
 		</form>
 		
     </div>
