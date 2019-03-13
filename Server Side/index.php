@@ -1540,22 +1540,38 @@
 					$new_email = htmlspecialchars(strip_tags($_POST["email"]));
 					$access_lvl_granted = htmlspecialchars(strip_tags($_POST["access_lvl"]));
 					$title = htmlspecialchars(strip_tags($_POST["title"]));
+					$pass_w = htmlspecialchars(strip_tags($_POST["pass"]));
 
 					//Separate the first and last name for the insert into database
 					$f_lnames = explode(" ", $new_emplName);
-					$f_name = $f_lnames[0];
-					$l_name = $f_lnames[1];
+					$f_name = " ";
+					$l_name = " ";
+					foreach($f_lnames as $part)
+					{
+						switch($part)  
+						{
+							case " ":
+							case "":
+							case $f_name == " ":
+								$f_name = $part;
+								break;
+							case " ":
+							case "":
+							case $f_name != " ":
+							case $l_name == " ":
+								$l_name = $part;
+								break;break;
+						}
+					}
+					$user_n = $f_name[0] . $l_name[0] . rand(0, 9) . rand(0, 9) . rand(0, 9);
 					
-					//Combines the Emergency contact name and phone number
-					$emer_contract = $new_emerName . " " . $new_emerPhone;
-
 					//set up insert statement
 					$insert = $conn->prepare("insert into Employee
-												(empl_id, empl_fname, empl_lname, phone_num, title, access_lvl, empl_email)
+												(empl_id, empl_fname, empl_lname, phone_num, title, access_lvl, empl_email, user_n, pass_w)
 												values
-												(Default, ?, ?, ?, ?, ?, ?)");
+												(Default, ?, ?, ?, ?, ?, ?, ?, ?)");
 					//execute the statement with variables
-					$insert ->execute([$f_name, $l_name, $new_phone, $title, $access_lvl_granted, $new_email]);
+					$insert ->execute([$f_name, $l_name, $new_phone, $title, $access_lvl_granted, $new_email, $user_n, $pass_w]);
 					//print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
 					//echo "\nPDO::errorInfo():\n";
 					//print_r($insert->errorInfo());

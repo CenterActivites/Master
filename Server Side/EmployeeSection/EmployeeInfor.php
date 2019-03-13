@@ -31,7 +31,7 @@
 			$password = strip_tags($_SESSION['password']);
 			$conn = hsu_conn_sess($username, $password);
 
-			foreach($conn->query("SELECT empl_fname, empl_lname, phone_num, empl_email, access_lvl, title
+			foreach($conn->query("SELECT empl_fname, empl_lname, phone_num, empl_email, access_lvl, title, user_n, pass_w
 									FROM Employee
 									WHERE empl_id = '$empl_id'") as $row)
 			{
@@ -41,6 +41,8 @@
 				$curr_empl_title = $row["title"];
 				$curr_empl_phone = $row["phone_num"];
 				$curr_empl_email = $row["empl_email"];
+				$curr_empl_user = $row["user_n"];
+				$curr_empl_pass = $row["pass_w"];
 ?>
 				<tr>
 					<th>Employee First Name:</th>
@@ -65,6 +67,14 @@
 				<tr>
 					<th>Employee Access Level:</th>
 					<td class="editcol"><?= $curr_empl_access_lvl?></td>
+				</tr>
+				<tr>
+					<th>Employee Username:</th>
+					<td class="editcol"><?= $curr_empl_user?></td>
+				</tr>
+				<tr>
+					<th>Employee Password:</th>
+					<td class="editcol"><?= $curr_empl_pass?></td>
 				</tr>
 <?php
 			}
