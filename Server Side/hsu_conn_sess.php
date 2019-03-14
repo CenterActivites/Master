@@ -36,7 +36,6 @@
 		}
 		else
 		{
-			$_SESSION['lvl_access'] = $display_array[0][0];
 			return $connctn;
 		}
 		

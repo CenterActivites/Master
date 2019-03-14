@@ -1,9 +1,7 @@
 <!DOCTYPE>
 <?php
-
-     function NavBar()
-     {
-
+    function NavBar()
+    {
 ?>
 	     <html>
 			<head>
@@ -61,19 +59,18 @@
 <?php
 				$empl_user = $_SESSION['empl_user'];
 				$empl_pass = $_SESSION['empl_pass'];
-
-				$username = $_SESSION['username'];
-				$password = $_SESSION['password'];
-					
-				$conn = hsu_conn_sess($username, $password);
+			
+				$conn = hsu_conn_sess();
 				
 				$login_lvl = $conn->prepare("SELECT access_lvl
 												FROM Employee
-												WHERE empl_fname = :f_name and empl_lname = :l_name");
-				$login_lvl->bindValue(':f_name', $empl_user, PDO::PARAM_STR);
-				$login_lvl->bindValue(':l_name', $empl_pass, PDO::PARAM_STR);
+												WHERE user_n = :user and pass_w = :pass");
+				$login_lvl->bindValue(':user', $empl_user, PDO::PARAM_STR);
+				$login_lvl->bindValue(':pass', $empl_pass, PDO::PARAM_STR);
 				$login_lvl->execute();
 				$display_array = $login_lvl->fetchAll();
+				
+				$_SESSION['lvl_access'] = $display_array[0][0];
 				
 				if($display_array[0][0] == "4")
 				{
@@ -110,5 +107,5 @@
             </body>
         </html>
 <?php
-     }
+    }
 ?>
