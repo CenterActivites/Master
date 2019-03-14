@@ -6,125 +6,9 @@
 ?>
 <html>
 <head>
+
 	<link rel="stylesheet" type="text/css" href="../CustomerselectionSection/cust_css/cust_selection.css"/>
 	
-	<!-- JavaScript Starts here -->
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
-	<script type="text/javascript" src="jquery.quicksearch.js"></script>  <!-- Plugin for the item Search function -->
-
-	<!-- Creation of a hidden input called cust_id to grab the selected customer id -->
-	<script type="text/javascript">
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'cust_id',
-				name: 'cust_id'
-			}).appendTo('#button');
-		});
-	</script>
-	
-	<!-- A "check" function for the button "Customer Information" that sees if a customer have been selected or not -->
-	<!-- A customer must be selected to move on -->
-	<script type="text/javascript">
-		function is_blank(){
-			if(document.getElementById('cust_id').value.length == 0){
-				alert("please select a customer");
-				return false;
-			}
-		}
-	</script>
-
-	<!-- Function for saving the selected customer's id to the hidden input "cust_id" -->
-	<script type="text/javascript">
-	$(document).ready(function(){
-		$("#table_div").click(function(){
-			$('input[type="radio"]:checked').each(function(){
-				var box_value = $(this).val();
-				$('#cust_id').val(box_value);
-				console.log($('#cust_id').val());
-			});
-		});
-	});
-	</script>
-
-	<script type="text/javascript">
-	//this script goes off when a table row is clicked it checks the radio button
-		$(document).ready(function(){
-			$("#cust_table_info tr").click(function(){
-					$(this).find('td input:radio').prop('checked',true);
-				});
-			});
-	</script>
-
-	<script type = "text/javascript">
-		// this script calls a CSS class called .highlight in the CSS file
-		// So that when a click happens It hightlights the row letting the user know that they've selected it.
-		$(document).ready(function(){
-			$("#cust_table_info tr").click(function(){
-				$("#cust_table_info tr").removeClass("highlight");
-				$(this).addClass("highlight");
-			});
-		});
-	</script>
-
-	<!-- Search functionally for the Customer table -->
-	<script type="text/javascript">
-		$(function ()
-		{
-			$('input#searchCust').quicksearch('#cust_table_info tbody tr'); //On key search for customer names here
-		});
-	</script>
-	
-	<!-- Modal script got from online with little adjustments for this page purpose -->
-	<script type="text/javascript">
-		$(document).ready(function()
-		{
-			//Grabs the hidden div called 'myModal" and the span tag
-			var modal = document.getElementById('myModal');
-			var span = document.getElementsByClassName("close")[0];
-			
-			//Once the Rental button is clicked
-			$("#rent").click(function(){
-				//Does the check if a customer have been selected
-				if(document.getElementById('cust_id').value.length == 0)
-				{
-					alert("Please Select a Customer");
-					return false;
-				}
-				else
-				{
-					console.log("Rental click");
-					//If a customer is selected, the hidden div will be shown
-					modal.style.display = "block";
-				}
-			});
-			
-			//Once the close/span, on the right top corner, is clicked; we re-hid the div
-			span.onclick = function(){
-				console.log("Close click");
-				modal.style.display = "none";
-			};
-		});
-	</script>
-	
-	<!-- Another check funtion that makes sure the user selects both "pick up date" and "return date" -->
-	<script type="text/javascript">
-		$(document).ready(function()
-		{
-			//Once the "Continue" button is clicked
-			$("#on_to_rental").click(function(){
-				//Does the check
-				if(document.getElementById('pickUpDate').value.length == 0 || document.getElementById('returnDate').value.length == 0)
-				{
-					alert("Please Enter in the Requested Dates");
-					return false;
-				}
-			});
-		});
-	</script>
-	
-	
-
 </head>
 <body>
 <?php
@@ -144,10 +28,8 @@
 ?>
 <div>
 <?php
-		//Using the username and password that was entered in the login page to connect to the database
-        $username = $_SESSION['username']; 
-		$password = $_SESSION['password'];
-        $conn = hsu_conn_sess($username, $password);
+		//Connecting to the Database
+		$conn = hsu_conn_sess();
  ?>
 		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id='button' >
 			<fieldset style="border:none">
@@ -320,6 +202,122 @@
 		</fieldset>
 </div>
 </body>
+
+	<!-- JavaScript Starts here -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
+	<script type="text/javascript" src="jquery.quicksearch.js"></script>  <!-- Plugin for the item Search function -->
+
+	<!-- Creation of a hidden input called cust_id to grab the selected customer id -->
+	<script type="text/javascript">
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'cust_id',
+				name: 'cust_id'
+			}).appendTo('#button');
+		});
+	</script>
+	
+	<!-- A "check" function for the button "Customer Information" that sees if a customer have been selected or not -->
+	<!-- A customer must be selected to move on -->
+	<script type="text/javascript">
+		function is_blank(){
+			if(document.getElementById('cust_id').value.length == 0){
+				alert("please select a customer");
+				return false;
+			}
+		}
+	</script>
+
+	<!-- Function for saving the selected customer's id to the hidden input "cust_id" -->
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#table_div").click(function(){
+			$('input[type="radio"]:checked').each(function(){
+				var box_value = $(this).val();
+				$('#cust_id').val(box_value);
+				console.log($('#cust_id').val());
+			});
+		});
+	});
+	</script>
+
+	<script type="text/javascript">
+	//this script goes off when a table row is clicked it checks the radio button
+		$(document).ready(function(){
+			$("#cust_table_info tr").click(function(){
+					$(this).find('td input:radio').prop('checked',true);
+				});
+			});
+	</script>
+
+	<script type = "text/javascript">
+		// this script calls a CSS class called .highlight in the CSS file
+		// So that when a click happens It hightlights the row letting the user know that they've selected it.
+		$(document).ready(function(){
+			$("#cust_table_info tr").click(function(){
+				$("#cust_table_info tr").removeClass("highlight");
+				$(this).addClass("highlight");
+			});
+		});
+	</script>
+
+	<!-- Search functionally for the Customer table -->
+	<script type="text/javascript">
+		$(function ()
+		{
+			$('input#searchCust').quicksearch('#cust_table_info tbody tr'); //On key search for customer names here
+		});
+	</script>
+	
+	<!-- Modal script got from online with little adjustments for this page purpose -->
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			//Grabs the hidden div called 'myModal" and the span tag
+			var modal = document.getElementById('myModal');
+			var span = document.getElementsByClassName("close")[0];
+			
+			//Once the Rental button is clicked
+			$("#rent").click(function(){
+				//Does the check if a customer have been selected
+				if(document.getElementById('cust_id').value.length == 0)
+				{
+					alert("Please Select a Customer");
+					return false;
+				}
+				else
+				{
+					console.log("Rental click");
+					//If a customer is selected, the hidden div will be shown
+					modal.style.display = "block";
+				}
+			});
+			
+			//Once the close/span, on the right top corner, is clicked; we re-hid the div
+			span.onclick = function(){
+				console.log("Close click");
+				modal.style.display = "none";
+			};
+		});
+	</script>
+	
+	<!-- Another check funtion that makes sure the user selects both "pick up date" and "return date" -->
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			//Once the "Continue" button is clicked
+			$("#on_to_rental").click(function(){
+				//Does the check
+				if(document.getElementById('pickUpDate').value.length == 0 || document.getElementById('returnDate').value.length == 0)
+				{
+					alert("Please Enter in the Requested Dates");
+					return false;
+				}
+			});
+		});
+	</script>
+
 </html>
 
 

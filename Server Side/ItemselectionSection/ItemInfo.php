@@ -9,109 +9,6 @@
 <head>
 
 	<link rel="stylesheet" type="text/css" href="../ItemselectionSection/item_css/item_info.css"/>
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-
-	<script type="text/javascript">
-	// creates an input object
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'item_id',
-				name: 'item_id'
-			}).appendTo('#button');
-			var item_id = "<?php echo $item_backid ?>"
-			$('#item_id').val(item_id);
-		});
-	</script>
-
-	<script type="text/javascript">
-	// creates an input object
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'inv_name',
-				name: 'inv_name'
-			}).appendTo('#button');
-		});
-	</script>
-
-	<script type="text/javascript">
-	// creates an input object
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'cat_name',
-				name: 'cat_name'
-			}).appendTo('#button');
-		});
-	</script>
-
-	<script type="text/javascript">
-	// creates an input object
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'item_name',
-				name: 'item_name'
-			}).appendTo('#button');
-		});
-	</script>
-
-	<script type="text/javascript">
-	// creates an input object
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'item_Frontid',
-				name: 'item_Frontid'
-			}).appendTo('#button');
-		});
-	</script>
-
-	<script type="text/javascript">
-	// creates an input object
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'item_size',
-				name: 'item_size'
-			}).appendTo('#button');
-		});
-	</script>
-
-	<script type="text/javascript">
-	// creates an input object
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'item_status',
-				name: 'item_status'
-			}).appendTo('#button');
-		});
-	</script>
-
-	<script type="text/javascript">
-	// creates an input object
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'inv_id',
-				name: 'inv_id'
-			}).appendTo('#button');
-		});
-	</script>
-
-	<script type="text/javascript">
-	// creates an input object
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'notes',
-				name: 'notes'
-			}).appendTo('#button');
-		});
-	</script>
 	
 <?php
 	$lvl_access = strip_tags($_SESSION['lvl_access']);
@@ -147,9 +44,9 @@
 			<fieldset id = "holds_item_info">
 				<div id="item_info">
 <?php
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
+					
 					//Item query
 					foreach($conn->query("SELECT item_Backid, A.inv_id, item_modeltype, inv_name, cat_name, item_Frontid, item_size, stat_name, location, notes, pur_price,pur_date,public,vin_num,dbw_own
 											FROM Item A, Inventory B, Category C, Status D
@@ -266,7 +163,8 @@
 					
 					$customer = $conn->prepare("select time_stamp, f_name, l_name
 												from ItemTran A, Transaction B, Customer C
-												where A.tran_id = B.trans_id and B.cust_id = C.cust_id and A.item_Backid = :a");
+												where A.tran_id = B.trans_id and B.cust_id = C.cust_id and A.item_Backid = :a
+												group by time_stamp");
 					$customer->bindValue(':a', $item_backid, PDO::PARAM_INT);
 					$customer->execute();
 					$customer = $customer->fetchAll();
@@ -309,7 +207,7 @@
 						</tbody>
 					</table>
 					
-					<br style="float: right;"></br>
+					<br></br>
 					</br>
 					
 					<table id="Cust_usage" style="float: right;">
@@ -365,35 +263,135 @@
 	    </fieldset>
 	</form>
     </div>
-		</div>
-
-
-		<script type="text/javascript">
-		// appends all information from query to input objects
-			$(document).ready(function(){
-				var inv_name = "<?php echo $curr_inv_name ?>"
-				var cat_name = "<?php echo $curr_cat_name?>"
-				var item_name = "<?php echo $curr_item_name ?>"
-				var front_id = "<?php echo $curr_item_frontid ?>"
-				var item_size= "<?php echo $curr_item_size ?>"
-				var item_status= "<?php echo $curr_item_status ?>"
-				var inv_id= "<?php echo $curr_inv_id ?>"
-				var notes= "<?php echo $curr_item_notes ?>"
-
-
-				$('#inv_name').val(inv_name);
-				$('#cat_name').val(cat_name);
-				$('#item_name').val(item_name);
-				$('#item_Frontid').val(front_id);
-				$('#item_size').val(item_size);
-				$('#item_status').val(item_status);
-				$('#inv_id').val(inv_id);
-				$('#notes').val(notes);
-			});
-		</script>
+	</div>
 </body>
-</html>
 
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+	<script type="text/javascript">
+		// creates an input object
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'item_id',
+				name: 'item_id'
+			}).appendTo('#button');
+			var item_id = "<?php echo $item_backid ?>"
+			$('#item_id').val(item_id);
+		});
+	</script>
+
+	<script type="text/javascript">
+		// creates an input object
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'inv_name',
+				name: 'inv_name'
+			}).appendTo('#button');
+		});
+	</script>
+
+	<script type="text/javascript">
+		// creates an input object
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'cat_name',
+				name: 'cat_name'
+			}).appendTo('#button');
+		});
+	</script>
+
+	<script type="text/javascript">
+		// creates an input object
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'item_name',
+				name: 'item_name'
+			}).appendTo('#button');
+		});
+	</script>
+
+	<script type="text/javascript">
+		// creates an input object
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'item_Frontid',
+				name: 'item_Frontid'
+			}).appendTo('#button');
+		});
+	</script>
+
+	<script type="text/javascript">
+		// creates an input object
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'item_size',
+				name: 'item_size'
+			}).appendTo('#button');
+		});
+	</script>
+
+	<script type="text/javascript">
+		// creates an input object
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'item_status',
+				name: 'item_status'
+			}).appendTo('#button');
+		});
+	</script>
+
+	<script type="text/javascript">
+		// creates an input object
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'inv_id',
+				name: 'inv_id'
+			}).appendTo('#button');
+		});
+	</script>
+
+	<script type="text/javascript">
+		// creates an input object
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'notes',
+				name: 'notes'
+			}).appendTo('#button');
+		});
+	</script>
+
+	<script type="text/javascript">
+		// appends all information from query to input objects
+		$(document).ready(function(){
+			var inv_name = "<?php echo $curr_inv_name ?>"
+			var cat_name = "<?php echo $curr_cat_name?>"
+			var item_name = "<?php echo $curr_item_name ?>"
+			var front_id = "<?php echo $curr_item_frontid ?>"
+			var item_size= "<?php echo $curr_item_size ?>"
+			var item_status= "<?php echo $curr_item_status ?>"
+			var inv_id= "<?php echo $curr_inv_id ?>"
+			var notes= "<?php echo $curr_item_notes ?>"
+
+			$('#inv_name').val(inv_name);
+			$('#cat_name').val(cat_name);
+			$('#item_name').val(item_name);
+			$('#item_Frontid').val(front_id);
+			$('#item_size').val(item_size);
+			$('#item_status').val(item_status);
+			$('#inv_id').val(inv_id);
+			$('#notes').val(notes);
+		});
+	</script>
+</html>
 
 <?php
 $conn=null;

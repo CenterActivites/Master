@@ -49,9 +49,13 @@ h1{
 
 #Item_comment tbody {
     display:block;
-    height:370px;
+    max-height:370px;
     overflow-y:scroll;
     background: white;
+}
+
+#Cust_usage {
+    max-height:100px;
 }
 
 #Item_comment thead {
@@ -89,11 +93,13 @@ h1{
     color: #EEE8AA;
 }
 
-#Item_Status td, #Item_comment td, #Cust_usage td{
+#Item_Status td, #Cust_usage td{
   width:30%;
 }
 
-
+#Item_comment td{
+  width:5%;
+}
 
 #backoniteminfo,#editItem,#editInv,#mainmenu {
     width: 10%;

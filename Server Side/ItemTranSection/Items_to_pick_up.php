@@ -9,6 +9,81 @@
 			<legend> Item Pick-Up </legend>
 			
 			<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+			
+		</head>
+		<body style="text-align: center;">
+<?php
+			//Grabbing the selected customer id and setting it in SESSION
+			$cust_id = strip_tags($_POST['cust_id']);
+			$_SESSION["cust_id"] = $cust_id;
+			
+			//Connecting to the Database
+			$connctn = hsu_conn_sess();
+			
+			//We do a mysql select here to get all the items that are being "reserved" for the customer to be picked up
+			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, request_date
+									FROM Inventory a, Item b, Reserve c, ItemReserve d
+									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rental_id = c.rental_id
+									and c.cust_id = :a");
+			$items->bindValue(':a', $cust_id, PDO::PARAM_INT);
+			$items->execute();
+			$display_array = $items->fetchAll();
+			
+			//Grab the size of the data we got from the select statement for the following FOR loop
+			$array_size = count($display_array);
+?>
+			<div class="container" style="margin-left:auto;margin-right:auto;width:100%;">
+			<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
+				<div>
+					<!-- Table Creation -->
+					<table id="item_table" name="item_table" style="width:70%; margin-left:auto; margin-right:auto;">
+						<tr>
+							<th id='hide_me'></th>
+							<th> Item Name: </th>
+							<th> Item Id: </th>
+							<th> Date to be Pick Up </th>
+						</tr>
+<?php
+					//Start of the FOR loop
+					for($i=0; $i<$array_size; $i++)
+					{
+?>
+						<tr>
+							
+							<!-- Create a checkbox for each item to be selected. Also here we set the item_Backid to the checkbox value -->
+							<td id='hide_me'> <input type="checkbox" id="item_id" name="item_id[]" value="<?= $display_array[$i]['item_Backid'] ?>"> </td>
+							
+							<!-- Displaying the item name and front id to the screen -->
+							<td> <?= $display_array[$i]['inv_name'] ?> </td>
+							<td> <?= $display_array[$i]['item_Frontid'] ?> </td>
+<?php
+							//The following two lines is for formatting reasons. Basically to make the date we get from the database more readable for users
+							$curr_request_date = strtotime($display_array[$i]['request_date']);
+							$curr_request_date = date('M d, Y', $curr_request_date);
+?>
+							<!-- Display the newly formated date -->
+							<td> <?= $curr_request_date ?> </td>
+						</tr>
+<?php
+					}
+?>
+					</table><br />
+					
+					<!-- Comments section for any comments about the transaction or items condition -->
+					<label> Comments </label>
+					<textarea name="comments" id="comments" rows="4" cols="50"></textarea> </br>
+					
+					<!-- Following are inputs that are either hidden or buttons -->
+					<input type="hidden" name="item_to_be_pick_up" id="item_to_be_pick_up"  />  <!-- Hidden input tag keep track of which items are selected to be returned -->
+					<input type="submit" name="Checkout" id="Checkout" value="Checkout" /> &nbsp; <!-- Checkout Button -->
+					<input type="submit" name="cancelReserve" id="cancelReserve" value="Cancel Reserve" /> &nbsp; <!-- Cancel Reserve Button. Which will cancel the Reserve entireally -->
+					<input type="submit" name="cancel" id="cancel" value="Cancel" /> &nbsp; <!-- Plain old Cancel button. Which just take user back to the Homepage. Used mainly for accidentally selecting the wrong customer -->
+				</div>
+			</form>
+			</div>
+		</body>
+		
+			<!-- Javascript Starts here -->
 			<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 			<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
 			
@@ -83,81 +158,8 @@
 					
 				});
 			</script>
-			
-		</head>
-		<body>
-<?php
-			//Grabbing the selected customer id and setting it in SESSION
-			$cust_id = strip_tags($_POST['cust_id']);
-			$_SESSION["cust_id"] = $cust_id;
-			
-			//Connecting to the database
-			$username = $_SESSION['username'];
-			$password = $_SESSION['password'];
-			$connctn = hsu_conn_sess($username, $password);
-			
-			//We do a mysql select here to get all the items that are being "reserved" for the customer to be picked up
-			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, request_date
-									FROM Inventory a, Item b, Reserve c, ItemReserve d
-									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rental_id = c.rental_id
-									and c.cust_id = :a");
-			$items->bindValue(':a', $cust_id, PDO::PARAM_INT);
-			$items->execute();
-			$display_array = $items->fetchAll();
-			
-			//Grab the size of the data we got from the select statement for the following FOR loop
-			$array_size = count($display_array);
-?>
-			<div class="container" style="margin-left:auto;margin-right:auto;width:100%;">
-			<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
-				<div>
-					<!-- Table Creation -->
-					<table id="item_table" name="item_table" style="width:70%">
-						<tr>
-							<th id='hide_me'></th>
-							<th> Item Name: </th>
-							<th> Item Id: </th>
-							<th> Date to be Pick Up </th>
-						</tr>
-<?php
-					//Start of the FOR loop
-					for($i=0; $i<$array_size; $i++)
-					{
-?>
-						<tr>
-							
-							<!-- Create a checkbox for each item to be selected. Also here we set the item_Backid to the checkbox value -->
-							<td id='hide_me'> <input type="checkbox" id="item_id" name="item_id[]" value="<?= $display_array[$i]['item_Backid'] ?>"> </td>
-							
-							<!-- Displaying the item name and front id to the screen -->
-							<td> <?= $display_array[$i]['inv_name'] ?> </td>
-							<td> <?= $display_array[$i]['item_Frontid'] ?> </td>
-<?php
-							//The following two lines is for formatting reasons. Basically to make the date we get from the database more readable for users
-							$curr_request_date = strtotime($display_array[$i]['request_date']);
-							$curr_request_date = date('M d, Y', $curr_request_date);
-?>
-							<!-- Display the newly formated date -->
-							<td> <?= $curr_request_date ?> </td>
-						</tr>
-<?php
-					}
-?>
-					</table><br />
-					
-					<!-- Comments section for any comments about the transaction or items condition -->
-					<label> Comments </label>
-					<textarea name="comments" id="comments" rows="4" cols="50"></textarea> </br>
-					
-					<!-- Following are inputs that are either hidden or buttons -->
-					<input type="hidden" name="item_to_be_pick_up" id="item_to_be_pick_up"  />  <!-- Hidden input tag keep track of which items are selected to be returned -->
-					<input type="submit" name="Checkout" id="Checkout" value="Checkout" /> &nbsp; <!-- Checkout Button -->
-					<input type="submit" name="cancelReserve" id="cancelReserve" value="Cancel Reserve" /> &nbsp; <!-- Cancel Reserve Button. Which will cancel the Reserve entireally -->
-					<input type="submit" name="cancel" id="cancel" value="Cancel" /> &nbsp; <!-- Plain old Cancel button. Which just take user back to the Homepage. Used mainly for accidentally selecting the wrong customer -->
-				</div>
-			</form>
-			</div>
-		</body>
+		
+		</html>
 <?php
 		$connctn = null;
 	}

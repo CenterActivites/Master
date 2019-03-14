@@ -1,22 +1,10 @@
 <?php
-
-		//                                                     !!!!!!!!!!!!!!!!!!!DO NOT PUSH THIS FILE TO GITHUB!!!!!!!!!!!!!!!!!!!!
-
-
-		//Connecting to the database through a PDO connection. For now DO NOT PUSH THIS FILE TO GITHUB!!! It has SENSITIVE INFORMATION ABOUT THE LOGIN
-
-		$connctn = new PDO("mysql:host=localhost"; $DB, $USER, $PASS, array('charset'=>'utf8'));
-
-		//TODO: Try to get the hsu_conn_sess function to work properly so we just don't have to hard code in the username and password to the database
-
-		/*require_once('hsu_conn_sess.php');
-		$username = $_SESSION['username'];
-		$password = $_SESSION['password'];
-        $connctn = hsu_conn_sess($username, $password);*/
-
-		//Setting the data's character setting we get from the database to utf8 because JSON only works with utf8. Also have to do it too along with the
-		//initial connecting to the database, at the end of the statement.
-		$connctn->query("SET CHARACTER SET utf8");
+		//Connecting to the database through a PDO connection
+		require('/home/centerac/public_html/connect_info.php');
+		require('/home/centerac/public_html/DB.php');
+		error_reporting(E_ERROR | E_PARSE);
+		$usr =  "centerac_" . $username;
+		$connctn = new PDO($DB , $usr, $password, array('charset'=>'utf8'));
 
 		//Grabs the pack_value sent by the AJAX call
 		$pack_value = $_REQUEST['pack_value'];

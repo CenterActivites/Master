@@ -8,30 +8,11 @@
 
 	<link rel="stylesheet" type="text/css" href="../EmployeeSection/empl_css/empl_edit.css"/>
 
-	<script type="text/javascript">
-			function back(){
-				var historyObj = window.history;
-				historyObj.back();
-			}
-	</script>
-
-	<script type="text/javascript">
-	function remove(){
-		if(confirm("You are about to remove a Employee")){
-			return true;
-		}else{
-			return false;
-		}
-	}
-	</script>
-
-
 <?php
 	$empl_id = $_SESSION['empl_id'];
 	
-	$username = strip_tags($_SESSION['username']);  //We grab the username and password the user input and logs the user in with the inputs
-	$password = strip_tags($_SESSION['password']);
-	$conn = hsu_conn_sess($username, $password);
+	//Connecting to the Database
+	$conn = hsu_conn_sess();
 	
 	//Does a select sql statement to grab all transactions that is involved with the selected customer
 	$empl_infor = $conn->prepare("SELECT empl_fname, empl_lname, phone_num, empl_email, access_lvl, title
@@ -96,6 +77,25 @@
 			</fieldset>
 		</form>
 	</div>
+	
+</body>
+
+	<script type="text/javascript">
+			function back(){
+				var historyObj = window.history;
+				historyObj.back();
+			}
+	</script>
+
+	<script type="text/javascript">
+	function remove(){
+		if(confirm("You are about to remove a Employee")){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	</script>
 
 	<script type="text/javascript">
 		$(document).ready(function(){
@@ -104,7 +104,6 @@
 		});
 	</script>
 
-</body>
 </html>
 <?php
 }

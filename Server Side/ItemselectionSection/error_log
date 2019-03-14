@@ -61,3 +61,32 @@ Stack trace:
 [26-Feb-2019 20:34:41 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/centerac/public_html/ItemselectionSection/ExcelPrint.php:10) in /home/centerac/public_html/ItemselectionSection/ExcelPrint.php on line 150
 [26-Feb-2019 20:34:41 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/centerac/public_html/ItemselectionSection/ExcelPrint.php:10) in /home/centerac/public_html/ItemselectionSection/ExcelPrint.php on line 151
 [26-Feb-2019 20:34:41 UTC] PHP Warning:  Cannot modify header information - headers already sent by (output started at /home/centerac/public_html/ItemselectionSection/ExcelPrint.php:10) in /home/centerac/public_html/ItemselectionSection/ExcelPrint.php on line 152
+[28-Feb-2019 20:53:14 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/centerac/public_html/ItemselectionSection/helper.php:89
+Stack trace:
+#0 {main}
+  thrown in /home/centerac/public_html/ItemselectionSection/helper.php on line 89
+[28-Feb-2019 21:00:45 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/centerac/public_html/ItemselectionSection/helper.php:89
+Stack trace:
+#0 {main}
+  thrown in /home/centerac/public_html/ItemselectionSection/helper.php on line 89
+[28-Feb-2019 21:00:55 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/centerac/public_html/ItemselectionSection/helper.php:51
+Stack trace:
+#0 {main}
+  thrown in /home/centerac/public_html/ItemselectionSection/helper.php on line 51
+[28-Feb-2019 21:01:00 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/centerac/public_html/ItemselectionSection/helper.php:89
+Stack trace:
+#0 {main}
+  thrown in /home/centerac/public_html/ItemselectionSection/helper.php on line 89
+[28-Feb-2019 21:01:04 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/centerac/public_html/ItemselectionSection/helper.php:51
+Stack trace:
+#0 {main}
+  thrown in /home/centerac/public_html/ItemselectionSection/helper.php on line 51
+[28-Feb-2019 21:04:41 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/centerac/public_html/ItemselectionSection/helper.php:89
+Stack trace:
+#0 {main}
+  thrown in /home/centerac/public_html/ItemselectionSection/helper.php on line 89
+[28-Feb-2019 21:04:53 UTC] PHP Fatal error:  Uncaught Error: Call to a member function prepare() on null in /home/centerac/public_html/ItemselectionSection/helper.php:89
+Stack trace:
+#0 {main}
+  thrown in /home/centerac/public_html/ItemselectionSection/helper.php on line 89
+[28-Feb-2019 21:07:04 UTC] PHP Parse error:  syntax error, unexpected 'var_dump' (T_STRING), expecting ',' or ';' in /home/centerac/public_html/ItemselectionSection/helper.php on line 87

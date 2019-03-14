@@ -19,10 +19,8 @@
 }
 
 input[type=text]{
-    width:15%;
+    width:50%;
     padding: 12px 20px;
-    margin-right: 20%;
-    margin: 8px 0;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -32,7 +30,8 @@ input[type=text]{
     text-align: center;
     vertical-align:top;
     display: table-cell;
-    margin-right: 60%;
+    margin-right: auto;
+    margin-left: auto;
 }
 
 #search_lable{
@@ -78,10 +77,6 @@ body{
 
 #table_info table , tr td{
     border:1px solid black;
-}
-
-#table_info table{
-   overflow:hidden;
 }
 
 #table_info tbody {
@@ -164,7 +159,7 @@ body{
   box-sizing:content-box;
 }
 
-#search_table {
+#search_table{
 	width:100%;
 	padding-left:auto;
 	padding-right:auto;

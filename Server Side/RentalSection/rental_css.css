@@ -38,7 +38,7 @@ table ,tr td{
 	margin-right:auto;
 }
 
-#finalize,#cancelFinal {
+#finalize,#cancelFinal,#calPay,#cancel{
     background-color: #008000;
     color: white;
     padding: 14px 20px;
@@ -57,6 +57,130 @@ table ,tr td{
     white-space: normal;
 }
 
+#finalize:hover, #cancelFinal:hover, #calPay:hover, #cancel:hover
+{
+	background-color: #006400;
+}
+
 #finalize {
 	margin-left:10px;
 }
+
+#item_selection table, #cart table, tr td{
+    border:1px solid black;
+}
+
+#item_selection tbody{
+    display:block;
+    max-height:400px;
+    overflow-y:scroll;
+	overflow-x:hidden;
+    background: white;
+	width: 100%;
+}
+
+#cart tbody {
+    display:block;
+    max-height:200px;
+    overflow-y:scroll;
+	overflow-x:hidden;
+    background: white;
+	width: 100%;
+}
+#item_selection thead, #cart thead, tbody tr {
+    display:table;
+    width: 100%;
+    table-layout:fixed;
+}
+#item_selection thead, #cart thead{
+    width: 100%;
+    box-sizing:content-box;
+}
+
+#item_selection th, #cart th{
+    font-family: "Times New Roman", Times, serif;
+    padding-top: 12px;
+    width: 100%;
+    padding-bottom: 12px;
+    background-color: #008000;
+    color: #EEE8AA;
+    text-align: center;
+}
+
+#item_selection td, #item_selection th{
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 17px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+ #cart td, #cart th {
+    border: 1px solid #ddd;
+    padding: 3px;
+    text-align: center;
+    font-size: 13px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+#item_selection td {
+    margin:15%;
+}
+
+#cart td {
+    margin:5%;
+}
+
+#item_selection tr:nth-child(even){background-color: #f2f2f2;}
+#item_selection tr:nth-child(odd){background-color: white;}
+
+#item_selection tbody tr:hover {background-color: ddd;}
+
+#cart tr:nth-child(even){background-color: #f2f2f2;}
+#cart tr:nth-child(odd){background-color: white;}
+
+#cart tbody tr:hover {background-color: ddd;}
+
+
+
+#hide_me{
+  display: none;
+}
+
+#search_lable{
+  font-family: "Times New Roman", Times, serif;
+  font-size: 30px;
+}
+
+input[type=text]{
+    width:40%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 20px;
+    text-align: center;
+    vertical-align:top;
+    display: table-cell;
+}
+
+#div_for_package_select{
+	border:none; 
+	float:right;
+	display:inline-block; 
+	vertical-align:top; 
+	overflow:hidden;
+	margin-top:3%;
+}
+
+#pack{
+	font-family: "Times New Roman", Times, serif;
+    font-size: 18px;
+	padding:10px; 
+	margin:-5px -20px -5px -5px;
+}
+
+

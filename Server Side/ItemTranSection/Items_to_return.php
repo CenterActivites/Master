@@ -9,6 +9,90 @@
 			<legend> Item Return </legend>
 			
 			<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+		</head>
+		<body style="text-align: center;">
+<?php
+			//Grabs the selected customer id and set it in SESSION
+			$cust_id = strip_tags($_POST['cust_id']);
+			$_SESSION["cust_id"] = $cust_id;
+			
+			//Connecting to the Database
+			$connctn = hsu_conn_sess();
+			
+			//Does a mysql select to the database to grab item front id, name, back id, and the due date of the item
+			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date
+									FROM Inventory a, Item b, Reserve c, ItemReserve d
+									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rental_id = c.rental_id
+									and c.cust_id = :a");
+			$items->bindValue(':a', $cust_id, PDO::PARAM_INT);
+			$items->execute();
+			$display_array = $items->fetchAll();
+			
+			//Grab the size of the data received from the database
+			$array_size = count($display_array);
+?>
+			<div class="container" style="margin-left:auto;margin-right:auto;width:100%;">
+			<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
+				<div>
+					<!-- Start of Table Creation -->
+					<table id="item_table" name="item_table" style="width:70%; margin-left:auto; margin-right:auto;">
+						<tr>
+							<th id='hide_me'></th>
+							<th> Item Name: </th>
+							<th> Item Id: </th>
+							<th> Due Date: </th>
+						</tr>
+<?php
+					//Start of the FOR loop that will loop through all the data received from the database
+					for($i=0; $i<$array_size; $i++)
+					{
+?>
+						<!-- Display the item name and front id to the screen -->
+						<tr>
+							<!-- Create a checkbox for each item and sets the item_Backid to the checkbox's value -->
+							<td id="hide_me"> <input type="checkbox" id="item_id" name="item_id[]" value="<?= $display_array[$i]['item_Backid'] ?>"></td>
+							<td> <?= $display_array[$i]['inv_name'] ?> </td>
+							<td> <?= $display_array[$i]['item_Frontid'] ?> </td>
+<?php
+							//Format the due date into a more readable format for the users
+							$curr_due_date = strtotime($display_array[$i]['due_date']);
+							$curr_due_date = date('M d, Y', $curr_due_date);
+							
+							//Does a check to see if the due_date received from the database is past the current date
+							//If so then that mean the item is due to be returned and will be label "Late" 
+							if(strtotime($display_array[$i]['due_date']) < strtotime(date('Y-m-d')))
+							{
+?>
+								<td> <?= $curr_due_date ?> &nbsp;&nbsp; LATE </td>
+<?php
+							}
+							else
+							{
+?>
+								<td> <?= $curr_due_date ?> </td>
+<?php								
+							}
+?>
+						</tr>
+<?php
+					}
+?>
+					</table><br />
+					
+					<!-- Comments section for any comments about item conditions or anything at all -->
+					<label> Comments: </label>
+					<textarea name="comments" id="comments" rows="4" cols="50"></textarea> </br>
+					
+					<!-- Following are 1 hidden input and 2 input buttons -->
+					<input type="hidden" name="item_to_be_return" id="item_to_be_return"  />  <!-- Hidden input tag keep track of which items are selected to be returned -->
+					<input type="submit" name="Checkin" id="Checkin" value="Checkin" /> &nbsp;
+					<input type="submit" name="cancel" id="cancel" value="Cancel" /><br />
+				</div>
+			</form>
+			</div>
+		</body>
+			
+			<!-- Javascript Starts here -->
 			<script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
 			<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
 			<script type="text/javascript">
@@ -81,90 +165,7 @@
 				});
 			</script>
 			
-		</head>
-		<body>
-<?php
-			//Grabs the selected customer id and set it in SESSION
-			$cust_id = strip_tags($_POST['cust_id']);
-			$_SESSION["cust_id"] = $cust_id;
-			
-			//Connects to the database
-			$username = $_SESSION['username'];
-			$password = $_SESSION['password'];
-			$connctn = hsu_conn_sess($username, $password);
-			
-			//Does a mysql select to the database to grab item front id, name, back id, and the due date of the item
-			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date
-									FROM Inventory a, Item b, Reserve c, ItemReserve d
-									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rental_id = c.rental_id
-									and c.cust_id = :a");
-			$items->bindValue(':a', $cust_id, PDO::PARAM_INT);
-			$items->execute();
-			$display_array = $items->fetchAll();
-			
-			//Grab the size of the data received from the database
-			$array_size = count($display_array);
-?>
-			<div class="container" style="margin-left:auto;margin-right:auto;width:100%;">
-			<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
-				<div>
-					<!-- Start of Table Creation -->
-					<table id="item_table" name="item_table" style="width:70%">
-						<tr>
-							<th id='hide_me'></th>
-							<th> Item Name: </th>
-							<th> Item Id: </th>
-							<th> Due Date: </th>
-						</tr>
-<?php
-					//Start of the FOR loop that will loop through all the data received from the database
-					for($i=0; $i<$array_size; $i++)
-					{
-?>
-						<!-- Display the item name and front id to the screen -->
-						<tr>
-							<!-- Create a checkbox for each item and sets the item_Backid to the checkbox's value -->
-							<td id="hide_me"> <input type="checkbox" id="item_id" name="item_id[]" value="<?= $display_array[$i]['item_Backid'] ?>"></td>
-							<td> <?= $display_array[$i]['inv_name'] ?> </td>
-							<td> <?= $display_array[$i]['item_Frontid'] ?> </td>
-<?php
-							//Format the due date into a more readable format for the users
-							$curr_due_date = strtotime($display_array[$i]['due_date']);
-							$curr_due_date = date('M d, Y', $curr_due_date);
-							
-							//Does a check to see if the due_date received from the database is past the current date
-							//If so then that mean the item is due to be returned and will be label "Late" 
-							if(strtotime($display_array[$i]['due_date']) < strtotime(date('Y-m-d')))
-							{
-?>
-								<td> <?= $curr_due_date ?> &nbsp;&nbsp; LATE </td>
-<?php
-							}
-							else
-							{
-?>
-								<td> <?= $curr_due_date ?> </td>
-<?php								
-							}
-?>
-						</tr>
-<?php
-					}
-?>
-					</table><br />
-					
-					<!-- Comments section for any comments about item conditions or anything at all -->
-					<label> Comments: </label>
-					<textarea name="comments" id="comments" rows="4" cols="50"></textarea> </br>
-					
-					<!-- Following are 1 hidden input and 2 input buttons -->
-					<input type="hidden" name="item_to_be_return" id="item_to_be_return"  />  <!-- Hidden input tag keep track of which items are selected to be returned -->
-					<input type="submit" name="Checkin" id="Checkin" value="Checkin" /> &nbsp;
-					<input type="submit" name="cancel" id="cancel" value="Cancel" /><br />
-				</div>
-			</form>
-			</div>
-		</body>
+		</html>
 <?php
 		$connctn = null;
 	}

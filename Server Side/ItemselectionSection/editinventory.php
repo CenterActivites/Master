@@ -1,9 +1,8 @@
 <?php
-  function editinventory(){
-
-    $username = $_SESSION['username'];
-    $password = $_SESSION['password'];
-    $conn = hsu_conn_sess($username, $password);
+  function editinventory()
+  {
+	//Connecting to the Database
+	$conn = hsu_conn_sess();
 
     $inv_id = strip_tags($_POST["inv_id"]);
 ?>
@@ -12,19 +11,6 @@
   <head>
 
     <link rel="stylesheet" type="text/css" href="../ItemselectionSection/item_css/edit_inv.css"/>
-
-    <script type="text/javascript">
-    //creates an inv_id input object and appends the current inv_id value passed from the $_POST array
-      $(function(){
-        $('<input>').attr({
-          type: 'hidden',
-          id:'inv_id',
-          name: 'inv_id'
-        }).appendTo('#inv_edit');
-        var hold_this = "<?php echo $inv_id?>";
-        $("#inv_id").val(hold_this);
-      });
-    </script>
 
   </head>
   <body>
@@ -113,6 +99,21 @@ foreach($conn->query("SELECT inv_name, cat_id, stu_day_price, day_price, stu_wee
     </div>
   </div>
 
+  </body>
+
+    <script type="text/javascript">
+    //creates an inv_id input object and appends the current inv_id value passed from the $_POST array
+      $(function(){
+        $('<input>').attr({
+          type: 'hidden',
+          id:'inv_id',
+          name: 'inv_id'
+        }).appendTo('#inv_edit');
+        var hold_this = "<?php echo $inv_id?>";
+        $("#inv_id").val(hold_this);
+      });
+    </script>
+	
     <script type="text/javascript">
     //fucntion meant to warn the user that they are going to delete an item from  the database
       function remove(){
@@ -132,10 +133,7 @@ foreach($conn->query("SELECT inv_name, cat_id, stu_day_price, day_price, stu_wee
       $("#cat_select").val(curr_cat);
       });
     </script>
-
-
-  </body>
-
+	
 </html>
 
 

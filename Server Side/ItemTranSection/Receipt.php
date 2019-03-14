@@ -33,8 +33,6 @@
 					}
 				</style>
 				
-				
-				
 				<!-- Printing script for the print receipt button -->
 				<script type="text/javascript">
 					function myFunction() 
@@ -47,16 +45,12 @@
 			
 			<body>
 <?php
-				//Connection to the database
-				$username = $_SESSION["username"];
-				$password = $_SESSION["password"];
-				$conn = hsu_conn_sess($username, $password);
-				
+				//Connecting to the Database
+				$conn = hsu_conn_sess();
+			
 				//Formating current, request, and due dates into more readable format for user. More readable format: EX. January 18, 2019 11:21am. 
 				//Current date is the only one with time in it.
-				$curr_date_and_time = date("F j, Y  g:ia"); 
-				$request_date = date("F j, Y", strtotime($_SESSION['request_date']));
-				$due_date = date("F j, Y", strtotime($_SESSION['due_date']));
+				$curr_date_and_time = date("F j, Y  g:ia");
 				
 				//Check whether the receipt needs to be a Rental or Return tranaction
 				if(isset($_POST["Checkin"]))
@@ -157,17 +151,16 @@
 				{
 					//Rental tranaction receipt
 					
+					//Formating both the request and due dates to be more readable for users
+					$request_date = date("F j, Y", strtotime($_SESSION['request_date']));
+					$due_date = date("F j, Y", strtotime($_SESSION['due_date']));
+					
 					//Grabbing the array of items that are being rented out along with the total calculated price and each item price
-					$items_to_rent = $_SESSION['array_of_items'];
 					$total_price = $_SESSION['total_price'];
 					$receipt_prices = $_SESSION['receipt_prices'];
+					$tax_amount = $_POST['tax_amount'];
+					$total_price_with_tax = $_POST['total_price_with_tax'];;
 					
-					//Grabbing the tax rate that was entered if at all by the user. Default value is 8.5%
-					$tax_rate = htmlspecialchars(strip_tags($_POST["tax_input"]));
-					
-					//Do the calculations for the tax amount and the total price with taxs
-					$tax_amount = (int)$total_price * ((float)$tax_rate / 100);
-					$total_price_with_tax = (float)$total_price + (float)$tax_amount;
 ?>
 					<!-- Styling and structure are basically the same as the return tranaction receipt -->
 					<div class="container" id="section_to_print">
@@ -215,19 +208,13 @@
 										</thead>
 										<tbody>
 <?php
-											for($i = 0; $i < count($items_to_rent); $i++)
+											foreach($receipt_prices as $receipt_items)
 											{
-												$item_query = $conn->prepare("SELECT item_Frontid, inv_name
-																				FROM Inventory a, Item b
-																				WHERE a.inv_id = b.inv_id and b.item_Backid = :a");
-												$item_query->bindValue(':a', $items_to_rent[$i], PDO::PARAM_INT);
-												$item_query->execute();
-												$item_display = $item_query->fetchAll();
 ?>
 												<tr>
-													<td class="col-md-6"><em> <?= $item_display[0]['inv_name'] ?> </em></h4></td>
-													<td class="col-md-1 text-center"> <?= $item_display[0]['item_Frontid'] ?> </td>
-													<td class="col-md-1 text-center"> $<?= $receipt_prices[$i] ?> </td>
+													<td class="col-md-6"><em> <?= $receipt_items['name'] ?> </em></h4></td>
+													<td class="col-md-1 text-center"> <?= $receipt_items['id'] ?> </td>
+													<td class="col-md-1 text-center"> $<?= $receipt_items['price'] ?> </td>
 													<td></td>
 												</tr>
 <?php
@@ -248,14 +235,14 @@
 														<strong>$<?= $total_price ?></strong>
 													</p>
 													<p>
-														<strong>$<?= round($tax_amount, 2) ?></strong>
+														<strong>$<?= $tax_amount ?></strong>
 													</p>
 												</td>
 											</tr>
 											<tr>
 												<td></td>
 												<td class="text-right"><h4><strong>Total:</strong></h4></td>
-												<td class="text-center text-danger"><h4><strong>$<?= round($total_price_with_tax, 2) ?></strong></h4></td>
+												<td class="text-center text-danger"><h4><strong>$<?= $total_price_with_tax ?></strong></h4></td>
 											</tr>
 										</tbody>
 									</table>

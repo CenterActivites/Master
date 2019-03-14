@@ -24,8 +24,19 @@ tbody {
 }
 
 #cust_table_info tbody {
+	display:block;
+    max-height:400px;
     overflow-y:scroll;
 	overflow-x:hidden;
+    background: white;
+}
+
+#cust_table_info_pick tbody, #cust_table_info_late tbody {
+	display:block;
+    max-height:200px;
+    overflow-y:scroll;
+	overflow-x:hidden;
+    background: white;
 }
 
 thead, tbody tr {
@@ -100,7 +111,7 @@ table {
 }
 
 
-#select,#custInfo,#rent,#newCust,#mainmenu,#viewReceipt,#backOnCustTran, #on_to_rental {
+#select,#custInfo,#rent,#newCust,#mainmenu,#viewReceipt,#backOnCustTran,#on_to_rental {
     background-color: #008000;
     color: white;
     padding: 14px 20px;

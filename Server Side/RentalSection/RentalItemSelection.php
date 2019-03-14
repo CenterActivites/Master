@@ -24,9 +24,7 @@
     <div style="text-align:center;"> 
 <?php
 		//PDO Connection to the Databse
-        $username = $_SESSION['username'];
-		$password = $_SESSION['password'];
-        $conn = hsu_conn_sess($username, $password);
+        $conn = hsu_conn_sess();
 		
 		//Grabs the selected customer and their request dates for the rental
 		$sel_cust = $_SESSION['sel_user'];
@@ -215,7 +213,7 @@
 					</tbody>
 				</table>
 			</div>
-				
+		
 			</br>
 			</br>
 			</br>

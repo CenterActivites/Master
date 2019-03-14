@@ -2,46 +2,14 @@
 //this page handles inventory enteries
 	function AddInventory()
 	{
-		$username = strip_tags($_SESSION['username']);  //We grab the username and password the user input and logs the user in with the inputs
-		$password = strip_tags($_SESSION['password']);
-		$conn = hsu_conn_sess($username, $password);
+		//Connecting to the Database
+		$conn = hsu_conn_sess();
 ?>
 <html>
 <head>
+
 	<link rel="stylesheet" type="text/css" href="../ItemselectionSection/item_css/add_item.css"/>
-	<script type="text/javascript">
-	// Makes an input object for category
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'cat_id',
-				name: 'cat_id'
-			}).appendTo('#inv_input');
-		});
-	</script>
-
-	<script type="text/javascript">
-	//grabs the value of category and appends it to cat_id object when the page loads
-		$(document).ready(function(){
-			$('#category').ready(function(){
-				var ven_id = $('#category').val();
-				$("#cat_id").val(ven_id);
-			});
-		});
-	</script>
-
-
-	<script type="text/javascript">
-	//grabs the value of category and appends it to cat_id object when a click action happens
-		$(document).ready(function(){
-			$('#category').click(function(){
-				var ven_id = $('#category').val();
-				$("#cat_id").val(ven_id);
-			});
-		});
-	</script>
-
-
+	
 </head>
 
 <body>
@@ -85,8 +53,40 @@
 				</fieldset>
     </div>
 </body>
-</html>
 
+	<script type="text/javascript">
+	// Makes an input object for category
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'cat_id',
+				name: 'cat_id'
+			}).appendTo('#inv_input');
+		});
+	</script>
+
+	<script type="text/javascript">
+	//grabs the value of category and appends it to cat_id object when the page loads
+		$(document).ready(function(){
+			$('#category').ready(function(){
+				var ven_id = $('#category').val();
+				$("#cat_id").val(ven_id);
+			});
+		});
+	</script>
+
+
+	<script type="text/javascript">
+	//grabs the value of category and appends it to cat_id object when a click action happens
+		$(document).ready(function(){
+			$('#category').click(function(){
+				var ven_id = $('#category').val();
+				$("#cat_id").val(ven_id);
+			});
+		});
+	</script>
+	
+</html>
 
 <?php
 	// ends connnection to database

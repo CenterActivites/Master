@@ -7,38 +7,11 @@
 
 	<link rel="stylesheet" type="text/css" href="../RentalSection/rental_css.css"/>
 	
-	<!-- Little script to dynamically change the total price with tax output according to whatever the user enters in as the tax amount -->
-	<script type="text/javascript">
-		$(document).ready(function(){
-			//When the tax input changes, indicating that the user have inputed a new tax rate
-			$("#tax_input").on("input", function() {
-				//Grab the subtotal price of the rental
-				subtotal_price = $('#subtotalCost').val();
-				
-				//Calculate the tax amount with the new tax rate
-				tax_amount = subtotal_price * (this.value / 100);
-				
-				//Make sure the new tax amount is 2 decimals long
-				tax_amount = tax_amount.toFixed(2);
-				
-				//Add subtotal price with new tax amount
-				total_price_with_tax = parseFloat(subtotal_price) + parseFloat(tax_amount);
-				
-				//And set the values to the output "totalCost" for viewing purposes and to the hidden inputs for receipt purposes
-				$('#totalCost').val(total_price_with_tax);
-				$('#total_price_with_tax').val(total_price_with_tax);
-				$('#tax_amount').val(parseFloat(tax_amount));
-			});
-		});
-	</script>
-
 </head>
 <body>
 <?php
-	//setting up the mysql connection
-	$username = $_SESSION['username']; 
-	$password = $_SESSION['password'];
-	$conn = hsu_conn_sess($username, $password);       
+	//PDO Connection to the Databse
+    $conn = hsu_conn_sess();
 	
 	//grabbing the customer's id and the item/items id they picked to rent
 	$sel_cust = $_SESSION['sel_user'];
@@ -457,6 +430,32 @@
 	</form>
 		</div>
 </body>
+
+	<!-- Little script to dynamically change the total price with tax output according to whatever the user enters in as the tax amount -->
+	<script type="text/javascript">
+		$(document).ready(function(){
+			//When the tax input changes, indicating that the user have inputed a new tax rate
+			$("#tax_input").on("input", function() {
+				//Grab the subtotal price of the rental
+				subtotal_price = $('#subtotalCost').val();
+				
+				//Calculate the tax amount with the new tax rate
+				tax_amount = subtotal_price * (this.value / 100);
+				
+				//Make sure the new tax amount is 2 decimals long
+				tax_amount = tax_amount.toFixed(2);
+				
+				//Add subtotal price with new tax amount
+				total_price_with_tax = parseFloat(subtotal_price) + parseFloat(tax_amount);
+				
+				//And set the values to the output "totalCost" for viewing purposes and to the hidden inputs for receipt purposes
+				$('#totalCost').val(total_price_with_tax);
+				$('#total_price_with_tax').val(total_price_with_tax);
+				$('#tax_amount').val(parseFloat(tax_amount));
+			});
+		});
+	</script>
+
 </html>
 
 

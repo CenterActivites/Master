@@ -1,4 +1,4 @@
-#first_name_feild,#stu_stat_field,#stu_id_field,#email_field{
+#first_name_feild,#empl_stat_field,#stu_id_field,#email_field{
   float: left;
   width: 35%;
   font-family: "Times New Roman", Times, serif;
@@ -7,7 +7,7 @@
 }
 
 
-#last_name_field,#empl_stat_field,#phone_num_field,#emerg_contact_field{
+#last_name_field,#driver_id_field,#phone_num_field,#street_address{
   float: right;
   width: 35%;
   font-family: "Times New Roman", Times, serif;
@@ -15,10 +15,25 @@
   margin-bottom: 2%;
 }
 
+#city {
+	float:left;
+	width:33%;
+}
+#zip {
+	float:left;
+	width:33%;
+}
+#state {
+	float:left;
+	width:33%;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+
 #updateCust,#removeCust,#cancelOnEditCust {
     width: 9%;
     background-color: #008000;
-    color: white;
     padding:5px;
     margin: 2px 0;
     border: none;
@@ -43,6 +58,10 @@ input[type=text], select,input[type=date] {
     text-align: center;
     word-wrap: break-word;
     white-space: normal;
+}
+
+#cust_city, #cust_stat, #cust_zip{
+    width:55%;
 }
 
 fieldset{

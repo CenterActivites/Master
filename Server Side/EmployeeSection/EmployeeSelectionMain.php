@@ -6,8 +6,79 @@
 ?>
 <html>
 <head>
+
 	<link rel="stylesheet" type="text/css" href="../EmployeeSection/empl_css/empl_selection.css"/>
 	
+</head>
+<body>
+	<div id="pageHeader" style="font-size: 35px; text-align: center;"> Employee List </div>
+<div>
+<?php
+		//Connecting to the Database
+		$conn = hsu_conn_sess();
+ ?>
+		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id='button' >
+			<fieldset style="border:none">
+				<div id='table_div'>
+					<!-- Customer table creation starts here -->
+					<table id='empl_table_info'>
+						<thead>
+							<!-- Labels for each column  -->
+							<tr>
+								<!-- The hidden column for the hidden radio buttons for the selection purposes since tables don't really have selecting capabilities -->
+								<th id='hide_me'></th>
+								<th>First Name</th>
+								<th>Last Name</th>
+								<th>Email</th>
+								<th>Phone Number</th>
+							</tr>
+						</thead>
+						<!-- The body of the table. Basically where all the customer's information is going to be -->
+						<tbody>
+<?php
+							//The Customer Section 
+							
+							//MYSQL select. Grab all customers in the data with the following information about them
+							//Their id, first and last name, phone number, and email
+							foreach($conn->query("SELECT empl_id, empl_fname, empl_lname, phone_num, empl_email
+													FROM Employee
+													ORDER BY empl_lname, empl_fname") as $row)
+							{
+								$curr_f_name = $row["empl_fname"]; //each row is a object that has a f_name, l_name, and a cust_id
+								$curr_l_name = $row["empl_lname"];
+								$curr_cust_id = $row["empl_id"];
+								$curr_c_email = $row["empl_email"];
+								$curr_c_phone =$row["phone_num"];
+?>
+								<!-- Placing the data into their correct columns -->
+								<tr>
+									<!-- Since tables really doesn't have a select capabilities to it, We just add a hidden radio button that will allow us to see which customer have been selected -->
+									<td id = "hide_me"><input id ="radio_in" type="radio"  name="empl_id" value = "<?= $curr_cust_id ?>"/></td>
+									<td><?= $curr_f_name ?></td>
+									<td><?= $curr_l_name ?></td>
+									<td><?= $curr_c_email ?></td>
+									<td><?= $curr_c_phone ?></td>
+								</tr>
+<?php
+							}
+?>
+						</tbody>
+					</table>
+				</div>
+			</fieldset>
+			
+			<fieldset style="border:none;">
+				<!-- The Search bar -->
+				<label id='search_lable'>Search:</label> <input type = "text" name = "searchCust" id = "searchCust" placeholder="Search for names..." /> <br/>   <!-- Search bar -->
+				</br>
+				</br>
+				<input type="submit" name="emplInfo" id="emplInfo" value="Employee Information" onclick="return is_blank()"/> &nbsp; &nbsp;
+				<input type="submit" name="newEmpl" id="newEmpl" value="New Employee" />
+			</fieldset>
+		</form>
+</div>
+</body>
+
 	<!-- JavaScript Starts here -->
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
 	<script type="text/javascript" src="jquery.quicksearch.js"></script>  <!-- Plugin for the item Search function -->
@@ -75,77 +146,6 @@
 		});
 	</script>
 	
-</head>
-<body>
-	<div id="pageHeader" style="font-size: 35px; text-align: center;"> Employee List </div>
-<div>
-<?php
-		//Using the username and password that was entered in the login page to connect to the database
-        $username = $_SESSION['username']; 
-		$password = $_SESSION['password'];
-        $conn = hsu_conn_sess($username, $password);
- ?>
-		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id='button' >
-			<fieldset style="border:none">
-				<div id='table_div'>
-					<!-- Customer table creation starts here -->
-					<table id='empl_table_info'>
-						<thead>
-							<!-- Labels for each column  -->
-							<tr>
-								<!-- The hidden column for the hidden radio buttons for the selection purposes since tables don't really have selecting capabilities -->
-								<th id='hide_me'></th>
-								<th>First Name</th>
-								<th>Last Name</th>
-								<th>Email</th>
-								<th>Phone Number</th>
-							</tr>
-						</thead>
-						<!-- The body of the table. Basically where all the customer's information is going to be -->
-						<tbody>
-<?php
-							//The Customer Section 
-							
-							//MYSQL select. Grab all customers in the data with the following information about them
-							//Their id, first and last name, phone number, and email
-							foreach($conn->query("SELECT empl_id, empl_fname, empl_lname, phone_num, empl_email
-													FROM Employee
-													ORDER BY empl_lname, empl_fname") as $row)
-							{
-								$curr_f_name = $row["empl_fname"]; //each row is a object that has a f_name, l_name, and a cust_id
-								$curr_l_name = $row["empl_lname"];
-								$curr_cust_id = $row["empl_id"];
-								$curr_c_email = $row["empl_email"];
-								$curr_c_phone =$row["phone_num"];
-?>
-								<!-- Placing the data into their correct columns -->
-								<tr>
-									<!-- Since tables really doesn't have a select capabilities to it, We just add a hidden radio button that will allow us to see which customer have been selected -->
-									<td id = "hide_me"><input id ="radio_in" type="radio"  name="empl_id" value = "<?= $curr_cust_id ?>"/></td>
-									<td><?= $curr_f_name ?></td>
-									<td><?= $curr_l_name ?></td>
-									<td><?= $curr_c_email ?></td>
-									<td><?= $curr_c_phone ?></td>
-								</tr>
-<?php
-							}
-?>
-						</tbody>
-					</table>
-				</div>
-			</fieldset>
-			
-			<fieldset style="border:none;">
-				<!-- The Search bar -->
-				<label id='search_lable'>Search:</label> <input type = "text" name = "searchCust" id = "searchCust" placeholder="Search for names..." /> <br/>   <!-- Search bar -->
-				</br>
-				</br>
-				<input type="submit" name="emplInfo" id="emplInfo" value="Employee Information" onclick="return is_blank()"/> &nbsp; &nbsp;
-				<input type="submit" name="newEmpl" id="newEmpl" value="New Employee" />
-			</fieldset>
-		</form>
-</div>
-</body>
 </html>
 
 

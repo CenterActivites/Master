@@ -16,7 +16,7 @@ input[type=text], select {
 	word-wrap: break-word;
 }
 
-#email{
+#email, #pass{
 	width:60%;
 }
 

@@ -40,14 +40,11 @@
 	require_once('hsu_conn_sess.php');
 	require_once('HomePage.php');
     require_once('Login.php');
-	require_once('NavBar.php'); //added the require for main menu back up here because as long everything is in the
-			                      //php function nothing unwanted html will show on the correct page
-    require_once('/home/centerac/public_html/VendorSection/MainVendor.php');  //Since the files are under a subdirectory, the require_once
-				                                                                  //statement have to look like this
+	require_once('NavBar.php'); //added the require for main menu back up here because as long everything is in the php function nothing unwanted html will show on the correct page
+    require_once('/home/centerac/public_html/VendorSection/MainVendor.php');  //Since the files are under a subdirectory, the require_once statement have to look like this
 	require_once('/home/centerac/public_html/VendorSection/AddVendor.php');
 	require_once('/home/centerac/public_html/VendorSection/EditVendor.php');
 	require_once('/home/centerac/public_html/VendorSection/VendorInfo.php');
-	//require_once('/home/centerac/public_html/VendorSection/addvendor-posthandler.php');
 	require_once('/home/centerac/public_html/ItemTranSection/Items_to_pick_up.php');
 	require_once('/home/centerac/public_html/ItemTranSection/Items_to_return.php');
 	require_once('/home/centerac/public_html/ItemTranSection/Receipt.php');
@@ -89,15 +86,10 @@
 		$empl_user = htmlspecialchars($_POST["username"]);	//We grab the username and password the user input and logs the user in with the inputs
 		$empl_pass = htmlspecialchars($_POST["password"]);
 
-		//We grab the username and password the user input and logs the user in with the inputs
-		//PDO Connection to the Database
-		$_SESSION['username'] = $username;
-		$_SESSION['password'] = $password;
-		
 		$_SESSION['empl_user'] = $empl_user;
 		$_SESSION['empl_pass'] = $empl_pass;
 		
-		$conn = hsu_conn_sess($username, $password); //Here we call the function 'hsu_conn_sess' which will does the connection to nrs-projects
+		$conn = hsu_conn_sess(); //Here we call the function 'hsu_conn_sess' which will does the connection to nrs-projects
 
 		NavBar();
 ?>
@@ -175,9 +167,7 @@
 					//removal of post handler from files is needed
 					//this is an input of vendors into the Database
 					//make a connection to database
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					$conn = hsu_conn_sess();
 					
 					//set variables to the values input by user
 					$new_ven_name = htmlspecialchars(strip_tags($_POST["venName"]));
@@ -210,11 +200,7 @@
 				}
 				elseif (isset($_POST['updateVen']))
 				{
-
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					
-					$conn = hsu_conn_sess($username, $password);
+					$conn = hsu_conn_sess();
 
 					$new_ven_name = htmlspecialchars(strip_tags($_POST["ven_name_edit"]));
 					$new_ven_phone = htmlspecialchars(strip_tags($_POST["ven_phone_edit"]));
@@ -245,9 +231,7 @@
 				}
 				elseif (isset($_POST["removeVen"]))
 				{
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					$conn = hsu_conn_sess();
 					$ven_id = $_SESSION['ven_id'];
 
 					$remove = $conn -> prepare("DELETE FROM Vendor
@@ -349,10 +333,8 @@
 				}
 				elseif(isset($_POST["Checkout"])) //Once the user is done selecting the item the customer is picking today, this button "Checkout" will push the user
 				{
-					//Create the connection to the database
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 					
 					//Grabbing the comments about the items the user entered when doing the item return
 					$comments = strip_tags($_POST['comments']);
@@ -515,10 +497,8 @@
 				elseif(isset($_POST["Checkin"])) //Once the user is done selecting the item they are returning today, this button "Checkin" will push the user
 												//to the finally page of the item return page which is the Receipt page
 				{
-					//Create the connection to the database
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 					
 					//Grabbing the comments about the items the user entered when doing the item return
 					$comments = strip_tags($_POST['comments']);
@@ -715,9 +695,8 @@
 				}
 				elseif(isset($_POST["removeItem"])) //The remove item button on the edit item view
 				{
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 
 					$item_id = htmlspecialchars(strip_tags($_POST["item_Backid"]));
 
@@ -738,9 +717,8 @@
 				}
 				else if(isset($_POST["removeInv"]))
 				{
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 
 					$inv_id = htmlspecialchars(strip_tags($_POST["inv_id"]));
 
@@ -756,9 +734,8 @@
 				}
 				else if(isset($_POST["updateInv"]))
 				{
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 
 					$inv_id = htmlspecialchars(strip_tags($_POST["inv_id"]));
 					$inv_name = htmlspecialchars(strip_tags($_POST["curr_inv_name"]));
@@ -790,9 +767,8 @@
 				}
 				elseif(isset($_POST["updateItem"])) //Here for the update button on the edit item view
 				{
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 
 					$item_backid = htmlspecialchars(strip_tags($_POST["item_Backid"]));
 					$item_frontid = htmlspecialchars(strip_tags($_POST["curr_item_Frontid"]));
@@ -841,9 +817,8 @@
 				}
 				elseif(isset($_POST["add"]))
 				{
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 
 					$new_inv_name = htmlspecialchars(strip_tags($_POST["new_inv_name"]));
 					$new_cat = (int)htmlspecialchars(strip_tags($_POST["cat_id"]));
@@ -867,9 +842,8 @@
 				}
 				elseif (isset($_POST["add2"]))
 				{
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 
 					$inv_id = (int)htmlspecialchars(strip_tags($_POST["inv_id"]));
 					$front_id = htmlspecialchars(strip_tags($_POST["new_front_id"]));
@@ -934,8 +908,7 @@
 <?php
 		}
     }
-	
-	
+
 	
 
 	//======================================================================
@@ -1006,9 +979,8 @@
 				}
 				elseif(isset($_POST["removeCust"])) //The remove customer button on the edit customer view
 				{
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 					$cust_id = strip_tags($_POST['cust_id']);
 
 					$delete = $conn ->prepare("DELETE FROM Customer
@@ -1021,9 +993,8 @@
 				}
 				elseif(isset($_POST["updateCust"])) //Here for the update button on the edit customer view
 				{
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 					$cust_id = (int)strip_tags($_POST['cust_id']);
 					$cust_fname = strip_tags($_POST['cust_fname']);
 					$cust_lname = strip_tags($_POST['cust_lname']);
@@ -1110,10 +1081,8 @@
 				}
 				elseif(isset($_POST["Addcust"]))
 				{
-					//make a connection to database
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 					
 					//set variables to the values input by user
 					$new_custName = htmlspecialchars(strip_tags($_POST["cust_name"]));
@@ -1163,7 +1132,6 @@
 				
 				
 				
-				
 				//======================================================================
 				//Rental Section
 				//======================================================================
@@ -1174,10 +1142,8 @@
 				}
 				elseif(isset($_POST["finalize"])) //Finalize button. Pushes users to the receipt for printing purposes.
 				{
-				   //PDO connection to the database
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 
 					//Grabbing the cust_id
 					$cust_id = $_SESSION['sel_user'];
@@ -1367,10 +1333,8 @@
 				}
 				elseif(isset($_POST["calPay"])) //Continue to Payments button. Pushes users to the CalculatePayments page.
 				{
-				   //PDO connection to the database
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 
 					//grabbing the array of item ids
 					$select_item = htmlspecialchars(strip_tags($_POST["item_array"]));
@@ -1469,9 +1433,8 @@
 				}
 				elseif(isset($_POST["removeEmpl"])) //The remove customer button on the edit customer view
 				{
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 					$empl_id = $_SESSION['empl_id'];
 
 					$delete = $conn ->prepare("DELETE FROM Employee
@@ -1484,9 +1447,8 @@
 				}
 				elseif(isset($_POST["updateEmpl"])) //Here for the update button on the edit customer view
 				{
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 					$empl_id = $_SESSION['empl_id'];
 					$empl_fname = strip_tags($_POST['empl_fname']);
 					$empl_lname = strip_tags($_POST['empl_lname']);
@@ -1529,10 +1491,8 @@
 				}
 				elseif(isset($_POST["Addempl"]))
 				{
-					//make a connection to database
-					$username = $_SESSION['username'];
-					$password = $_SESSION['password'];
-					$conn = hsu_conn_sess($username, $password);
+					//Connecting to the Database
+					$conn = hsu_conn_sess();
 					
 					//set variables to the values input by user
 					$new_emplName = htmlspecialchars(strip_tags($_POST["empl_name"]));

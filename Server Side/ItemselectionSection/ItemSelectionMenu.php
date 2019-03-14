@@ -1,13 +1,246 @@
 <?php
 	function Itemselection()
 	{
-		$username = $_SESSION['username'];
-		$password = $_SESSION['password'];
-		$conn = hsu_conn_sess($username, $password);
+		//Connecting to the Database
+		$conn = hsu_conn_sess();
 ?>
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="../ItemselectionSection/item_css/item_selection.css"/>
+	
+
+<?php
+	//Access level view check. Only users who have level 3 and 4 can add new Inventory includes new prices.
+	//Level 2 and up can only add new items
+	$lvl_access = strip_tags($_SESSION['lvl_access']);
+	if($lvl_access == "4" || $lvl_access == "3")
+	{
+		$lvl_3 = "type = 'submit'";
+		$disabled_3="";
+	}
+	else
+	{
+		$lvl_3 = "type = 'hidden'";
+		$disabled_3="disabled";
+	}
+	
+	if($lvl_access == "4" || $lvl_access == "3" || $lvl_access == "2")
+	{
+		$lvl_2 = "type = 'submit'";	
+		$disabled_2="";
+	}
+	else
+	{
+		$lvl_2 = "type = 'hidden'";
+		$disabled_2="disabled";
+	}
+?>
+
+</head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<body>
+  <div id="main_div">
+   <div id="form_div">
+		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="inv">
+			<fieldset id="form_feildset">
+				<legend style="font-size: 35px; text-align:center;"> Select An Item </legend>
+				<fieldset id='fieldset_label'>
+					<label id='header_for_table'>Item Selection</label>
+				</fieldset>
+			</br>
+				<div id="table_div" >
+
+					<table id="table_info" class = "fixed" >
+						<thead>
+							<tr>
+								<th id = "hide_me"> </th>
+								<th id ="th_front">Item Id</th>
+								<th>Item Size</th>
+								<th>Model</th>
+								<th>Item Name</th>
+								<th>Public Use</th>
+								<th>Status</th>
+								<th>Usage</th>
+							</tr>
+						</thead>
+						<tbody id='empty'>
+<?php
+							//query for item information
+							foreach($conn->query("SELECT item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
+													FROM Item A, Inventory B, Category C, Status D
+													WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id
+													ORDER BY inv_name, item_modeltype") as $row)
+							{
+								$curr_item_backid = $row["item_Backid"];
+								$curr_item_size = $row["item_size"];
+								$curr_inv_name = $row["inv_name"];
+								$curr_item_name = $row["item_modeltype"];
+								$curr_item_frontid = $row["item_Frontid"];
+								$curr_pub_use = $row["public"];
+								$curr_stat_info = $row["stat_name"];
+
+								$item_backid = (int)$curr_item_backid;
+								
+								$number_of_use = $conn->prepare("select count(itemtran_id)
+																	from Item A, Transaction B, ItemTran C
+																	where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+								$number_of_use->bindValue(':a', $item_backid, PDO::PARAM_INT);
+								$number_of_use->execute();
+								$number_of_use = $number_of_use->fetchAll();
+								
+								$curr_number_of_use = $number_of_use[0][0];
+								
+								if($curr_pub_use == "1"){
+									$curr_pub_use = "Yes";
+								}
+								else{
+									$curr_pub_use = "No";
+								}
+								
+								if($curr_item_size == NULL)
+								{
+									$curr_item_size = "";
+								}
+?>
+								<tr id='table_row_info'>
+									<td id = "hide_me"><input id ="radio_in" type="radio"  name="item_id[]" value = "<?= $curr_item_backid ?>"/><lable class="zombie" for="radio_in"> </lable></td>
+									<td id = 'td_front'><?= $curr_item_frontid?></td>
+									<td><?= $curr_item_size ?></td>
+									<td><?= $curr_item_name ?></td>
+									<td><?= $curr_inv_name ?></td>
+									<td><?=$curr_pub_use?></td>
+									<td id='status_stuff'><?=$curr_stat_info?></td>
+									<td><?=$curr_number_of_use?></td>
+								</tr>
+<?php
+							}
+?>
+						</tbody>
+					</table>
+				</div>
+			</fieldset>
+			<fieldset id="search_fieldset">
+		</form>
+				</br>
+				</br>
+				<label id="search_lable">Search: </label> 
+				<input type = "text" name = "searchItem" id = "searchItem" placeholder="Item Id, Size, Model, Name, Status" /> </br>
+				</br>
+		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="inv">
+				<label id="search_lable">Sort By: </label>
+				</br>
+				</br>
+				
+				<table id="search_table">
+					<!-- Searchable functionals for a more narrower search in a table for styling purposes -->
+					
+					<tr>
+						<th>Status</th>
+						<th>DBW</th> 
+						<th>Public</th>
+						<th>Location</th>
+					</tr>
+					<tr>
+						<!-- A status select where users can select a certain status of the items they just want to see -->
+						<td>
+							<div class="select_status">
+								<select id='change'>
+									<option value=0 selected="selected"> None </option>
+<?php
+									//Query for status name
+									foreach($conn->query("SELECT * FROM Status") as $row)
+									{
+										$curr_stat_name = $row['stat_name'];
+										$curr_stat_id = $row['stat_id'];
+?>
+										<option value="<?= $curr_stat_id ?>">		<!-- Pushing the fetch information to the screen -->
+											<?= $curr_stat_name ?>
+										</option>
+<?php
+									}
+?>
+								</select>
+							</div>
+						</td>
+
+						<!-- A DBW search where users can see either only DBW items, non-DBW items, or both DBW and non-DBW items -->
+						<td>
+							<div class="select">
+								<select id="dbw"> 
+									<option value="none" selected="selected">
+										Include both
+									</option>
+									<option value="yes">
+										Is DBW
+									</option>
+									<option value="no">
+										Non DBW
+									</option>
+								</select>
+							</div>
+						</td>
+
+						<!-- A public search where users can see either only items rentable to the public, non-public-rentable items, or both public-rentable and non-public-rentable items -->
+						<td>
+							<div class="select">
+								<select id="public">
+									<option value="none" selected="selected">
+										Include both
+									</option>
+									<option value="yes">
+										Is Public
+									</option>
+									<option value="no">
+										Not Public
+									</option>
+								</select>
+							</div>
+						</td>
+
+						<!-- A simple location search select where user can see items according to one location to another, or all locations -->
+						<td>
+							<div class="select">
+								<select id="location">
+									<option value="none" selected="selected">
+										Both
+									</option>
+									<option value="ca">
+										Center Activites
+									</option>
+									<option value="hbac">
+										Humboldt Bay Aquatic Center
+									</option>
+								</select>
+							</div>
+						</td>
+					</tr>
+				</table>
+
+		 	</fieldset>
+		</form>
+		
+		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="button">
+			<!-- Following are just buttons -->
+			<fieldset id="button_feildset">
+				<input type="submit" name="moreinfo" id="moreinfo" value="Item Info" onclick="return is_blank()" /> &nbsp;&nbsp;
+				<input <?= $lvl_2 ?> name="additem" id="additem" value="Add Item" <?= $disabled_2 ?>/> &nbsp;&nbsp;
+				<input <?= $lvl_3 ?> name="addinventory" id="addinventory" value="Add Inventory" <?= $disabled_3 ?>/> &nbsp;&nbsp;
+		</form>
+		
+		<!-- Button for downloading a excel sheet of the current item list in the table -->
+		<form method= "post" action="../ItemselectionSection/ExcelPrint.php">
+				<input type="hidden" id="status_hidden" name="status_hidden" value="0"/>
+				<input type="hidden" id="dbw_hidden" name="dbw_hidden" value="none"/>
+				<input type="hidden" id="public_hidden" name="public_hidden" value="none"/>
+				<input type="submit" id="excel_download" id="excel_download" value="Download Excel" />
+			</fieldset>
+		</form>
+		
+    </div>
+	</div>
+
+</body>
+
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
 	<script type="text/javascript" src="jquery.quicksearch.js"></script>  
 	
@@ -221,235 +454,6 @@
 		 });
 	</script>
 
-<?php
-	//Access level view check. Only users who have level 3 and 4 can add new Inventory includes new prices.
-	//Level 2 and up can only add new items
-	$lvl_access = strip_tags($_SESSION['lvl_access']);
-	if($lvl_access == "4" || $lvl_access == "3")
-	{
-		$lvl_3 = "type = 'submit'";
-		$disabled_3="";
-	}
-	else
-	{
-		$lvl_3 = "type = 'hidden'";
-		$disabled_3="disabled";
-	}
-	
-	if($lvl_access == "4" || $lvl_access == "3" || $lvl_access == "2")
-	{
-		$lvl_2 = "type = 'submit'";	
-		$disabled_2="";
-	}
-	else
-	{
-		$lvl_2 = "type = 'hidden'";
-		$disabled_2="disabled";
-	}
-?>
-
-</head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<body>
-  <div id="main_div">
-   <div id="form_div">
-		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="inv">
-			<fieldset id="form_feildset">
-				<legend style="font-size: 35px; text-align:center;"> Select An Item </legend>
-				<fieldset id='fieldset_label'>
-					<label id='header_for_table'>Item Selection</label>
-				</fieldset>
-			</br>
-				<div id="table_div" >
-
-					<table id="table_info" class = "fixed" >
-						<thead>
-							<tr>
-								<th id = "hide_me"> </th>
-								<th id ="th_front">Item Id</th>
-								<th>Item Size</th>
-								<th>Model</th>
-								<th>Item Name</th>
-								<th>Public Use</th>
-								<th>Status</th>
-								<th>Usage</th>
-							</tr>
-						</thead>
-						<tbody id='empty'>
-<?php
-							//query for item information
-							foreach($conn->query("SELECT item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
-													FROM Item A, Inventory B, Category C, Status D
-													WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id
-													ORDER BY inv_name, item_modeltype") as $row)
-							{
-								$curr_item_backid = $row["item_Backid"];
-								$curr_item_size = $row["item_size"];
-								$curr_inv_name = $row["inv_name"];
-								$curr_item_name = $row["item_modeltype"];
-								$curr_item_frontid = $row["item_Frontid"];
-								$curr_pub_use = $row["public"];
-								$curr_stat_info = $row["stat_name"];
-
-								$item_backid = (int)$curr_item_backid;
-								
-								$number_of_use = $conn->prepare("select count(itemtran_id)
-																	from Item A, Transaction B, ItemTran C
-																	where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
-								$number_of_use->bindValue(':a', $item_backid, PDO::PARAM_INT);
-								$number_of_use->execute();
-								$number_of_use = $number_of_use->fetchAll();
-								
-								$curr_number_of_use = $number_of_use[0][0];
-								
-								if($curr_pub_use == "1"){
-									$curr_pub_use = "Yes";
-								}
-								else{
-									$curr_pub_use = "No";
-								}
-								
-								if($curr_item_size == NULL)
-								{
-									$curr_item_size = "";
-								}
-?>
-								<tr id='table_row_info'>
-									<td id = "hide_me"><input id ="radio_in" type="radio"  name="item_id[]" value = "<?= $curr_item_backid ?>"/><lable class="zombie" for="radio_in"> </lable></td>
-									<td id = 'td_front'><?= $curr_item_frontid?></td>
-									<td><?= $curr_item_size ?></td>
-									<td><?= $curr_item_name ?></td>
-									<td><?= $curr_inv_name ?></td>
-									<td><?=$curr_pub_use?></td>
-									<td id='status_stuff'><?=$curr_stat_info?></td>
-									<td><?=$curr_number_of_use?></td>
-								</tr>
-<?php
-							}
-?>
-						</tbody>
-					</table>
-				</div>
-			</fieldset>
-			<fieldset id="search_fieldset">
-		</form>
-				<label id="search_lable">Search: </label> 
-				<input type = "text" name = "searchItem" id = "searchItem" placeholder="Search for Items..." /> </br>
-				</br>
-		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="inv">
-				<label id="search_lable">Sort By: </label>
-				</br>
-				</br>
-				
-				<table id="search_table">
-					<!-- Searchable functionals for a more narrower search in a table for styling purposes -->
-					
-					<tr>
-						<th>Status</th>
-						<th>DBW</th> 
-						<th>Public</th>
-						<th>Location</th>
-					</tr>
-					<tr>
-						<!-- A status select where users can select a certain status of the items they just want to see -->
-						<td>
-							<div class="select_status">
-								<select id='change'>
-									<option value=0 selected="selected"> None </option>
-<?php
-									//Query for status name
-									foreach($conn->query("SELECT * FROM Status") as $row)
-									{
-										$curr_stat_name = $row['stat_name'];
-										$curr_stat_id = $row['stat_id'];
-?>
-										<option value="<?= $curr_stat_id ?>">		<!-- Pushing the fetch information to the screen -->
-											<?= $curr_stat_name ?>
-										</option>
-<?php
-									}
-?>
-								</select>
-							</div>
-						</td>
-
-						<!-- A DBW search where users can see either only DBW items, non-DBW items, or both DBW and non-DBW items -->
-						<td>
-							<div class="select">
-								<select id="dbw"> 
-									<option value="none" selected="selected">
-										Include both
-									</option>
-									<option value="yes">
-										Is DBW
-									</option>
-									<option value="no">
-										Non DBW
-									</option>
-								</select>
-							</div>
-						</td>
-
-						<!-- A public search where users can see either only items rentable to the public, non-public-rentable items, or both public-rentable and non-public-rentable items -->
-						<td>
-							<div class="select">
-								<select id="public">
-									<option value="none" selected="selected">
-										Include both
-									</option>
-									<option value="yes">
-										Is Public
-									</option>
-									<option value="no">
-										Not Public
-									</option>
-								</select>
-							</div>
-						</td>
-
-						<!-- A simple location search select where user can see items according to one location to another, or all locations -->
-						<td>
-							<div class="select">
-								<select id="location">
-									<option value="none" selected="selected">
-										Both
-									</option>
-									<option value="ca">
-										Center Activites
-									</option>
-									<option value="hbac">
-										Humboldt Bay Aquatic Center
-									</option>
-								</select>
-							</div>
-						</td>
-					</tr>
-				</table>
-
-		 	</fieldset>
-		</form>
-		
-		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="button">
-			<!-- Following are just buttons -->
-			<fieldset id="button_feildset">
-				<input type="submit" name="moreinfo" id="moreinfo" value="Item Info" onclick="return is_blank()" /> &nbsp;&nbsp;
-				<input <?= $lvl_2 ?> name="additem" id="additem" value="Add Item" <?= $disabled_2 ?>/> &nbsp;&nbsp;
-				<input <?= $lvl_3 ?> name="addinventory" id="addinventory" value="Add Inventory" <?= $disabled_3 ?>/> &nbsp;&nbsp;
-		</form>
-		
-		<!-- Button for downloading a excel sheet of the current item list in the table -->
-		<form method= "post" action="../ItemselectionSection/ExcelPrint.php">
-				<input type="hidden" id="status_hidden" name="status_hidden" value="0"/>
-				<input type="hidden" id="dbw_hidden" name="dbw_hidden" value="none"/>
-				<input type="hidden" id="public_hidden" name="public_hidden" value="none"/>
-				<input type="submit" id="excel_download" id="excel_download" value="Download Excel" />
-			</fieldset>
-		</form>
-		
-    </div>
-	</div>
-
-</body>
 </html>
 
 

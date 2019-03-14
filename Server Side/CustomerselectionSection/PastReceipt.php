@@ -46,10 +46,8 @@
 			
 			<body>
 <?php
-				//Connection to the database
-				$username = $_SESSION["username"];
-				$password = $_SESSION["password"];
-				$conn = hsu_conn_sess($username, $password);
+				//Connecting to the Database
+				$conn = hsu_conn_sess();
 				
 				//Grab the customer and transaction id
 				$cust_id = (int)$_POST['cust_id'];
@@ -170,6 +168,10 @@
 					$reserve_his_infor->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
 					$reserve_his_infor->execute();
 					$reserve_his_infor = $reserve_his_infor->fetchAll();
+					
+					//Formating the date and time we got from the Transaction table into a more readable format for users
+					$his_request_date = date("F j, Y", strtotime($reserve_his_infor[0][0]));
+					$his_due_date = date("F j, Y", strtotime($reserve_his_infor[0][1]));
 ?>
 					<!-- Styling and structure are basically the same as the return tranaction receipt -->
 					<div class="container" id="section_to_print">
@@ -195,10 +197,10 @@
 											<em>Tranaction Type: Rental</em>
 										</p>
 										<p>
-											<em>Request Date:<?= $reserve_his_infor[0][0] ?></em>
+											<em>Request Date:&nbsp;<?= $his_request_date ?></em>
 										</p>
 										<p>
-											<em>Due Date:<?= $reserve_his_infor[0][1] ?></em>
+											<em>Due Date:&nbsp;<?= $his_due_date ?></em>
 										</p>
 									</div>
 								</div>

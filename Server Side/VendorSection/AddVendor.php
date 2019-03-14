@@ -5,18 +5,7 @@
         <html>
           <head>
 			<link rel="stylesheet" type="text/css" href="../VendorSection/ven_css/ven_main_menu.css"/>
-            <script>
-                function is_blank()
-                {
-                  if (document.getElementById('venName').value.length == 0 || document.getElementById('venPhone').value.length == 0 || document.getElementById('venLoc').value.length == 0){
-                    if(confirm("There are some empty fields left"))
-                    {
-                      return false;
-                    }
-                  }
-                }
-            </script>
-
+          
           </head>
            <body>
 				<fieldset id='fieldset_label' style="width:25%; margin-left:37%; border:none;">
@@ -91,6 +80,19 @@
           </form>
 		  
         </body>
+		
+		  <script>
+                function is_blank()
+                {
+                  if (document.getElementById('venName').value.length == 0 || document.getElementById('venPhone').value.length == 0 || document.getElementById('venLoc').value.length == 0){
+                    if(confirm("There are some empty fields left"))
+                    {
+                      return false;
+                    }
+                  }
+                }
+            </script>
+
 </html>
 
 <?php

@@ -1,8 +1,12 @@
 <?php
-		//                                                     !!!!!!!!!!!!!!!!!!!DO NOT PUSH THIS FILE TO GITHUB!!!!!!!!!!!!!!!!!!!!
-	$connctn = new PDO("mysql:host=localhost; dbname=centerac_center_activities", "centerac_test", "Testing123+", array('charset'=>'utf8'));
-
-	$connctn->query("SET CHARACTER SET utf8");
+		
+	//Connecting to the database through a PDO connection
+	require('/home/centerac/public_html/connect_info.php');
+	require('/home/centerac/public_html/DB.php');
+    error_reporting(E_ERROR | E_PARSE);
+	$usr =  "centerac_" . $username;
+	$connctn = new PDO($DB , $usr, $password, array('charset'=>'utf8'));
+	
 	//sets the incoming stat_id to this var
 	$stat_val = $_REQUEST['stat_id'];
 	$dbw_val = $_REQUEST['dbw'];

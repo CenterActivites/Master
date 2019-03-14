@@ -20,23 +20,6 @@
 
 	<link rel="stylesheet" type="text/css" href="../CustomerselectionSection/cust_css/cust_edit.css"/>
 
-	<script type="text/javascript">
-			function back(){
-				var historyObj = window.history;
-				historyObj.back();
-			}
-	</script>
-
-	<script type="text/javascript">
-	function remove(){
-		if(confirm("You are about to delet a Customer")){
-			return true;
-		}else{
-			return false;
-		}
-	}
-	</script>
-
 </head>
 <body>
 	<fieldset id='fieldset_label' style="border:none; text-align: center;">
@@ -97,8 +80,6 @@
 			</form>
 		</div>
 
-
-
 		<script type="text/javascript">
 			$(function(){
 				$('<input>').attr({
@@ -110,7 +91,6 @@
 				$("#cust_id").val(cust_id_infor);
 			});
 		</script>
-
 
 		<script type="text/javascript">
 			$(document).ready(function(){
@@ -143,7 +123,22 @@
 			$("#cust_zip").val(cust_zip);
 		</script>
 
+		<script type="text/javascript">
+				function back(){
+					var historyObj = window.history;
+					historyObj.back();
+				}
+		</script>
 
+		<script type="text/javascript">
+			function remove(){
+				if(confirm("You are about to delet a Customer")){
+					return true;
+				}else{
+					return false;
+				}
+			}
+		</script>
 </body>
 </html>
 <?php

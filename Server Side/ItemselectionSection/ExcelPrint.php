@@ -1,7 +1,12 @@
 <?php
 	require_once '../PHPExcel-1.8/Classes/PHPExcel.php';
-	$connctn = new PDO("mysql:host=localhost; dbname=centerac_center_activities", "centerac_test", "Testing123+", array('charset'=>'utf8'));
-	$connctn->query("SET CHARACTER SET utf8");
+	
+	//Connecting to the database through a PDO connection
+	require('/home/centerac/public_html/connect_info.php');
+	require('/home/centerac/public_html/DB.php');
+    error_reporting(E_ERROR | E_PARSE);
+	$usr =  "centerac_" . $username;
+	$connctn = new PDO($DB , $usr, $password, array('charset'=>'utf8'));
 
 	$stat_val = $_POST['status_hidden'];
 	$dbw_val = $_POST['dbw_hidden'];

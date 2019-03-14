@@ -7,79 +7,7 @@
 <html>
 <head>
 
-	<!-- JavaScript Starts here -->
 	<link rel="stylesheet" type="text/css" href="../CustomerselectionSection/cust_css/cust_selection.css"/>
-	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
-	<script type="text/javascript" src="jquery.quicksearch.js"></script>  <!-- Plugin for the item Search function -->
-
-	<!-- Creating a hidden input that will handle cust_id values that will be pasted on to the next page -->
-	<script type="text/javascript">
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'cust_id',
-				name: 'cust_id'
-			}).appendTo('#button');
-		});
-	</script>
-	
-	<!-- Little script that checks if a customer have been selected for the next page -->
-	<script type="text/javascript">
-		$(document).ready(function(){
-			$("#select").click(function(){
-				if(document.getElementById('cust_id').value.length == 0 || document.getElementById('cust_id').value.length == null)
-				{
-					alert("please select a customer");
-					return false;
-				}
-			});
-		});
-	</script>
-
-	<!-- Little script set the cust_id values to the hidden input that was created in the last couple of lines -->
-	<script type="text/javascript">
-	$(document).ready(function(){
-		$("#table_div").click(function(){
-			$('input[type="radio"]:checked').each(function(){
-				var box_value = $(this).val();
-				$('#cust_id').val(box_value);
-				console.log("Cust_id: " + $(this).val());
-			});
-		});
-	});
-	</script>
-
-	<script type="text/javascript">
-		$(document).ready(function(){
-			//this script goes off when a table row is clicked, it checks the hidden radio button correlating to that table row
-			$("#cust_table_info_late tr, #cust_table_info_pick tr").click(function(){
-					$(this).find('td input:radio').prop('checked',true);
-			});
-
-			//The next following lines sets the hidden input "which_table" to values of either "Late" or "Pick". 
-			//This allows the program to know which table was the row selected from so that program will know where to sent the user next to
-			$("#cust_table_info_late tr").click(function(){
-				$('#which_table').val("Late");
-				console.log("Late table was selected");
-			});	
-			$("#cust_table_info_pick tr").click(function(){
-				$('#which_table').val("Pick");
-				console.log("Pick-up table was selected");
-			});	
-		});
-	</script>
-
-	<script type = "text/javascript">
-		// this script calls a CSS class called .highlight in the CSS file
-		// So that when a click happens It hightlights the row letting the user know that they've selected it.
-		$(document).ready(function(){
-			$("#cust_table_info_late tr, #cust_table_info_pick tr").click(function(){
-				$("#cust_table_info_late tr").removeClass("highlight");
-				$("#cust_table_info_pick tr").removeClass("highlight");
-				$(this).addClass("highlight");
-			});
-		});
-	</script>
 
 </head>
 <body>
@@ -88,9 +16,8 @@
 	</br>
 <div>
 <?php
-        $username = $_SESSION['username']; //Using the username and password that was entered in the login page to connect to the database
-		$password = $_SESSION['password'];
-        $conn = hsu_conn_sess($username, $password);
+		//Connecting to the Database
+        $conn = hsu_conn_sess();
 		
  ?>
 		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id='button' >
@@ -241,6 +168,80 @@
 		</form>
 </div>
 </body>
+
+	<!-- JavaScript Starts here -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
+	<script type="text/javascript" src="jquery.quicksearch.js"></script>  <!-- Plugin for the item Search function -->
+
+	<!-- Creating a hidden input that will handle cust_id values that will be pasted on to the next page -->
+	<script type="text/javascript">
+		$(function(){
+			$('<input>').attr({
+				type: 'hidden',
+				id:'cust_id',
+				name: 'cust_id'
+			}).appendTo('#button');
+		});
+	</script>
+	
+	<!-- Little script that checks if a customer have been selected for the next page -->
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#select").click(function(){
+				if(document.getElementById('cust_id').value.length == 0 || document.getElementById('cust_id').value.length == null)
+				{
+					alert("please select a customer");
+					return false;
+				}
+			});
+		});
+	</script>
+
+	<!-- Little script set the cust_id values to the hidden input that was created in the last couple of lines -->
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$("#table_div").click(function(){
+			$('input[type="radio"]:checked').each(function(){
+				var box_value = $(this).val();
+				$('#cust_id').val(box_value);
+				console.log("Cust_id: " + $(this).val());
+			});
+		});
+	});
+	</script>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			//this script goes off when a table row is clicked, it checks the hidden radio button correlating to that table row
+			$("#cust_table_info_late tr, #cust_table_info_pick tr").click(function(){
+					$(this).find('td input:radio').prop('checked',true);
+			});
+
+			//The next following lines sets the hidden input "which_table" to values of either "Late" or "Pick". 
+			//This allows the program to know which table was the row selected from so that program will know where to sent the user next to
+			$("#cust_table_info_late tr").click(function(){
+				$('#which_table').val("Late");
+				console.log("Late table was selected");
+			});	
+			$("#cust_table_info_pick tr").click(function(){
+				$('#which_table').val("Pick");
+				console.log("Pick-up table was selected");
+			});	
+		});
+	</script>
+
+	<script type = "text/javascript">
+		// this script calls a CSS class called .highlight in the CSS file
+		// So that when a click happens It hightlights the row letting the user know that they've selected it.
+		$(document).ready(function(){
+			$("#cust_table_info_late tr, #cust_table_info_pick tr").click(function(){
+				$("#cust_table_info_late tr").removeClass("highlight");
+				$("#cust_table_info_pick tr").removeClass("highlight");
+				$(this).addClass("highlight");
+			});
+		});
+	</script>
+	
 </html>
 
 

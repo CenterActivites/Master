@@ -5,11 +5,99 @@
 ?>
 		<html>
 		<head>
+		
 			<link rel="stylesheet" type="text/css" href="../CustomerselectionSection/cust_css/cust_selection.css"/>
-			<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
+			
+		</head>
+		<body>
+			<div id="pageHeader" style="font-size: 35px; text-align: center;"> Customer Transactions </div>
+			<div>
+				<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
+					<fieldset style="border: none;">
+						<legend style="font-size: 20px;"> TimeStamps: </legend>
+							<!-- TimeStamp Select Table -->
+							<select name="time_stamp_select" id="time_stamp_select" size="6" class="time_stamp_select">
+<?php
+								//Connecting to the Database
+								$connctn = hsu_conn_sess();
+								
+								//Grab the selected customer id
+								$cust_id = (int)$_SESSION['cust_id'];
+								
+								//Does a select sql statement to grab all transactions that is involved with the selected customer
+								$trans = $connctn->prepare("SELECT trans_id, time_stamp, trans_type
+															FROM Transaction
+															WHERE cust_id = :a
+															ORDER BY time_stamp desc");
+															
+								$trans->bindValue(':a', $cust_id, PDO::PARAM_INT);
+								$trans->execute();
+								$trans_display = $trans->fetchAll();
+								//echo $trans -> errorCode();
+								
+								//Grabs the number of transactions for the following "FOR" loop
+								$array_size = count($trans_display);
+
+								//Loops through the array of data that came from the select 
+								for($i=0; $i<$array_size; $i++)
+								{
+									//Set the data to the correct fields
+									$curr_trans_id = $trans_display[$i]['trans_id'];
+									$curr_time_stamp = $trans_display[$i]['time_stamp'];
+									$curr_trans_type = $trans_display[$i]['trans_type'];
+									
+									//Format the timestamp that was given from the database into a more readable timestamp
+									$curr_time_stamp = date('h:i a F d, Y', strtotime($curr_time_stamp));
+									if($curr_trans_type == "return")
+									{
+										$curr_trans_type = $curr_trans_type . "&nbsp;&nbsp;";
+									}
+?>
+									<!-- Display the fields -->
+									<option value="<?= $curr_trans_id ?>">
+										<?= $curr_trans_type ?> &nbsp; : &nbsp; <?= $curr_time_stamp ?> 
+									</option>
+<?php
+								}
+								//Always to remember to disconnect from the database
+								$connctn = null;
+?>
+							</select>
+							
+						<!-- Comments header and the actual comments themselves  -->
+						<table id="comment_table">
+						</table>
+					</fieldset>
+					
+					<!-- Item Information Table -->
+					<div id='item_info_label' style="font-size: 25px; text-align: center;"></div>
+					<table id='tran_infor_table'>
+						<thead>
+							<tr>
+								<th>Front Id</th>
+								<th>Item Name</th>
+								<th>Item Size</th>
+								<th>Item Model</th>
+							</tr>
+						</thead>
+						<tbody id='empty'>
+							<tr> <td colspan="4"> Please Select a TimeStamp to See Items Involved With the Tranaction </td> </tr>
+						</tbody>
+					</table>
+			</div>
+					
+					<!-- Bottom Buttons -->
+					<div>
+						<input type="hidden" name="cust_id" id="cust_id" value="<?= $cust_id ?>"/> 
+						<input type="submit" name="viewReceipt" id="viewReceipt" value="View Receipt of Transactions" /> &nbsp;
+						<input type="submit" name="backOnCustTran" id="backOnCustTran" value="Back" onclick="back()"/> &nbsp;
+					</div>
+				</form>
+
+		</body>
 			
 			<!-- Start of Javacript -->
-			
+			<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
 			
 			<!-- Little script that lets users know what type of tranaction that they have selected and are seeing at the moment -->
 			<script type="text/javascript">
@@ -29,8 +117,6 @@
 					});
 				});
 			</script>
-			
-			
 			
 			<script type="text/javascript">
 				$(function()
@@ -154,95 +240,6 @@
 				});
 			</script>
 			
-		</head>
-		<body>
-			<div id="pageHeader" style="font-size: 35px; text-align: center;"> Customer Transactions </div>
-			<div>
-				<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
-					<fieldset style="border: none;">
-						<legend style="font-size: 20px;"> TimeStamps: </legend>
-							<!-- TimeStamp Select Table -->
-							<select name="time_stamp_select" id="time_stamp_select" size="6" class="time_stamp_select">
-<?php
-								//Connects to the database
-								$username = $_SESSION['username'];
-								$password = $_SESSION['password'];
-								$connctn = hsu_conn_sess($username, $password);
-								
-								//Grab the selected customer id
-								$cust_id = (int)$_SESSION['cust_id'];
-								
-								//Does a select sql statement to grab all transactions that is involved with the selected customer
-								$trans = $connctn->prepare("SELECT trans_id, time_stamp, trans_type
-															FROM Transaction
-															WHERE cust_id = :a
-															ORDER BY time_stamp desc");
-															
-								$trans->bindValue(':a', $cust_id, PDO::PARAM_INT);
-								$trans->execute();
-								$trans_display = $trans->fetchAll();
-								//echo $trans -> errorCode();
-								
-								//Grabs the number of transactions for the following "FOR" loop
-								$array_size = count($trans_display);
-
-								//Loops through the array of data that came from the select 
-								for($i=0; $i<$array_size; $i++)
-								{
-									//Set the data to the correct fields
-									$curr_trans_id = $trans_display[$i]['trans_id'];
-									$curr_time_stamp = $trans_display[$i]['time_stamp'];
-									$curr_trans_type = $trans_display[$i]['trans_type'];
-									
-									//Format the timestamp that was given from the database into a more readable timestamp
-									$curr_time_stamp = date('h:i a F d, Y', strtotime($curr_time_stamp));
-									if($curr_trans_type == "return")
-									{
-										$curr_trans_type = $curr_trans_type . "&nbsp;&nbsp;";
-									}
-?>
-									<!-- Display the fields -->
-									<option value="<?= $curr_trans_id ?>">
-										<?= $curr_trans_type ?> &nbsp; : &nbsp; <?= $curr_time_stamp ?> 
-									</option>
-<?php
-								}
-								//Always to remember to disconnect from the database
-								$connctn = null;
-?>
-							</select>
-							
-						<!-- Comments header and the actual comments themselves  -->
-						<table id="comment_table">
-						</table>
-					</fieldset>
-					
-					<!-- Item Information Table -->
-					<div id='item_info_label' style="font-size: 25px; text-align: center;"></div>
-					<table id='tran_infor_table'>
-						<thead>
-							<tr>
-								<th>Front Id</th>
-								<th>Item Name</th>
-								<th>Item Size</th>
-								<th>Item Model</th>
-							</tr>
-						</thead>
-						<tbody id='empty'>
-							<tr> <td colspan="4"> Please Select a TimeStamp to See Items Involved With the Tranaction </td> </tr>
-						</tbody>
-					</table>
-			</div>
-					
-					<!-- Bottom Buttons -->
-					<div>
-						<input type="hidden" name="cust_id" id="cust_id" value="<?= $cust_id ?>"/> 
-						<input type="submit" name="viewReceipt" id="viewReceipt" value="View Receipt of Transactions" /> &nbsp;
-						<input type="submit" name="backOnCustTran" id="backOnCustTran" value="Back" onclick="back()"/> &nbsp;
-					</div>
-				</form>
-
-		</body>
 		</html>
 <?php
 	} 

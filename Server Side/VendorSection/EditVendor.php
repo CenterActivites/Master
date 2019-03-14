@@ -7,10 +7,8 @@
 		$ven_id = strip_tags($_POST['edit_ven_id']);
 		$_SESSION['ven_id'] = $ven_id;
 		
-		//We grab the username and password the user input and logs the user in with the inputs
-		$username = strip_tags($_SESSION['username']);
-        $password = strip_tags($_SESSION['password']);
-        $conn = hsu_conn_sess($username, $password);
+		//Connecting to the Database
+        $conn = hsu_conn_sess();
 		
 		$ven_address = $conn->prepare("SELECT ven_street_address, ven_city, ven_state, ven_zip_code
 										FROM Vendor

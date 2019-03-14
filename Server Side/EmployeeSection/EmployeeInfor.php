@@ -9,17 +9,6 @@
 
 		<link rel="stylesheet" type="text/css" href="../EmployeeSection/empl_css/empl_info.css"/>
 
-		<script type="text/javascript">
-			$(function(){
-				$('<input>').attr({
-					type: 'hidden',
-					id:'empl_id',
-					name: 'empl_id'
-				}).appendTo('#button');
-				var empl_id_infor = "<?php echo $empl_id ?>";
-				$("#empl_id").val(empl_id_infor);
-			});
-		</script>
 	</head>
 	<body>
 	    <fieldset id='fieldset_label' style="text-align: center; border:none;">
@@ -27,9 +16,8 @@
 		</fieldset>
 		<table id='empl_info_table'>
 <?php
-			$username = strip_tags($_SESSION['username']);  //We grab the username and password the user input and logs the user in with the inputs
-			$password = strip_tags($_SESSION['password']);
-			$conn = hsu_conn_sess($username, $password);
+			//Connecting to the Database
+			$conn = hsu_conn_sess();
 
 			foreach($conn->query("SELECT empl_fname, empl_lname, phone_num, empl_email, access_lvl, title, user_n, pass_w
 									FROM Employee
@@ -89,6 +77,18 @@
 			</fieldset>
 		</form>
 	</body>
+	
+		<script type="text/javascript">
+			$(function(){
+				$('<input>').attr({
+					type: 'hidden',
+					id:'empl_id',
+					name: 'empl_id'
+				}).appendTo('#button');
+				var empl_id_infor = "<?php echo $empl_id ?>";
+				$("#empl_id").val(empl_id_infor);
+			});
+		</script>
 </html>
 <?php
 		$conn = null;
