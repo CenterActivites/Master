@@ -7,16 +7,16 @@
 		
 		$usr =  "centerac_" . $username;
 		
-		$empl_user = $_SESSION['empl_user'];
-		$empl_pass = $_SESSION['empl_pass'];
+		$user = $_SESSION['empl_user'];
+		$pass = $_SESSION['empl_pass'];
 		
 		$connctn = new PDO($DB , $usr, $password, array('charset'=>'utf8'));
 	
 		$Can_access = $connctn->prepare("SELECT empl_id
 									FROM Employee
-									WHERE empl_fname = :f_name and empl_lname = :l_name");
-		$Can_access->bindValue(':f_name', $empl_user, PDO::PARAM_STR);
-		$Can_access->bindValue(':l_name', $empl_pass, PDO::PARAM_STR);
+									WHERE user_n = :user and pass_w = :pass");
+		$Can_access->bindValue(':user', $user, PDO::PARAM_STR);
+		$Can_access->bindValue(':pass', $pass, PDO::PARAM_STR);
 		$Can_access->execute();
 		$display_array = $Can_access->fetchAll();
 		
