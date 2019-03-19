@@ -65,6 +65,11 @@
 						</thead>
 						<tbody id='empty'>
 <?php
+							$list_of_status = $conn->prepare("SELECT stat_id, stat_name
+																	FROM Status");
+							$list_of_status->execute();
+							$list_of_status = $list_of_status->fetchAll();
+
 							//query for item information
 							foreach($conn->query("SELECT item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 													FROM Item A, Inventory B, Category C, Status D
@@ -109,7 +114,27 @@
 									<td><?= $curr_item_name ?></td>
 									<td><?= $curr_inv_name ?></td>
 									<td><?=$curr_pub_use?></td>
-									<td id='status_stuff'><?=$curr_stat_info?></td>
+									<td id='status_stuff'>
+										<div class="select_table_status">
+											<select id="table_status" name="table_status" style="background-color: transparent;">
+<?php
+												foreach($list_of_status as $row)
+												{
+													$cur_stat_name = $row["stat_name"];
+													$cur_stat_id = $row["stat_id"];
+													$option_info = "value = " . $cur_stat_id;
+													if($cur_stat_name == $curr_stat_info)
+													{
+														$option_info = $option_info . " selected='selected' ";
+													}
+?>
+													<option <?= $option_info ?> > <?=$cur_stat_name?> </option>
+<?php
+											}	
+?>
+											</select>
+										</div>
+									</td>
 									<td><?=$curr_number_of_use?></td>
 								</tr>
 <?php
@@ -131,6 +156,8 @@
 				</br>
 				</br>
 				
+				<link rel="stylesheet" type="text/css" href="../ItemselectionSection/item_css/select_style.css"/>
+				
 				<table id="search_table">
 					<!-- Searchable functionals for a more narrower search in a table for styling purposes -->
 					
@@ -144,7 +171,7 @@
 						<!-- A status select where users can select a certain status of the items they just want to see -->
 						<td>
 							<div class="select_status">
-								<select id='change'>
+								<select id='change'  name='change'>
 									<option value=0 selected="selected"> None </option>
 <?php
 									//Query for status name
@@ -166,7 +193,7 @@
 						<!-- A DBW search where users can see either only DBW items, non-DBW items, or both DBW and non-DBW items -->
 						<td>
 							<div class="select">
-								<select id="dbw"> 
+								<select id="dbw" name="dbw"> 
 									<option value="none" selected="selected">
 										Include both
 									</option>
@@ -183,7 +210,7 @@
 						<!-- A public search where users can see either only items rentable to the public, non-public-rentable items, or both public-rentable and non-public-rentable items -->
 						<td>
 							<div class="select">
-								<select id="public">
+								<select id="public" name="public">
 									<option value="none" selected="selected">
 										Include both
 									</option>
@@ -200,7 +227,7 @@
 						<!-- A simple location search select where user can see items according to one location to another, or all locations -->
 						<td>
 							<div class="select">
-								<select id="location">
+								<select id="location" name="location">
 									<option value="none" selected="selected">
 										Both
 									</option>
@@ -288,7 +315,7 @@
 	<!-- Hover function for the selects -->
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$("select").hover(function(){
+			$("#change, #dbw, #location, #public").hover(function(){
 				$(this).attr('size', 
 			  $('option').length);
 			}, function() {
@@ -367,7 +394,7 @@
 			});
 		});
 	</script>
-		
+	
 	<script type="text/javascript">
 	 //AJAX is asynchronous javascript
 	 //https://www.w3schools.com/xml/ajax_intro.asp
@@ -422,10 +449,41 @@
 									item_size = "";
 								 }
 
+								 //Also grab status list
+								 var status_list = <?php echo json_encode($list_of_status); ?>;
+								
+								 option = "";
+								 
+								 for(var j = 0; j < status_list.length; j++){
+									 var row = status_list[j];
+									 stat_name = row['stat_name'];
+									 stat_id = row['stat_id'];
+									 value = "value='" + stat_id + "'";
+									 if(stat_name == stat_info)
+									 {
+										 value = value + " selected='selected'";
+									 }
+									 option = option + "<option " + value + " >" + stat_name + "</option> "
+								 }
+								
 								 var tr = document.createElement('tr');
 
-								 tr.innerHTML = "<td id='hide_me'>" + "<input id ='radio_in' type='radio' name='item_id[]' value = '"+item_Backid+"'/>" +"</td>" + "<td>" + item_Frontid + "</td>"  + "<td>" + item_size + "</td>"
-																 +"<td>"+item_modeltype+"</td>" + "<td>"+inv_name+"</td>" + "<td>"+pub_use+"</td>" + "<td>"+stat_info+"</td>" + "<td>"+usage+"</td>";
+								 tr.innerHTML = "<td id='hide_me'>" + "<input id ='radio_in' type='radio' name='item_id[]' value = '" + item_Backid + "'/>" +"</td>" + 
+												"<td>" + item_Frontid + "</td>"  + 
+												"<td>" + item_size + "</td>" + 
+												"<td>" + item_modeltype + "</td>" + 
+												"<td>" + inv_name + "</td>" + 
+												"<td>" + pub_use + "</td>" + 
+												
+												"<td>" + 
+													"<div class='select_table_status'>" + 
+														"<select id='table_status' name='table_status' style='background-color: transparent;'>" + 
+															option + 
+														"</select>" + 
+													"</div>" + 
+												"</td>" + 
+												
+												"<td>" + usage + "</td>";
 
 								 tbody.appendChild(tr);
 						 }
@@ -449,6 +507,29 @@
 							 //this resets the search functioallity after the table is refilled
 						 $('input#searchItem').quicksearch('#table_info tbody tr'); //On key search for customer names here
 					 }
+				 });
+			 });
+		 });
+	</script>
+	
+	<script type="text/javascript">
+		//Ajax call that does the update for the status updates on the item selection table. The status dropdown on the item select table.  
+		 $(function(){
+			 $('#table_div').on('change', 'select', function() {
+				 $.ajax({
+					 
+					 url: "../ItemselectionSection/status_update_helper.php",
+					 type: "post",
+					 data:{
+						'status_id': $(this).val(),
+						'item_id':$('#item_id').val()
+					 },
+					 success:function(data){
+						 console.log("Status Update");
+					 },
+					 error: function(XMLHttpRequest, textStatus, errorThrown) { 
+						 console.log("Something went wrong");
+					 }       
 				 });
 			 });
 		 });
