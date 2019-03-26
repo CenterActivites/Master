@@ -259,6 +259,7 @@
 				<input type="hidden" id="status_hidden" name="status_hidden" value="0"/>
 				<input type="hidden" id="dbw_hidden" name="dbw_hidden" value="none"/>
 				<input type="hidden" id="public_hidden" name="public_hidden" value="none"/>
+				<input type="hidden" id="location_hidden" name="location_hidden" value="none"/>
 				<input type="submit" id="excel_download" id="excel_download" value="Download Excel" />
 			</fieldset>
 		</form>
@@ -369,6 +370,19 @@
 		});
 	</script>
 	
+	<!-- Little script that save the Location Value to a hidden input field -->
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			$('#location').change(function()
+			{
+				var box_value = $(this).val();
+				$('#location_hidden').val(box_value);
+				console.log("Location Hidden value changed to :" + box_value);
+			});
+		});
+	</script>
+	
 	<!-- Little script that save the DBW Value to a hidden input field -->
 	<script type="text/javascript">
 		$(document).ready(function()
@@ -399,7 +413,7 @@
 	 //AJAX is asynchronous javascript
 	 //https://www.w3schools.com/xml/ajax_intro.asp
 		 $(function(){
-			 $('#change, #dbw, #public').change(function(){
+			 $('#change, #dbw, #public, #location').change(function(){
 				 $.ajax({
 					 // this section of the script
 					 //1. finds where the helper file is located
@@ -408,9 +422,10 @@
 					 type: "post",
 					 // 3. gets the data from the the section of the web page we want
 					 data:{
-						'stat_id':$('#change').val(),
-						'dbw':$('#dbw').val(),
-						'public':$('#public').val()
+						'stat_id':$('#status_hidden').val(),
+						'dbw':$('#dbw_hidden').val(),
+						'public':$('#public_hidden').val(),
+						'location':$('#location_hidden').val()
 					 },
 					 //4. sends the data gathered to this success function after it has quereied
 					 success:function(data){
