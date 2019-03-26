@@ -17,11 +17,18 @@
     <div id="pageHeader"> Adding New Items </div>
     <div>
         <form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id = "item_input">
-	        <input type = "text" name = "new_front_id" id = "new_front_id" placeholder="Item Front Desk ID"/>
-			<input type = "text" name = "new_item_name" id = "new_item_name" placeholder="Item Model"/>
-			<input type = "text" name = "new_size" id = "new_size" placeholder="Item's Size"/><br/>
+			<!-- The Item ID input field -->
+	        <input type = "text" name = "new_front_id" id = "new_front_id" placeholder="Item ID" required/>
+			
+			<!-- The Item Model/Brand input field -->
+			<input type = "text" name = "new_item_name" id = "new_item_name" placeholder="Item Model/Brand" required/>
+			
+			<!-- The Item Size input field -->
+			<input type = "text" name = "new_size" id = "new_size" placeholder="Item's Size" required/><br/>
+			
+			<!-- The Item Inventory select field -->
 			<select name="inventory" id="inventory" size="1" required placeholder="Inventory Classification" >
-				<option id="blank" value = "" disabled="disabled">Select An Inventory Class</option>
+				<option id="blank" value="nope" selected>Inventory Class</option>
 <?php
 					//inventory query
 				foreach($conn->query("SELECT  inv_id, inv_name
@@ -35,8 +42,10 @@
 				}
 ?>
 			</select>
+			
+			<!-- The Item Status select field -->
 			<select name="status" id="status" size="1" required>
-				<option id="blank2" value = "" disabled="disabled">Select Item Status</option>
+				<option id="blank2" value="nope" selected>Item Status</option>
 <?php
 				// status query
 				foreach($conn->query("SELECT  stat_id, stat_name
@@ -51,10 +60,20 @@
 				}
 ?>
 			</select>
-			<input type = "text" name = "new_location" id = "new_location" placeholder="Location of Item"/><br/>
-			<input type = "text" name = "new_purchase_price" id = "new_purchase_price" placeholder="Purchase Price"/>
+			
+			<!-- The Item Location select field -->
+			<select name = "new_location" id = "new_location">
+				<option value="nope" selected> Location of Item </option>
+				<option> Center Activities </option>
+				<option> Humboldt Bay Aquatic Center </option>
+			</select><br/>
+			
+			<!-- The Item Purchase Price input field -->
+			<input type = "text" name = "new_purchase_price" id = "new_purchase_price" placeholder="Purchase Price" required/>
+			
+			<!-- The Item Vendor select field -->
 			<select name="ven" id="ven" size="1"  required>
-				<option id="blank3" value=""disabled="disabled">Select Item Vendor</option>
+				<option id="blank3" value="nope" selected>Select Item Vendor</option>
 <?php
 				//vendor query
 				foreach($conn->query("SELECT  ven_id, ven_name
@@ -68,22 +87,32 @@
 				}
 ?>
 			</select>
+			
+			<!-- The Item DBW select field -->
 			<select name = "dbw_own" id="dbw_own" size="1" required >
-				<option value = "" disabled="disabled">Owned by DBW</option>
+				<option value="nope" selected>DBW own?</option>
 				<option value = "0"> No </option>
 				<option value = "1"> Yes </option>
 			</select></br>
-			<input type="text" name ="new_purchase_date" id = "new_purchase_date" placeholder="Purchase Date" onfocus="(this.type='date')" onblur="(this.type='text')" />
-			<input type = "text" name = "new_vin" id = "new_vin" placeholder="Vin Number"/>
-	        <select name = "pub_use" id="pub_use" size="1" required>
-				<option value="" disabled="disabled">Select Public Usage</option>
-				<option value = "0"> No </option>
-				<option value = "1"> Yes </option>
+			
+			<!-- The Item Purchase date input field -->
+			<input type="text" name ="new_purchase_date" id = "new_purchase_date" placeholder="Purchase Date" onfocus="(this.type='date')" onblur="(this.type='text')" required/>
+			
+			<!-- The Item Vin Id input field -->
+			<input type = "text" name = "new_vin" id = "new_vin" placeholder="Vin Number" required/>
+			
+			<!-- The Item Public usage select field -->
+	        <select name="pub_use" id="pub_use" size="1" required>
+				<option value="nope" selected >Public Usage</option>
+				<option value = "0"> Not open to the public </option>
+				<option value = "1"> Open to the public </option>
 			</select></br>
-	        <input type = "text" name = "new_notes" id = "new_notes" placeholder="Notes"/>
+			
+			<!-- The Item Notes input field -->
+	        <input type = "text" name = "new_notes" id = "new_notes" placeholder="Notes" required/>
 			
 			<fieldset style="border:none">
-				<input type="submit" name="add2" id="add2" value="Add" onclick="return is_blank()"/>
+				<input type="submit" name="add2" id="add2" value="Add"/>
 
 		</form>
 				<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id = "item_input">
@@ -92,7 +121,6 @@
 			</fieldset>
     </div>
 </body>
-
 
 	<script type="text/javascript">
 	//Creation of input object which holds stat_id value
@@ -260,7 +288,56 @@
 			});
 		});
 	</script>
-
+	
+	<script type="text/javascript">
+	//Makes all select "placeholders" disable for select so that the user can not select them
+		$(document).ready(function(){
+			$("option[value='nope']").attr("disabled", "disabled");
+		});
+	</script>
+	
+	<!-- Little Javacript that makes sure the user selects a Inventory, status, location, vendor, if the item is DBW own, and if it is open to the public for rental -->
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#add2").click(function(){
+				if($('#pub_use').val() == "nope")
+				{
+					alert("Please Select a Public Usage");
+					return false;
+				}
+				
+				if($('#status').val() == "nope")
+				{
+					alert("Please Select a Status");
+					return false;
+				}
+				
+				if($('#dbw_own').val() == "nope")
+				{
+					alert("Is the item DBW own or not?");
+					return false;
+				}
+				
+				if($('#ven').val() == "nope")
+				{
+					alert("Please Select the Vendor the Item came from");
+					return false;
+				}
+				
+				if($('#new_location').val() == "nope")
+				{
+					alert("Please Select the Location the Item is going to be at");
+					return false;
+				}
+				
+				if($('#inventory').val() == "nope")
+				{
+					alert("Please select the Inventory the item belongs to");
+					return false;
+				}
+			});
+		});
+	</script>
 
 </html>
 
