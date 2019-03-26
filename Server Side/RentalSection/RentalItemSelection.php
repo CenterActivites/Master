@@ -12,10 +12,10 @@
 </head>
 <body>
 
-	<label for="location"> Location </label>
-	<select name="location" class="location" id="location">
-		<option value="Center Activities" selected="selected"> Center Activities </option>
-		<option value="Humboldt Bay Aquatic Center"> Humboldt Bay Aquatic Center </option>
+	<label for="rent_location"> Location </label>
+	<select name="rent_location" class="rent_location" id="rent_location">
+		<option value="ca" selected="selected"> Center Activities </option>
+		<option value="hbac"> Humboldt Bay Aquatic Center </option>
 	</select>
 	
     <fieldset id='fieldset_label' style="border:none; text-align: center;">
@@ -122,7 +122,7 @@
 						//Query for item selection with Items status 'Ready'
 						foreach($conn->query("SELECT item_Backid, inv_name, item_size, item_Frontid, item_modeltype 
 												FROM Item a, Inventory c, Status b 
-												WHERE a.inv_id = c.inv_id and a.stat_id = b.stat_id and a.stat_id = 1") as $row)
+												WHERE a.inv_id = c.inv_id and a.stat_id = b.stat_id and a.location = 'Center Activities' and a.stat_id = 1") as $row)
 						{
 							//Check if the selected customer is a student or not.
 							if($is_student[0][0] == 'no' || $is_student[0][0] == 'No')
@@ -242,6 +242,14 @@
 				</select>
 			</div>
 			
+			</br>
+			</br>
+			
+			<div style="float:right; text-align: center; padding:10px; width:25%;">
+				<div id="pack_infor" name="pack_infor">
+				</div>
+			</div>
+			
 		</fieldset>
 		
 		</br>
@@ -350,63 +358,70 @@
 			
 			//Once the user select a item from the cart to be deselected
 			$("#div_for_cart").on('click', 'table tr', function(){
+				//Grab the whatever is in the current cart
+				what_in_cart_curr = $("#delete_me").text();
+				what_in_cart_curr = what_in_cart_curr.replace(/\s/g, '');
 				
-				//Check the hidden radio button so that we can grab the item id value that is set with the radio button
-				$(this).find('td input:radio').prop('checked',true);
+				//Check the currenty cart to see if its empty or not. If the cart is empty, we do nothing. If it is not empty and has a item then we do...
+				if(what_in_cart_curr != "CartEmpty")
+				{
+					//Check the hidden radio button so that we can grab the item id value that is set with the radio button
+					$(this).find('td input:radio').prop('checked',true);
+					
+					$('input[type="radio"]:checked').each(function(){
+						//Grab the item_id value of the selected item
+						var box_value = $(this).val();
+						
+						//Logs the item id into the console
+						console.log("Item id that was selected to be removed from the cart: " + $(this).val());
+						
+						//Like the selecting the item, here the following lines to for when the user deselect a item from cart.
+						var get_val = $("#item_array").val(); //Grabs current string values from the input tag "item_array"
+						var new_val = get_val.replace(box_value, "");  //Finds it in the string and replace it with just a emply one, ""
+						$("#item_array").val(new_val); //Have the input tag "item_array" hold/keep the new string
+						
+						//Logs the current values or the cart array
+						console.log("Current cart array: " + $("#item_array").val());
+					
+						//Grabs the "tbody" select tag for adding rows to it
+						var tbody = document.getElementById('select_empty'); 
+						
+						//Grab all the needed information to be added to the item selection list
+						item_id = $(this).closest("tr").find('td:nth-child(2)').text();
+						item_size = $(this).closest("tr").find('td:nth-child(3)').text();
+						item_model = $(this).closest("tr").find('td:nth-child(4)').text();
+						item_name = $(this).closest("tr").find('td:nth-child(5)').text();
+						
+						//Create a tr tag
+						var tr = document.createElement('tr');
+						
+						//Populate the tr tag
+						tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+box_value+"'/>" +"</td>" + 
+										"<td>" + item_id + "</td>"  + 
+										"<td>" + item_size + "</td>" +
+										"<td>" + item_model + "</td>" + 
+										"<td>" + item_name + "</td>";
+										
+						//Add the tr tag to the tbody of the item selection list
+						tbody.appendChild(tr);
+					
+					});
 				
-				$('input[type="radio"]:checked').each(function(){
-					//Grab the item_id value of the selected item
-					var box_value = $(this).val();
+					//Remove the selected item from the selection list
+					$(this).remove();
 					
-					//Logs the item id into the console
-					console.log("Item id that was selected to be removed from the cart: " + $(this).val());
-					
-					//Like the selecting the item, here the following lines to for when the user deselect a item from cart.
-					var get_val = $("#item_array").val(); //Grabs current string values from the input tag "item_array"
-					var new_val = get_val.replace(box_value, "");  //Finds it in the string and replace it with just a emply one, ""
-					$("#item_array").val(new_val); //Have the input tag "item_array" hold/keep the new string
-					
-					//Logs the current values or the cart array
-					console.log("Current cart array: " + $("#item_array").val());
-				
-					//Grabs the "tbody" select tag for adding rows to it
-					var tbody = document.getElementById('select_empty'); 
-					
-					//Grab all the needed information to be added to the item selection list
-					item_id = $(this).closest("tr").find('td:nth-child(2)').text();
-					item_size = $(this).closest("tr").find('td:nth-child(3)').text();
-					item_model = $(this).closest("tr").find('td:nth-child(4)').text();
-					item_name = $(this).closest("tr").find('td:nth-child(5)').text();
-					
-					//Create a tr tag
-					var tr = document.createElement('tr');
-					
-					//Populate the tr tag
-					tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+box_value+"'/>" +"</td>" + 
-									"<td>" + item_id + "</td>"  + 
-									"<td>" + item_size + "</td>" +
-									"<td>" + item_model + "</td>" + 
-									"<td>" + item_name + "</td>";
-									
-					//Add the tr tag to the tbody of the item selection list
-					tbody.appendChild(tr);
-				
-				});
-			
-				//Remove the selected item from the selection list
-				$(this).remove();
-				
-				//The next following lines is a little script for checking if the item that was deselect was the last item in the cart or not
-				//If the item was the last item in the cart then we add the "Cart Empty" td tag to let the user know that the cart is empty.
-				if_cart_is_empty = $("#cart_empty").text();
-				if_cart_is_empty = if_cart_is_empty.replace(/\s/g, '');
-				if(if_cart_is_empty == "")
-				{ 
-					//Grabs the "tbody" of the cart
-					var tbody = document.getElementById('cart_empty');
-					var tr = document.createElement('tr');
-					tr.innerHTML = "<td colspan='5' id='delete_me'>" + "Cart Empty" + "</td>";
-					tbody.appendChild(tr);
+					//The next following lines is a little script for checking if the item that was deselect was the last item in the cart or not
+					//If the item was the last item in the cart then we add the "Cart Empty" td tag to let the user know that the cart is empty.
+					if_cart_is_empty = $("#cart_empty").text();
+					if_cart_is_empty = if_cart_is_empty.replace(/\s/g, '');
+					if(if_cart_is_empty == "")
+					{ 
+						//Grabs the "tbody" of the cart
+						var tbody = document.getElementById('cart_empty');
+						var tr = document.createElement('tr');
+						tr.innerHTML = "<td colspan='5' id='delete_me'>" + "Cart Empty" + "</td>";
+						tbody.appendChild(tr);
+					}
 				}
 			});
 		});
@@ -550,6 +565,50 @@
 						}
 					}
 				});
+			});
+		});
+	</script>
+	
+	<!-- The AJAX script that list the items needed for a package. Just in case the user does not know all item involve with a package -->
+	<script type="text/javascript">
+		$(function() 
+		{
+			$('.pack').change(function() //Starts the script when the user select a package from the package selection field
+			{
+				if($("#pack").val() != 0)
+				{
+					$.ajax(
+					{
+						url: "../RentalSection/Pack_List_Helper.php", //The file where the php select query is at
+						type: "post",
+						data: 
+						{
+							'pack_id': $(this).val() //assigning the value of the selected package to "pack_value"
+						},
+						success: function(data) //When the AJAX call is successful, the script does the following
+						{
+							var json_object = JSON.parse(data); //Grabs the data that is in JSON format and parse it so it is usable
+							
+							document.getElementById('pack_infor').innerHTML = "***Items in the Package*** </br>";
+							//Here the script starts processing all the item data it got from the AJAX call by looping through it in a FOR loop
+							for(var i = 0; i < json_object.length; i++)
+							{
+								var obj = json_object[i]; //First it grabs the current item in the data
+							
+								inv_name = obj['inv_name'];
+								amount = obj['count(inv_name)'];
+								
+								curr = document.getElementById('pack_infor').innerHTML;
+								
+								//Then set the first string to the div tab "item_info_label" which will be displayed for the user to see
+								document.getElementById('pack_infor').innerHTML = curr + amount + " " + inv_name + "</br>";
+							}
+						}
+					});
+				}
+				else{
+					document.getElementById('pack_infor').innerHTML = " ";
+				}
 			});
 		});
 	</script>
