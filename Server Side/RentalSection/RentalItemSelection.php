@@ -12,12 +12,6 @@
 </head>
 <body>
 
-	<label for="rent_location"> Location </label>
-	<select name="rent_location" class="rent_location" id="rent_location">
-		<option value="ca" selected="selected"> Center Activities </option>
-		<option value="hbac"> Humboldt Bay Aquatic Center </option>
-	</select>
-	
     <fieldset id='fieldset_label' style="border:none; text-align: center;">
 		<label id='header_for_table' style="font-size: 25px"> Item Selection </label>
 	</fieldset>
@@ -98,8 +92,34 @@
 			}
 		}
  ?>
- 
 	<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
+	
+		<label for="rent_location"> Location </label>
+		<select name="rent_location" class="rent_location" id="rent_location">
+<?php
+			foreach($conn->query("SELECT loc_name, loc_id
+									FROM Location") as $row)
+			{
+				if($row['loc_name'] == 'Center Activities')
+				{
+?>
+					<option value="<?= $row['loc_id'] ?>" selected='selected' >
+						<?= $row['loc_name'] ?>
+					</option>
+<?php
+				}
+				else
+				{
+?>
+					<option value="<?= $row['loc_id'] ?>">
+						<?= $row['loc_name'] ?>
+					</option>
+<?php
+				}
+			}
+?>
+		</select>
+		
 		<fieldset style="border:none; word-wrap: break-word;">
 			<div id="div_for_selection" name="div_for_selection"  style="float:left; width:65%;">
 				<fieldset id='fieldset_label' style="border:none; text-align: center;">
@@ -122,7 +142,7 @@
 						//Query for item selection with Items status 'Ready'
 						foreach($conn->query("SELECT item_Backid, inv_name, item_size, item_Frontid, item_modeltype 
 												FROM Item a, Inventory c, Status b 
-												WHERE a.inv_id = c.inv_id and a.stat_id = b.stat_id and a.location = 'Center Activities' and a.stat_id = 1") as $row)
+												WHERE a.inv_id = c.inv_id and a.stat_id = b.stat_id and a.loc_id = 1 and a.stat_id = 1") as $row)
 						{
 							//Check if the selected customer is a student or not.
 							if($is_student[0][0] == 'no' || $is_student[0][0] == 'No')
@@ -563,6 +583,9 @@
 								}
 							}
 						}
+						
+						//this resets the search functioallity after the table is refilled
+						$('input#searchItem').quicksearch('#item_selection tbody tr'); //On key search for customer names here
 					}
 				});
 			});
