@@ -34,6 +34,24 @@
 		$lvl_2 = "type = 'hidden'";
 		$disabled_2="disabled";
 	}
+	
+	if($lvl_access == "4")
+	{
+		$stat_sql_statement = "SELECT stat_id, stat_name
+									FROM Status
+									WHERE stat_name <> 'Check-out' and
+											stat_name <> 'Check-in' and
+											stat_name <> 'Reserved'";
+	}
+	else
+	{
+		$stat_sql_statement = "SELECT stat_id, stat_name
+									FROM Status
+									WHERE stat_name <> 'Check-out' and
+											stat_name <> 'Check-in' and
+											stat_name <> 'Reserved' and
+											stat_name <> 'Retire'";
+	}
 ?>
 
 </head>
@@ -65,8 +83,7 @@
 						</thead>
 						<tbody id='empty'>
 <?php
-							$list_of_status = $conn->prepare("SELECT stat_id, stat_name
-																	FROM Status");
+							$list_of_status = $conn->prepare($stat_sql_statement);
 							$list_of_status->execute();
 							$list_of_status = $list_of_status->fetchAll();
 
@@ -118,6 +135,7 @@
 										<div class="select_table_status">
 											<select id="table_status" name="table_status" style="background-color: transparent;">
 <?php
+												$status_not_on_the_list = false;
 												foreach($list_of_status as $row)
 												{
 													$cur_stat_name = $row["stat_name"];
@@ -126,11 +144,18 @@
 													if($cur_stat_name == $curr_stat_info)
 													{
 														$option_info = $option_info . " selected='selected' ";
+														$status_not_on_the_list = true;
 													}
 ?>
 													<option <?= $option_info ?> > <?=$cur_stat_name?> </option>
 <?php
-											}	
+												}
+												if($status_not_on_the_list == false)
+												{
+?>
+													<option value='nope' selected='selected'> <?=$curr_stat_info?> </option>
+<?php
+												}
 ?>
 											</select>
 										</div>
@@ -435,7 +460,7 @@
 						 $('#empty').empty();
 						 
 						 var tbody = document.getElementById('empty'); //Grabs the "tbody" select tag
-						 //we loop through the entirety of the json object array
+						 //we're going to loop through the entirety of the json object array
 						 for(var i = 0; i < json_object.length; i++){
 								 var info = json_object[i];
 								 item_Backid = info['item_Backid'];
@@ -468,6 +493,7 @@
 								 var status_list = <?php echo json_encode($list_of_status); ?>;
 								
 								 option = "";
+								 items_stat_not_in_list = false;
 								 
 								 for(var j = 0; j < status_list.length; j++){
 									 var row = status_list[j];
@@ -477,8 +503,13 @@
 									 if(stat_name == stat_info)
 									 {
 										 value = value + " selected='selected'";
+										 items_stat_not_in_list = true;
 									 }
 									 option = option + "<option " + value + " >" + stat_name + "</option> "
+								 }
+								 if(items_stat_not_in_list == false)
+								 {
+									 option = option + "<option value='nope' selected='selected'>" + stat_info + "</option> "
 								 }
 								
 								 var tr = document.createElement('tr');
@@ -521,6 +552,9 @@
 
 							 //this resets the search functioallity after the table is refilled
 						 $('input#searchItem').quicksearch('#table_info tbody tr'); //On key search for customer names here
+						 
+						 //Making the newly created rows to be disabled if the option value is 'nope'
+						 $("option[value='nope']").attr("disabled", "disabled");
 					 }
 				 });
 			 });
@@ -549,7 +583,14 @@
 			 });
 		 });
 	</script>
-
+	
+	<script type="text/javascript">
+	//Makes sure the user can not select a status option they can't
+		$(document).ready(function(){
+			$("option[value='nope']").attr("disabled", "disabled");
+		});
+	</script>
+	
 </html>
 
 
