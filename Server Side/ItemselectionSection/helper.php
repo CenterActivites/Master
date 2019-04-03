@@ -41,11 +41,11 @@
 	
 	if($loc_val == 'ca')
 	{
-		$loc_val = " and A.location = 'Center Activities'";
+		$loc_val = " and A.loc_id = '1'";
 	}
 	elseif($loc_val == 'hbac')
 	{
-		$loc_val = " and A.location = 'Humboldt Bay Aquatic Center'";
+		$loc_val = " and A.loc_id = '2'";
 	}
 	else
 	{
