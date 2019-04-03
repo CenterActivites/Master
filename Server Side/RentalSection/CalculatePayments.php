@@ -53,8 +53,8 @@
 	$calcuated = priceCal($request_date_format, $due_date_format, $array_of_items, $sel_cust);
 	
 	//Saving the total price of rental and the array of prices for each item for receipt page
-	$_SESSION['total_price'] = $calcuated['total_price'];
-	$_SESSION['receipt_prices'] = $calcuated['receipt_prices'];
+	$_SESSION['total_price'] = $calcuated[0]['total_price'];
+	$_SESSION['receipt_prices'] = $calcuated[0]['receipt_prices'];
 	
 	//Doing calculation of the taxs and the total price with tax
 	$tax_amount = (int)$calcuated[0]['total_price'] * ((float)$loc_tax[0]['loc_tax'] / 100);
