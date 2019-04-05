@@ -14,8 +14,8 @@
 
   </head>
   <body>
-    <fieldset id="pageheader_fieldset">
-      <lable id="pageheader"> Inventory Edit </lable>
+    <fieldset id="pageheader_fieldset" style="border:none; font-size: 35px;">
+		Inventory Edit
     </fieldset>
   <div id = "main_div">
     <div id="form_div">
@@ -23,69 +23,68 @@
         <fieldset id="holds_info_inv_set">
 <?php
 //inventory query
-foreach($conn->query("SELECT inv_name, cat_id, stu_day_price, day_price, stu_weekend_price, weekend_price, stu_week_price, week_price
-            FROM Inventory
-            WHERE inv_id = '$inv_id'") as $row)
-            {
-              $curr_inv_name = $row["inv_name"];
-              $curr_cat_id = $row["cat_id"];
-              $curr_stu_day_price = $row["stu_day_price"];
-              $curr_day_price = $row["day_price"];
-              $curr_student_weekend_price = $row["stu_weekend_price"];
-              $curr_weekend_price = $row["weekend_price"];
-              $curr_stu_week_price = $row["stu_week_price"];
-              $curr_week_price = $row["week_price"];
-            }
+			foreach($conn->query("SELECT inv_name, cat_id, stu_day_price, day_price, stu_weekend_price, weekend_price, stu_week_price, week_price
+									FROM Inventory
+									WHERE inv_id = '$inv_id'") as $row)
+			{
+				$curr_inv_name = $row["inv_name"];
+				$curr_cat_id = $row["cat_id"];
+				$curr_stu_day_price = $row["stu_day_price"];
+				$curr_day_price = $row["day_price"];
+				$curr_student_weekend_price = $row["stu_weekend_price"];
+				$curr_weekend_price = $row["weekend_price"];
+				$curr_stu_week_price = $row["stu_week_price"];
+				$curr_week_price = $row["week_price"];
+			}
  ?>
-        <fieldset id="inv_name_fieldset">
-          <label id="inv_lable">Inventory Name:</lable><br/><input type = "text" name = "curr_inv_name" id = "curr_inv_name" value ="<?= $curr_inv_name ?>" />
-        </fieldset>
+			<fieldset id="inv_name_fieldset" style="border:none;">
+				<label id="inv_lable">Inventory Name:</label><br/>
+				<input type = "text" name = "curr_inv_name" id = "curr_inv_name" value ="<?= $curr_inv_name ?>" />
+			</fieldset>
 
-        <fieldset id="cat_fieldset">
-          <label id="inv_lable">Category:</lable><br/> <select name = "cat_select" id="cat_select" size="1"  required >
-  			<?php
-              //Category query
-  							foreach($conn->query("SELECT  cat_id, cat_name
-  													FROM Category") as $row)
-  							{
-  								$cur_cat_name = $row["cat_name"];
-  								$cur_cat_id = $row["cat_id"];
+			<fieldset id="cat_fieldset"  style="border:none;">
+				<label id="inv_lable">Category:</label><br/> 
+				<select name = "cat_select" id="cat_select" size="1"  required >
+<?php
+					//Category query
+					foreach($conn->query("SELECT  cat_id, cat_name
+											FROM Category") as $row)
+					{
+						$cur_cat_name = $row["cat_name"];
+						$cur_cat_id = $row["cat_id"];
+						// what I need to do is get the original status of the item to fill this box.
+?>
+						<option id ='catinv' value ="<?= $cur_cat_id ?>"> <?=$cur_cat_name?> </option>
 
+<?php
+					}
+?>
+				</select><br/>
+			</fieldset>
 
-  								// what I need to do is get the original status of the item to fill this box.
+			<fieldset id="stu_day_price_fieldset" style="border:none;">
+			  <label id="inv_lable">Student Day Price:</label><br/> <input type = "text" name = "curr_stu_day_price" id = "curr_stu_day_price" value ="<?= $curr_stu_day_price ?>" /><br/>
+			</fieldset>
 
-  			?>
-  						<option id ='catinv' value ="<?= $cur_cat_id ?>"> <?=$cur_cat_name?> </option>
+			<fieldset id="reg_day_price_fieldset" style="border:none;">
+			  <label id="inv_lable">Regular Day Price:</label><br/> <input type = "text" name = "curr_day_price" id = "curr_day_price" value ="<?= $curr_day_price ?>" /><br/>
+			</fieldset>
 
-  			<?php
-  							}
-  			?>
-  							</select><br/>
-        </fieldset>
+			<fieldset id="stu_weekend_price_fieldset" style="border:none;">
+			  <label id="inv_lable">Student Weekend Price:</label><br/> <input type = "text" name = "curr_stu_weekend_price" id = "curr_stu_weekend_price" value ="<?= $curr_student_weekend_price ?>" /><br/>
+			</fieldset>
 
-        <fieldset id="stu_day_price_fieldset">
-          <label id="inv_lable">Student Day Price:</lable><br/> <input type = "text" name = "curr_stu_day_price" id = "curr_stu_day_price" value ="<?= $curr_stu_day_price ?>" /><br/>
-        </fieldset>
+			<fieldset id="regular_weekend_price_fieldset" style="border:none;">
+			  <label id="inv_lable">Regular Weekend Price:</label><br/> <input type = "text" name = "curr_weekend_price" id = "curr_weekend_price" value ="<?= $curr_weekend_price ?>" /><br/>
+			</fieldset>
 
-        <fieldset id="reg_day_price_fieldset">
-          <label id="inv_lable">Regular Day Price:</lable><br/> <input type = "text" name = "curr_day_price" id = "curr_day_price" value ="<?= $curr_day_price ?>" /><br/>
-        </fieldset>
+			<fieldset id="stu_week_price_fieldset" style="border:none;">
+			  <label id="inv_lable">Student Week Price:</label><br/> <input type = "text" name = "curr_stu_week_price" id = "curr_stu_week_price" value ="<?= $curr_stu_week_price ?>" /><br/>
+			</fieldset>
 
-        <fieldset id="stu_weekend_price_fieldset">
-          <label id="inv_lable">Student Weekend Price:</lable><br/> <input type = "text" name = "curr_stu_weekend_price" id = "curr_stu_weekend_price" value ="<?= $curr_student_weekend_price ?>" /><br/>
-        </fieldset>
-
-        <fieldset id="regular_weekend_price_fieldset">
-          <label id="inv_lable">Regular Weekend Price:</lable><br/> <input type = "text" name = "curr_weekend_price" id = "curr_weekend_price" value ="<?= $curr_weekend_price ?>" /><br/>
-        </fieldset>
-
-        <fieldset id="stu_week_price_fieldset">
-          <label id="inv_lable">Student Week Price:</lable><br/> <input type = "text" name = "curr_stu_week_price" id = "curr_stu_week_price" value ="<?= $curr_stu_week_price ?>" /><br/>
-        </fieldset>
-
-        <fieldset id="regular_week_price_fieldset">
-          <label id="inv_lable">Regular Week Price:</lable><br/> <input type = "text" name = "curr_week_price" id = "curr_week_price" value ="<?= $curr_week_price ?>" /><br/>
-        </fieldset>
+			<fieldset id="regular_week_price_fieldset" style="border:none;">
+			  <label id="inv_lable">Regular Week Price:</label><br/> <input type = "text" name = "curr_week_price" id = "curr_week_price" value ="<?= $curr_week_price ?>" /><br/>
+			</fieldset>
 
         </fieldset>
       </div>
