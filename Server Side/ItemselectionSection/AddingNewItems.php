@@ -64,8 +64,8 @@
 			<!-- The Item Location select field -->
 			<select name = "new_location" id = "new_location">
 				<option value="nope" selected> Location of Item </option>
-				<option> Center Activities </option>
-				<option> Humboldt Bay Aquatic Center </option>
+				<option value="1"> Center Activities </option>
+				<option value="2"> Humboldt Bay Aquatic Center </option>
 			</select><br/>
 			
 			<!-- The Item Purchase Price input field -->

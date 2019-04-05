@@ -48,9 +48,9 @@
 					$conn = hsu_conn_sess();
 					
 					//Item query
-					foreach($conn->query("SELECT item_Backid, A.inv_id, item_modeltype, inv_name, cat_name, item_Frontid, item_size, stat_name, location, notes, pur_price,pur_date,public,vin_num,dbw_own
-											FROM Item A, Inventory B, Category C, Status D
-											WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and item_Backid = '$item_backid'") as $row)
+					foreach($conn->query("SELECT item_Backid, A.inv_id, item_modeltype, inv_name, cat_name, item_Frontid, item_size, stat_name, loc_name, notes, pur_price,pur_date,public,vin_num,dbw_own
+											FROM Item A, Inventory B, Category C, Status D, Location E
+											WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and A.loc_id = E.loc_id and item_Backid = '$item_backid'") as $row)
 					{
 						$curr_item_backid = $row["item_Backid"];
 						$curr_inv_id = $row["inv_id"];
@@ -60,7 +60,7 @@
 						$curr_item_frontid = $row["item_Frontid"];
 						$curr_item_size = $row["item_size"];
 						$curr_item_status = $row["stat_name"];
-						$curr_item_location = $row["location"];
+						$curr_item_location = $row["loc_name"];
 						$curr_item_pur_price = $row["pur_price"];
 						$curr_item_pur_date = $row["pur_date"];
 						$curr_item_public=$row["public"];
@@ -164,7 +164,7 @@
 					$customer = $conn->prepare("select time_stamp, f_name, l_name
 												from ItemTran A, Transaction B, Customer C
 												where A.tran_id = B.trans_id and B.cust_id = C.cust_id and A.item_Backid = :a
-												group by time_stamp");
+												group by time_stamp, l_name, f_name");
 					$customer->bindValue(':a', $item_backid, PDO::PARAM_INT);
 					$customer->execute();
 					$customer = $customer->fetchAll();

@@ -827,19 +827,19 @@
 
 					$update = $conn ->prepare("UPDATE Item
 												SET item_modeltype = '$item_name',
-												item_Frontid = '$item_frontid',
-												item_size = '$item_size',
-												stat_id = '$stat_id',
-      									location = '$item_location',
-      									pur_price = '$item_pur_price',
-      									ven_id = '$item_vendor',
-      									dbw_own = '$item_owned_dbw',
-      									pur_date = '$item_pur_date',
-      									vin_num = '$item_vin_num',
-      									public = '$item_pub_use',
-      									notes = '$item_notes',
-      						     inv_id = '$item_class'
-											WHERE item_Backid = '$item_backid'");
+													item_Frontid = '$item_frontid',
+													item_size = '$item_size',
+													stat_id = '$stat_id',
+													loc_id = '$item_location',
+													pur_price = '$item_pur_price',
+													ven_id = '$item_vendor',
+													dbw_own = '$item_owned_dbw',
+													pur_date = '$item_pur_date',
+													vin_num = '$item_vin_num',
+													public = '$item_pub_use',
+													notes = '$item_notes',
+													inv_id = '$item_class'
+												WHERE item_Backid = '$item_backid'");
 					$update ->execute();
 					$conn = null;
 
@@ -914,7 +914,7 @@
 
 
 						$insert = $conn ->prepare("insert into Item
-													(item_Frontid, item_modeltype, item_size, inv_id, stat_id, location, pur_price, ven_id, dbw_own, pur_date, vin_num, public, notes)
+													(item_Frontid, item_modeltype, item_size, inv_id, stat_id, loc_id, pur_price, ven_id, dbw_own, pur_date, vin_num, public, notes)
 													values
 													(:item_Frontid, :item_modeltype, :item_size, :inv_id, :stat_id, :location, :pur_price, :ven_id, :dbw_own, :pur_date,
 													:vin_num, :public, :notes)");
@@ -924,7 +924,7 @@
 						$insert -> bindValue(':item_size', $item_size, PDO::PARAM_STR);
 						$insert -> bindValue(':inv_id', $inv_id, PDO::PARAM_INT);
 						$insert -> bindValue(':stat_id', $item_status, PDO::PARAM_INT);
-						$insert -> bindValue(':location', $item_loc, PDO::PARAM_STR);
+						$insert -> bindValue(':location', $item_loc, PDO::PARAM_INT);
 						$insert -> bindValue(':pur_price', $pur_price, PDO::PARAM_INT);
 						$insert -> bindValue(':ven_id', $ven_id, PDO::PARAM_INT);
 						$insert -> bindValue(':dbw_own', $dbw, PDO::PARAM_INT);
@@ -1344,7 +1344,7 @@
 							$insert->bindValue(':rental_id', $_SESSION['rental_id'], PDO::PARAM_INT);
 							$insert->execute();
 						
-							//If request_date is the same as the current date, then that means that the customer is picking up the item today
+							//If request_date is the same as the current date, then that means that the customer is picking up the item that day
 							//We then will change the chosen item's status to 3 which is "Check-out"
 							if($_SESSION['request_date'] == $curr_date)
 							{
@@ -1552,6 +1552,7 @@
 					//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
 					if($_SESSION['refreshed'] != "Addempl")
 					{
+						echo "we got in the if tho";
 						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
 						$_SESSION['refreshed'] = "Addempl";
 					
@@ -1565,6 +1566,7 @@
 						$access_lvl_granted = htmlspecialchars(strip_tags($_POST["access_lvl"]));
 						$title = htmlspecialchars(strip_tags($_POST["title"]));
 						$pass_w = htmlspecialchars(strip_tags($_POST["pass"]));
+						$user_n = htmlspecialchars(strip_tags($_POST["user"]));
 
 						//Separate the first and last name for the insert into database
 						$f_lnames = explode(" ", $new_emplName);
@@ -1587,24 +1589,24 @@
 									break;break;
 							}
 						}
-						$user_n = $f_name[0] . $l_name[0] . rand(0, 9) . rand(0, 9) . rand(0, 9);
 						
 						//set up insert statement
 						$insert = $conn->prepare("insert into Employee
-													(empl_id, empl_fname, empl_lname, phone_num, title, access_lvl, empl_email, user_n, pass_w)
+													(empl_id, empl_fname, empl_lname, phone_num, title, access_lvl, empl_email, user_n, pass_w, loc_id)
 													values
-													(Default, ?, ?, ?, ?, ?, ?, ?, ?)");
+													(Default, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
 						//execute the statement with variables
 						$insert ->execute([$f_name, $l_name, $new_phone, $title, $access_lvl_granted, $new_email, $user_n, $pass_w]);
-						//print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
-						//echo "\nPDO::errorInfo():\n";
-						//print_r($insert->errorInfo());
+						print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+						echo "\nPDO::errorInfo():\n";
+						print_r($insert->errorInfo());
 						
 						//end connection
 						$conn = null;
 					}
 					Employee();
 				}
+				
 				else //A "catch all" thing where if there was ever a time a button has not been press and the page somehow moves on,
 					 //We just move on back the main section page
 					 //back to the main section menu.
