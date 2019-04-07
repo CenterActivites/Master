@@ -164,33 +164,40 @@
 				}
 				elseif (isset($_POST["AddVendor"]))
 				{
-					//removal of post handler from files is needed
-					//this is an input of vendors into the Database
-					//make a connection to database
-					$conn = hsu_conn_sess();
+					//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
+					if($_SESSION['refreshed'] != "AddVendor")
+					{
+						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+						$_SESSION['refreshed'] = "AddVendor";
+						
+						//removal of post handler from files is needed
+						//this is an input of vendors into the Database
+						//make a connection to database
+						$conn = hsu_conn_sess();
+						
+						//set variables to the values input by user
+						$new_ven_name = htmlspecialchars(strip_tags($_POST["venName"]));
+						$new_ven_phone = htmlspecialchars(strip_tags($_POST["venPhone"]));
+						$new_ven_street_address = htmlspecialchars(strip_tags($_POST["venStreet"]));
+						$new_ven_city = htmlspecialchars(strip_tags($_POST["venCity"]));
+						$new_ven_state = htmlspecialchars(strip_tags($_POST["venState"]));
+						$new_ven_zip = htmlspecialchars(strip_tags($_POST["venZIP"]));
+						
+						//set up insert statement
+						$insert = $conn ->prepare("insert into Vendor
+													(ven_id, ven_name, ven_phone, ven_street_address, ven_city, ven_state, ven_zip_code)
+													values
+													(Default, ?, ?, ?, ?, ?, ?)");
+						//execute the statement with variables
+						$insert ->execute([$new_ven_name, $new_ven_phone, $new_ven_street_address, $new_ven_city, $new_ven_state, $new_ven_zip]);
+						/*
+						echo "\nPDO::errorInfo():\n";
+						print_r($insert->errorInfo());*/
+						
+						//end connection
+						$conn = null;
+					}
 					
-					//set variables to the values input by user
-					$new_ven_name = htmlspecialchars(strip_tags($_POST["venName"]));
-					$new_ven_phone = htmlspecialchars(strip_tags($_POST["venPhone"]));
-					$new_ven_street_address = htmlspecialchars(strip_tags($_POST["venStreet"]));
-					$new_ven_city = htmlspecialchars(strip_tags($_POST["venCity"]));
-					$new_ven_state = htmlspecialchars(strip_tags($_POST["venState"]));
-					$new_ven_zip = htmlspecialchars(strip_tags($_POST["venZIP"]));
-					
-					//set up insert statement
-					$insert = $conn ->prepare("insert into Vendor
-												(ven_id, ven_name, ven_phone, ven_street_address, ven_city, ven_state, ven_zip_code)
-												values
-												(Default, ?, ?, ?, ?, ?, ?)");
-					//execute the statement with variables
-					$insert ->execute([$new_ven_name, $new_ven_phone, $new_ven_street_address, $new_ven_city, $new_ven_state, $new_ven_zip]);
-					/*
-					echo "\nPDO::errorInfo():\n";
-					print_r($insert->errorInfo());*/
-					
-					
-					//end connection
-					$conn = null;
 					//return to vendors page to see updates
 					Vendor();
 				}
@@ -245,6 +252,9 @@
 				elseif(isset($_POST["moreIn"])) //Update button/Cancel button on Edit Vendor page/More Infor. Button
 												//Pushes users to the More Infor. for Vendors page
 				{
+					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+					$_SESSION['refreshed'] = "none";
+					
 					InfoVendor();
 				}
 				elseif(isset($_POST["backToMainSection"]) or isset($_POST["cancelEdit"]) or isset($_POST["updateVen"])) //Remove Vendor button on Edit Vendor page/Back button on Vendor's Infor. page.
@@ -324,97 +334,110 @@
 				}
 				elseif($_POST['which_table'] == "Late")
 				{
+					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+					$_SESSION['refreshed'] = "none";
+					
 					ItemToReturn();
 					$_SESSION['next_page'] = "ReturnItem_buttons";
 				}
 				elseif($_POST['which_table'] == "Pick")
 				{
+					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+					$_SESSION['refreshed'] = "none";
+					
 					ItemToPickUp();
 				}
 				elseif(isset($_POST["Checkout"])) //Once the user is done selecting the item the customer is picking today, this button "Checkout" will push the user
 				{
-					//Connecting to the Database
-					$conn = hsu_conn_sess();
-					
-					//Grabbing the comments about the items the user entered when doing the item return
-					$comments = strip_tags($_POST['comments']);
-					
-					//Grabbing the item array/list that were returned
-					$item_to_pick_up = $_POST["item_to_be_pick_up"];
-					
-					$items_to_pick_up = explode(',', $item_to_pick_up); //Filtering throught the array/list. Dropping all empty spots
-					$_SESSION["item_array"] = $items_to_pick_up; //Enter the newly filtered array/list into SESSION
-
-					//Grabbing customer id
-					$cust_id = $_SESSION["cust_id"];
-					
-					//Here we're going to be grabbing the 'rh_id' from the Reserve table to allow us to update the correct ReserveHis row
-					$rh_id_select = $conn->prepare("select rh_id
-													from Reserve
-													where cust_id = :cust_id");
-					$rh_id_select->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
-					$rh_id_select->execute();
-					$rh_id_select = $rh_id_select->fetchAll();
-					$rh_id = $rh_id_select[0][0];
-					
-					//Format the current date into a date without the hours and mins for both ReserveHis and Reserve table.
-					$current_date = date('Y-m-d');
-					$update = $conn->prepare("update ReserveHis
-												set pick_up_date = :current_date
-												where rh_id = :rh_id");
-					$update->bindValue(':current_date', $current_date, PDO::PARAM_STR);
-					$update->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
-					$update->execute(); //execute the query
-					
-					$update = $conn->prepare("update Reserve
-												set pick_up_date = :current_date
-												where cust_id = :cust_id");
-					$update->bindValue(':current_date', $current_date, PDO::PARAM_STR);
-					$update->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
-					$update->execute(); //execute the query
-
-					//Grabbing current date with hours and min format for Transaction time_stamp
-					$current_date = date('Y-m-d H:i:s');
-
-					//Insert statement for Transaction to record the returns
-					$insert = $conn->prepare("insert into Transaction
-												(time_stamp, cust_id, trans_type, comments, rh_id)
-												values
-												(:time_stamp, :cust_id, 'pick-up', :comments, :rh_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
-					//Binding the vars along with their respected datatype
-					$insert->bindValue(':time_stamp', $current_date, PDO::PARAM_STR);
-					$insert->bindValue(':comments', $comments, PDO::PARAM_STR);
-					$insert->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
-					$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
-					$insert->execute();
-					$tran_id = $conn->lastInsertId();
-					
-					foreach($items_to_pick_up as $item_id)
+					//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
+					if($_SESSION['refreshed'] != "Checkout")
 					{
-						$item_id_int = (int)$item_id;
+						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+						$_SESSION['refreshed'] = "Checkout";
+						
+						//Connecting to the Database
+						$conn = hsu_conn_sess();
+						
+						//Grabbing the comments about the items the user entered when doing the item return
+						$comments = strip_tags($_POST['comments']);
+						
+						//Grabbing the item array/list that were returned
+						$item_to_pick_up = $_POST["item_to_be_pick_up"];
+						
+						$items_to_pick_up = explode(',', $item_to_pick_up); //Filtering throught the array/list. Dropping all empty spots
+						$_SESSION["item_array"] = $items_to_pick_up; //Enter the newly filtered array/list into SESSION
 
-						//Insert statement for ItemTran
-						$insert = $conn->prepare("insert into ItemTran
-													(item_Backid, tran_id)
-													values
-													(:item_id, :tran_id)");
-						//Binding the vars along with their respected datatype
-						$insert->bindValue(':item_id', $item_id, PDO::PARAM_INT);
-						$insert->bindValue(':tran_id', $tran_id, PDO::PARAM_INT);
-						$insert->execute();
-						//print $insert->errorCode();
-
-						//Updating the status of the item to 'Check-out'.
-						//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, and 'In Wash' = 9
-						$update = $conn->prepare("update Item
-													set stat_id = 3
-													where item_Backid = :item_id");
-						$update->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+						//Grabbing customer id
+						$cust_id = $_SESSION["cust_id"];
+						
+						//Here we're going to be grabbing the 'rh_id' from the Reserve table to allow us to update the correct ReserveHis row
+						$rh_id_select = $conn->prepare("select rh_id
+														from Reserve
+														where cust_id = :cust_id");
+						$rh_id_select->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
+						$rh_id_select->execute();
+						$rh_id_select = $rh_id_select->fetchAll();
+						$rh_id = $rh_id_select[0][0];
+						
+						//Format the current date into a date without the hours and mins for both ReserveHis and Reserve table.
+						$current_date = date('Y-m-d');
+						$update = $conn->prepare("update ReserveHis
+													set pick_up_date = :current_date
+													where rh_id = :rh_id");
+						$update->bindValue(':current_date', $current_date, PDO::PARAM_STR);
+						$update->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
 						$update->execute(); //execute the query
+						
+						$update = $conn->prepare("update Reserve
+													set pick_up_date = :current_date
+													where cust_id = :cust_id");
+						$update->bindValue(':current_date', $current_date, PDO::PARAM_STR);
+						$update->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
+						$update->execute(); //execute the query
+
+						//Grabbing current date with hours and min format for Transaction time_stamp
+						$current_date = date('Y-m-d H:i:s');
+
+						//Insert statement for Transaction to record the returns
+						$insert = $conn->prepare("insert into Transaction
+													(time_stamp, cust_id, trans_type, comments, rh_id)
+													values
+													(:time_stamp, :cust_id, 'pick-up', :comments, :rh_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
+						//Binding the vars along with their respected datatype
+						$insert->bindValue(':time_stamp', $current_date, PDO::PARAM_STR);
+						$insert->bindValue(':comments', $comments, PDO::PARAM_STR);
+						$insert->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
+						$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
+						$insert->execute();
+						$tran_id = $conn->lastInsertId();
+						
+						foreach($items_to_pick_up as $item_id)
+						{
+							$item_id_int = (int)$item_id;
+
+							//Insert statement for ItemTran
+							$insert = $conn->prepare("insert into ItemTran
+														(item_Backid, tran_id)
+														values
+														(:item_id, :tran_id)");
+							//Binding the vars along with their respected datatype
+							$insert->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+							$insert->bindValue(':tran_id', $tran_id, PDO::PARAM_INT);
+							$insert->execute();
+							//print $insert->errorCode();
+
+							//Updating the status of the item to 'Check-out'.
+							//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, and 'In Wash' = 9
+							$update = $conn->prepare("update Item
+														set stat_id = 3
+														where item_Backid = :item_id");
+							$update->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+							$update->execute(); //execute the query
+						}
+						
+						//Remember to always to disconnect the database connection
+						$conn = null;
 					}
-					
-					//Remember to always to disconnect the database connection
-					$conn = null;
 					
 					HomePage();
 				}
@@ -490,107 +513,118 @@
 					Employee();
 				}
 				elseif(isset($_POST["select"]) or isset($_POST["cancelOnReceipt"])) //After finding the customer, the "select" button push the user onto the next page
-																					//which is the item check-in page where the user will select which item they are returning today														   //Also when the cancel button on the Receipt page is press, the screen will move back to the item check-in																	   //part of the return section
+																					//which is the item check-in page where the user will select which item they are returning today
+																					//Also when the cancel button on the Receipt page is press, the screen will move back to the item check-in																	   //part of the return section
 				{
+					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+					$_SESSION['refreshed'] = "none";
+					
 					ItemToReturn();
 				}
 				elseif(isset($_POST["Checkin"])) //Once the user is done selecting the item they are returning today, this button "Checkin" will push the user
 												//to the finally page of the item return page which is the Receipt page
 				{
-					//Connecting to the Database
-					$conn = hsu_conn_sess();
-					
-					//Grabbing the comments about the items the user entered when doing the item return
-					$comments = strip_tags($_POST['comments']);
-					
-					//Grabbing the item array/list that were returned
-					$item_to_return = $_POST["item_to_be_return"];
-					$items_to_return = explode(',', $item_to_return); //Filtering throught the array/list. Dropping all empty spots
-					$_SESSION["item_array"] = $items_to_return; //Enter the newly filtered array/list into SESSION
-
-					//Grabbing customer id
-					$cust_id = $_SESSION["cust_id"];
-
-					//Grabbing current date
-					$current_date = date('Y-m-d H:i:s');
-					
-					//Here we're going to be grabbing the 'rh_id' from the Reserve table to allow us to update the correct ReserveHis row
-					$rh_id_select = $conn->prepare("select rh_id
-													from Reserve
-													where cust_id = :cust_id");
-					$rh_id_select->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
-					$rh_id_select->execute();
-					$rh_id_select = $rh_id_select->fetchAll();
-					$rh_id = $rh_id_select[0][0];
-
-					//Insert statement for Transaction to record the returns
-					$insert = $conn->prepare("insert into Transaction
-												(time_stamp, cust_id, trans_type, comments, rh_id)
-												values
-												(:time_stamp, :cust_id, 'return', :comments, :rh_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
-					//Binding the vars along with their respected datatype
-					$insert->bindValue(':time_stamp', $current_date, PDO::PARAM_STR);
-					$insert->bindValue(':comments', $comments, PDO::PARAM_STR);
-					$insert->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
-					$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
-					$insert->execute();
-					$tran_id = $conn->lastInsertId();
-					
-					//Format the current date into a date with the hours and mins for ReserveHis table.
-					$current_date = date('Y-m-d', strtotime($current_date));
-					$update = $conn->prepare("update ReserveHis
-												set return_date = :current_date
-												where rh_id = :rh_id");
-					$update->bindValue(':current_date', $current_date, PDO::PARAM_STR);
-					$update->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
-					$update->execute(); //execute the query
-
-					foreach($items_to_return as $item_id)
+					//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
+					if($_SESSION['refreshed'] != "Checkin")
 					{
-						$item_id_int = (int)$item_id;
+						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+						$_SESSION['refreshed'] = "Checkin";
+						
+						//Connecting to the Database
+						$conn = hsu_conn_sess();
+						
+						//Grabbing the comments about the items the user entered when doing the item return
+						$comments = strip_tags($_POST['comments']);
+						
+						//Grabbing the item array/list that were returned
+						$item_to_return = $_POST["item_to_be_return"];
+						$items_to_return = explode(',', $item_to_return); //Filtering throught the array/list. Dropping all empty spots
+						$_SESSION["item_array"] = $items_to_return; //Enter the newly filtered array/list into SESSION
 
-						//Deleting the reserve cause the item was returned
-						$delete = $conn->prepare("delete from ItemReserve
-													where item_Backid = :item_id");
-						$delete->bindValue(':item_id', $item_id, PDO::PARAM_INT);
-						$delete->execute();
+						//Grabbing customer id
+						$cust_id = $_SESSION["cust_id"];
 
-						//Insert statement for ItemTran
-						$insert = $conn->prepare("insert into ItemTran
-													(item_Backid, tran_id)
+						//Grabbing current date
+						$current_date = date('Y-m-d H:i:s');
+						
+						//Here we're going to be grabbing the 'rh_id' from the Reserve table to allow us to update the correct ReserveHis row
+						$rh_id_select = $conn->prepare("select rh_id
+														from Reserve
+														where cust_id = :cust_id");
+						$rh_id_select->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
+						$rh_id_select->execute();
+						$rh_id_select = $rh_id_select->fetchAll();
+						$rh_id = $rh_id_select[0][0];
+
+						//Insert statement for Transaction to record the returns
+						$insert = $conn->prepare("insert into Transaction
+													(time_stamp, cust_id, trans_type, comments, rh_id)
 													values
-													(:item_id, :tran_id)");
+													(:time_stamp, :cust_id, 'return', :comments, :rh_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
 						//Binding the vars along with their respected datatype
-						$insert->bindValue(':item_id', $item_id, PDO::PARAM_INT);
-						$insert->bindValue(':tran_id', $tran_id, PDO::PARAM_INT);
+						$insert->bindValue(':time_stamp', $current_date, PDO::PARAM_STR);
+						$insert->bindValue(':comments', $comments, PDO::PARAM_STR);
+						$insert->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
+						$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
 						$insert->execute();
-
-						//Updating the status of the item to 'Check-in'. 
-						//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, and 'In Wash' = 9
-						$update = $conn->prepare("update Item
-													set stat_id = 4
-													where item_Backid = :item_id");
-						$update->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+						$tran_id = $conn->lastInsertId();
+						
+						//Format the current date into a date with the hours and mins for ReserveHis table.
+						$current_date = date('Y-m-d', strtotime($current_date));
+						$update = $conn->prepare("update ReserveHis
+													set return_date = :current_date
+													where rh_id = :rh_id");
+						$update->bindValue(':current_date', $current_date, PDO::PARAM_STR);
+						$update->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
 						$update->execute(); //execute the query
-					}
-					
-					//Checking if all items under the customer have been returned
-					$items_returned = $conn->prepare("SELECT b.item_Backid
-									FROM Reserve a, ItemReserve b
-									WHERE a.rental_id = b.rental_id and a.cust_id = :cust_id");
-					$items_returned->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
-					$items_returned->execute();
-					$display_array = $items_returned->fetchAll();
-					$array_size = count($display_array);
-					
-					//If all items have been return then delete the reserve
-					if($array_size == 0)
-					{
-						//Deleting the reserve cause all items was returned
-						$delete = $conn->prepare("delete from Reserve
-													where cust_id = :cust_id");
-						$delete->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
-						$delete->execute();
+
+						foreach($items_to_return as $item_id)
+						{
+							$item_id_int = (int)$item_id;
+
+							//Deleting the reserve cause the item was returned
+							$delete = $conn->prepare("delete from ItemReserve
+														where item_Backid = :item_id");
+							$delete->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+							$delete->execute();
+
+							//Insert statement for ItemTran
+							$insert = $conn->prepare("insert into ItemTran
+														(item_Backid, tran_id)
+														values
+														(:item_id, :tran_id)");
+							//Binding the vars along with their respected datatype
+							$insert->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+							$insert->bindValue(':tran_id', $tran_id, PDO::PARAM_INT);
+							$insert->execute();
+
+							//Updating the status of the item to 'Check-in'. 
+							//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, and 'In Wash' = 9
+							$update = $conn->prepare("update Item
+														set stat_id = 4
+														where item_Backid = :item_id");
+							$update->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+							$update->execute(); //execute the query
+						}
+						
+						//Checking if all items under the customer have been returned
+						$items_returned = $conn->prepare("SELECT b.item_Backid
+										FROM Reserve a, ItemReserve b
+										WHERE a.rental_id = b.rental_id and a.cust_id = :cust_id");
+						$items_returned->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
+						$items_returned->execute();
+						$display_array = $items_returned->fetchAll();
+						$array_size = count($display_array);
+						
+						//If all items have been return then delete the reserve
+						if($array_size == 0)
+						{
+							//Deleting the reserve cause all items was returned
+							$delete = $conn->prepare("delete from Reserve
+														where cust_id = :cust_id");
+							$delete->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
+							$delete->execute();
+						}
 					}
 ?>
 			</div>
@@ -681,11 +715,17 @@
 				elseif(isset($_POST["addinventory"])) //Add Item button on the Item Selection Main Menu page. Pushes users to the add item
 													//page
 				{
+					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+					$_SESSION['refreshed'] = "none";
+					
 					AddInventory();
 				}
 				elseif(isset($_POST["additem"])) //Add Item button on the Item Selection Main Menu page. Pushes users to the add item
 												//page
 				{
+					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+					$_SESSION['refreshed'] = "none";
+					
 					AddItems();
 				}
 				elseif(isset($_POST["moreinfo"])) //Update button/Cancel button on Edit Vendor page/More Infor. Button
@@ -787,19 +827,19 @@
 
 					$update = $conn ->prepare("UPDATE Item
 												SET item_modeltype = '$item_name',
-												item_Frontid = '$item_frontid',
-												item_size = '$item_size',
-												stat_id = '$stat_id',
-      									location = '$item_location',
-      									pur_price = '$item_pur_price',
-      									ven_id = '$item_vendor',
-      									dbw_own = '$item_owned_dbw',
-      									pur_date = '$item_pur_date',
-      									vin_num = '$item_vin_num',
-      									public = '$item_pub_use',
-      									notes = '$item_notes',
-      						     inv_id = '$item_class'
-											WHERE item_Backid = '$item_backid'");
+													item_Frontid = '$item_frontid',
+													item_size = '$item_size',
+													stat_id = '$stat_id',
+													loc_id = '$item_location',
+													pur_price = '$item_pur_price',
+													ven_id = '$item_vendor',
+													dbw_own = '$item_owned_dbw',
+													pur_date = '$item_pur_date',
+													vin_num = '$item_vin_num',
+													public = '$item_pub_use',
+													notes = '$item_notes',
+													inv_id = '$item_class'
+												WHERE item_Backid = '$item_backid'");
 					$update ->execute();
 					$conn = null;
 
@@ -817,73 +857,87 @@
 				}
 				elseif(isset($_POST["add"]))
 				{
-					//Connecting to the Database
-					$conn = hsu_conn_sess();
+					//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
+					if($_SESSION['refreshed'] != "add")
+					{
+						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+						$_SESSION['refreshed'] = "add";
+						
+						//Connecting to the Database
+						$conn = hsu_conn_sess();
 
-					$new_inv_name = htmlspecialchars(strip_tags($_POST["new_inv_name"]));
-					$new_cat = (int)htmlspecialchars(strip_tags($_POST["cat_id"]));
-					$new_stu_day_price = htmlspecialchars(strip_tags($_POST["new_stu_day_price"]));
-					$new_public_day_price = htmlspecialchars(strip_tags($_POST["new_public_day_price"]));
-					$new_student_week_price = htmlspecialchars(strip_tags($_POST["new_student_week_price"]));
-					$new_public_week_price = htmlspecialchars(strip_tags($_POST["new_public_week_price"]));
-					$new_student_weekend_price = htmlspecialchars(strip_tags($_POST["new_student_weekend_price"]));
-					$new_public_weekend_price =htmlspecialchars(strip_tags($_POST["new_public_weekend_price"]));
+						$new_inv_name = htmlspecialchars(strip_tags($_POST["new_inv_name"]));
+						$new_cat = (int)htmlspecialchars(strip_tags($_POST["cat_id"]));
+						$new_stu_day_price = htmlspecialchars(strip_tags($_POST["new_stu_day_price"]));
+						$new_public_day_price = htmlspecialchars(strip_tags($_POST["new_public_day_price"]));
+						$new_student_week_price = htmlspecialchars(strip_tags($_POST["new_student_week_price"]));
+						$new_public_week_price = htmlspecialchars(strip_tags($_POST["new_public_week_price"]));
+						$new_student_weekend_price = htmlspecialchars(strip_tags($_POST["new_student_weekend_price"]));
+						$new_public_weekend_price =htmlspecialchars(strip_tags($_POST["new_public_weekend_price"]));
 
 
-					$insert = $conn ->prepare("insert into Inventory
-					(inv_id, inv_name, cat_id, stu_day_price, day_price, stu_weekend_price, weekend_price, stu_week_price, week_price)
-					values
-					(Default, ?, ?, ?, ?, ?, ?, ?, ?)");
+						$insert = $conn ->prepare("insert into Inventory
+						(inv_id, inv_name, cat_id, stu_day_price, day_price, stu_weekend_price, weekend_price, stu_week_price, week_price)
+						values
+						(Default, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-					$insert ->execute([$new_inv_name, $new_cat, $new_stu_day_price, $new_public_day_price, $new_student_week_price, $new_public_week_price, $new_student_weekend_price, $new_public_weekend_price]);
+						$insert ->execute([$new_inv_name, $new_cat, $new_stu_day_price, $new_public_day_price, $new_student_week_price, $new_public_week_price, $new_student_weekend_price, $new_public_weekend_price]);
 
-					$conn = null;
+						$conn = null;
+					}
 					Itemselection();
 				}
 				elseif (isset($_POST["add2"]))
 				{
-					//Connecting to the Database
-					$conn = hsu_conn_sess();
+					//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
+					if($_SESSION['refreshed'] != "add2")
+					{
+						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+						$_SESSION['refreshed'] = "add2";
+						
+						//Connecting to the Database
+						$conn = hsu_conn_sess();
 
-					$inv_id = (int)htmlspecialchars(strip_tags($_POST["inv_id"]));
-					$front_id = htmlspecialchars(strip_tags($_POST["new_front_id"]));
-					$item_name = htmlspecialchars(strip_tags($_POST["new_item_name"]));
-					$item_size = htmlspecialchars(strip_tags($_POST["new_size"]));
-					$item_status = htmlspecialchars(strip_tags($_POST["status"]));
-					$item_loc = htmlspecialchars(strip_tags($_POST["new_location"]));
-					$pur_price = (int)htmlspecialchars(strip_tags($_POST["new_purchase_price"]));
-					$ven_id = (int)htmlspecialchars(strip_tags($_POST["ven_id"]));
-					$dbw = (int)htmlspecialchars(strip_tags($_POST["dbw"]));
-					$date_pur = htmlspecialchars(strip_tags($_POST["new_purchase_date"]));
-					$vin_num = (int)htmlspecialchars(strip_tags($_POST["new_vin"]));
-					$pub = (int)htmlspecialchars(strip_tags($_POST["pub"]));
-					$notes = (int)htmlspecialchars(strip_tags($_POST["new_notes"]));
+						$inv_id = (int)htmlspecialchars(strip_tags($_POST["inv_id"]));
+						$front_id = htmlspecialchars(strip_tags($_POST["new_front_id"]));
+						$item_name = htmlspecialchars(strip_tags($_POST["new_item_name"]));
+						$item_size = htmlspecialchars(strip_tags($_POST["new_size"]));
+						$item_status = htmlspecialchars(strip_tags($_POST["status"]));
+						$item_loc = htmlspecialchars(strip_tags($_POST["new_location"]));
+						$pur_price = (int)htmlspecialchars(strip_tags($_POST["new_purchase_price"]));
+						$ven_id = (int)htmlspecialchars(strip_tags($_POST["ven_id"]));
+						$dbw = (int)htmlspecialchars(strip_tags($_POST["dbw"]));
+						$date_pur = htmlspecialchars(strip_tags($_POST["new_purchase_date"]));
+						$vin_num = (int)htmlspecialchars(strip_tags($_POST["new_vin"]));
+						$pub = (int)htmlspecialchars(strip_tags($_POST["pub"]));
+						$notes = (int)htmlspecialchars(strip_tags($_POST["new_notes"]));
 
 
-					$insert = $conn ->prepare("insert into Item
-												(item_Frontid, item_modeltype, item_size, inv_id, stat_id, location, pur_price, ven_id, dbw_own, pur_date, vin_num, public, notes)
-												values
-												(:item_Frontid, :item_modeltype, :item_size, :inv_id, :stat_id, :location, :pur_price, :ven_id, :dbw_own, :pur_date,
-												:vin_num, :public, :notes)");
+						$insert = $conn ->prepare("insert into Item
+													(item_Frontid, item_modeltype, item_size, inv_id, stat_id, loc_id, pur_price, ven_id, dbw_own, pur_date, vin_num, public, notes)
+													values
+													(:item_Frontid, :item_modeltype, :item_size, :inv_id, :stat_id, :location, :pur_price, :ven_id, :dbw_own, :pur_date,
+													:vin_num, :public, :notes)");
 
-					$insert -> bindValue(':item_Frontid', $front_id, PDO::PARAM_STR);
-					$insert -> bindValue(':item_modeltype', $item_name, PDO::PARAM_STR);
-					$insert -> bindValue(':item_size', $item_size, PDO::PARAM_STR);
-					$insert -> bindValue(':inv_id', $inv_id, PDO::PARAM_INT);
-					$insert -> bindValue(':stat_id', $item_status, PDO::PARAM_INT);
-					$insert -> bindValue(':location', $item_loc, PDO::PARAM_STR);
-					$insert -> bindValue(':pur_price', $pur_price, PDO::PARAM_INT);
-					$insert -> bindValue(':ven_id', $ven_id, PDO::PARAM_INT);
-					$insert -> bindValue(':dbw_own', $dbw, PDO::PARAM_INT);
-					$insert -> bindValue(':pur_date', $date_pur, PDO::PARAM_STR);
-					$insert -> bindValue(':vin_num', $vin_num, PDO::PARAM_INT);
-					$insert -> bindValue(':public', $pub, PDO::PARAM_INT);
-					$insert -> bindValue(':notes', $notes, PDO::PARAM_STR);
+						$insert -> bindValue(':item_Frontid', $front_id, PDO::PARAM_STR);
+						$insert -> bindValue(':item_modeltype', $item_name, PDO::PARAM_STR);
+						$insert -> bindValue(':item_size', $item_size, PDO::PARAM_STR);
+						$insert -> bindValue(':inv_id', $inv_id, PDO::PARAM_INT);
+						$insert -> bindValue(':stat_id', $item_status, PDO::PARAM_INT);
+						$insert -> bindValue(':location', $item_loc, PDO::PARAM_INT);
+						$insert -> bindValue(':pur_price', $pur_price, PDO::PARAM_INT);
+						$insert -> bindValue(':ven_id', $ven_id, PDO::PARAM_INT);
+						$insert -> bindValue(':dbw_own', $dbw, PDO::PARAM_INT);
+						$insert -> bindValue(':pur_date', $date_pur, PDO::PARAM_STR);
+						$insert -> bindValue(':vin_num', $vin_num, PDO::PARAM_INT);
+						$insert -> bindValue(':public', $pub, PDO::PARAM_INT);
+						$insert -> bindValue(':notes', $notes, PDO::PARAM_STR);
 
-					$insert ->execute();
-					//print $insert->errorCode(); // <<----- The code to print the error code
+						$insert ->execute();
+						//print $insert->errorCode(); // <<----- The code to print the error code
 
-					$conn = null;
+						$conn = null;
+					}
 					Itemselection();
 				}
 				elseif(isset($_POST["cancel"]) or isset($_POST["backoniteminfo"]) or isset($_POST["cancelEdit"]) ) //Cancel buttons on the Adding New Items page.
@@ -914,7 +968,6 @@
 	//======================================================================
 	//Customer Selection Section
 	//======================================================================
-
 	elseif($_SESSION['next_page'] == "Customer_Section")
 	{
 	    if(isset($_POST["LogOut"]))
@@ -982,12 +1035,9 @@
 					//Connecting to the Database
 					$conn = hsu_conn_sess();
 					$cust_id = strip_tags($_POST['cust_id']);
-
 					$delete = $conn ->prepare("DELETE FROM Customer
 												WHERE cust_id = '$cust_id'");
-
 					$delete -> execute();
-
 					$conn = null;
 					CustomerSelection();
 				}
@@ -1007,7 +1057,6 @@
 					$cust_state = strip_tags($_POST['cust_state']);
 					$cust_zip = strip_tags($_POST["cust_zip"]);
 					$cust_is_empl = strip_tags($_POST["empl_stat"]);
-
 					if($cust_stu_id == "")
 					{
 						$cust_is_student = "No";
@@ -1016,7 +1065,6 @@
 					{
 						$cust_is_student = "Yes";
 					}
-
 					$update = $conn ->prepare("UPDATE Customer
 												SET f_name = :a,
 													l_name = :b,
@@ -1049,11 +1097,9 @@
 					/*print $update -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
 					echo "\nPDO::errorInfo():\n";
 					print_r($update->errorInfo());*/
-
 					$conn = null;	
 					
 					CustomerInfo();
-
 				}
 				elseif(isset($_POST["viewTran"]) or isset($_POST["PrintReceipt"]) or isset($_POST["cancelOnReceipt"])) //View Transaction button on Customer Information page
 																													  //PrintReceipt/Cancel buttons Receipt page.
@@ -1077,56 +1123,65 @@
 				}
 				elseif(isset($_POST["newCust"]))
 				{
+					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+					$_SESSION['refreshed'] = "none";
+					
 					addcust();
 				}
 				elseif(isset($_POST["Addcust"]))
 				{
-					//Connecting to the Database
-					$conn = hsu_conn_sess();
-					
-					//set variables to the values input by user
-					$new_custName = htmlspecialchars(strip_tags($_POST["cust_name"]));
-					$new_address = htmlspecialchars(strip_tags($_POST["street_address"]));
-					$new_phone = htmlspecialchars(strip_tags($_POST["phone"]));
-					$new_email = htmlspecialchars(strip_tags($_POST["email"]));
-					$new_is_student = htmlspecialchars(strip_tags($_POST["is_student"]));
-					$new_is_empl = htmlspecialchars(strip_tags($_POST["empl_stat"]));
-					$new_city = htmlspecialchars(strip_tags($_POST["city"]));
-					$new_state = htmlspecialchars(strip_tags($_POST["state"]));
-					$new_zip = htmlspecialchars(strip_tags($_POST["zip"]));
-					
-					//checks which id was entered. Student or Driver License
-					if(isset($_POST["stu_id"]))
+					//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
+					if($_SESSION['refreshed'] != "Addcust")
 					{
-						$new_stu_id = htmlspecialchars(strip_tags($_POST["stu_id"]));
-						$new_drive_id = "";
-					}
-					else
-					{
-						$new_drive_id = htmlspecialchars(strip_tags($_POST["drive_id"]));
-						$new_stu_id = "";
-					}
+						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+						$_SESSION['refreshed'] = "Addcust";
+						
+						//Connecting to the Database
+						$conn = hsu_conn_sess();
+						
+						//set variables to the values input by user
+						$new_custName = htmlspecialchars(strip_tags($_POST["cust_name"]));
+						$new_address = htmlspecialchars(strip_tags($_POST["street_address"]));
+						$new_phone = htmlspecialchars(strip_tags($_POST["phone"]));
+						$new_email = htmlspecialchars(strip_tags($_POST["email"]));
+						$new_is_student = htmlspecialchars(strip_tags($_POST["is_student"]));
+						$new_is_empl = htmlspecialchars(strip_tags($_POST["empl_stat"]));
+						$new_city = htmlspecialchars(strip_tags($_POST["city"]));
+						$new_state = htmlspecialchars(strip_tags($_POST["state"]));
+						$new_zip = htmlspecialchars(strip_tags($_POST["zip"]));
+						
+						//checks which id was entered. Student or Driver License
+						if(isset($_POST["stu_id"]))
+						{
+							$new_stu_id = htmlspecialchars(strip_tags($_POST["stu_id"]));
+							$new_drive_id = "";
+						}
+						else
+						{
+							$new_drive_id = htmlspecialchars(strip_tags($_POST["drive_id"]));
+							$new_stu_id = "";
+						}
 
-					//Separate the first and last name for the insert into database
-					$f_lnames = explode(" ", $new_custName);
-					$f_name = $f_lnames[0];
-					$l_name = $f_lnames[1];
-					
-					//set up insert statement
-					$insert = $conn ->prepare("insert into Customer
-												(cust_id, f_name, l_name, c_stu_id, c_driver_id, c_street_addr, c_city, c_state, c_zip_code, c_phone, c_email, is_student, is_employee)
-												values
-												(Default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-					//execute the statement with variables
-					$insert ->execute([$f_name, $l_name, $new_stu_id, $new_drive_id, $new_address, $new_city, $new_state, $new_zip, $new_phone, $new_email, $new_is_student, $new_is_empl]);
-					
-					/*print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
-					echo "\nPDO::errorInfo():\n";
-					print_r($insert->errorInfo());*/
-					
-					//end connection
-					$conn = null;
-					
+						//Separate the first and last name for the insert into database
+						$f_lnames = explode(" ", $new_custName);
+						$f_name = $f_lnames[0];
+						$l_name = $f_lnames[1];
+						
+						//set up insert statement
+						$insert = $conn ->prepare("insert into Customer
+													(cust_id, f_name, l_name, c_stu_id, c_driver_id, c_street_addr, c_city, c_state, c_zip_code, c_phone, c_email, is_student, is_employee)
+													values
+													(Default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+						//execute the statement with variables
+						$insert ->execute([$f_name, $l_name, $new_stu_id, $new_drive_id, $new_address, $new_city, $new_state, $new_zip, $new_phone, $new_email, $new_is_student, $new_is_empl]);
+						
+						/*print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+						echo "\nPDO::errorInfo():\n";
+						print_r($insert->errorInfo());*/
+						
+						//end connection
+						$conn = null;
+					}
 					CustomerSelection();
 				}
 				
@@ -1142,69 +1197,91 @@
 				}
 				elseif(isset($_POST["finalize"])) //Finalize button. Pushes users to the receipt for printing purposes.
 				{
-					//Connecting to the Database
-					$conn = hsu_conn_sess();
-
-					//Grabbing the cust_id
-					$cust_id = $_SESSION['sel_user'];
-
-					//Grab the array of items selected
-					$array_of_items = $_SESSION['array_of_items'];
-
-					//First we got the current date and see if the current date is the same with the request date. If so then logically this means the customer
-					//is planning to pick up the item as well then we just take this time to change the item status to "check-out" so it wouldn't show up for rent
-					$curr_date = Date("Y-m-d");
-					$current_date = date('Y-m-d H:i:s');
-					
-					//Grabbing all the information we need for the insert to ReserveHis, Reserve, and ItemReserve tables
-					$request_date = $_SESSION['request_date'];
-					$due_date = $_SESSION['due_date'];
-					$sel_cust = $_SESSION['sel_user'];
-					$total_price = (int)$_SESSION['total_price'];
-					
-					//Formatting the both request and due dates into the mysql format which is YYYY-MM-DD
-					$sql_request_date = date('Y-m-d', strtotime($request_date));
-					$sql_due_date = date('Y-m-d', strtotime($due_date));
-					
-					//The following "if" statement sees if the request date is the current date. If so then the customer probably is picking up the item right there and then.
-					//So if then the code will have to insert the current date instead of NULL as it usually is for a future date
-					if($request_date == $curr_date)
+					//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
+					if($_SESSION['refreshed'] != "finalize")
 					{
-						//Formatting the current date into mysql format for insert
-						$curr_date = date('Y-m-d', strtotime($curr_date));
+						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+						$_SESSION['refreshed'] = "finalize";
+		
+						//Connecting to the Database
+						$conn = hsu_conn_sess();
+
+						//Grabbing the cust_id
+						$cust_id = $_SESSION['sel_user'];
+
+						//Grab the array of items selected
+						$array_of_items = $_SESSION['array_of_items'];
+
+						//First we got the current date and see if the current date is the same with the request date. If so then logically this means the customer
+						//is planning to pick up the item as well then we just take this time to change the item status to "check-out" so it wouldn't show up for rent
+						$curr_date = Date("Y-m-d");
+						$current_date = date('Y-m-d H:i:s');
+						
+						//Grabbing all the information we need for the insert to ReserveHis, Reserve, and ItemReserve tables
+						$request_date = $_SESSION['request_date'];
+						$due_date = $_SESSION['due_date'];
+						$sel_cust = $_SESSION['sel_user'];
+						$total_price = (int)$_SESSION['total_price'];
+						
+						//Formatting the both request and due dates into the mysql format which is YYYY-MM-DD
+						$sql_request_date = date('Y-m-d', strtotime($request_date));
+						$sql_due_date = date('Y-m-d', strtotime($due_date));
+						
+						//The following "if" statement sees if the request date is the current date. If so then the customer probably is picking up the item right there and then.
+						//So if then the code will have to insert the current date instead of NULL as it usually is for a future date
+						if($request_date == $curr_date)
+						{
+							//Formatting the current date into mysql format for insert
+							$curr_date = date('Y-m-d', strtotime($curr_date));
+							$pick_up_check = true;
+							$sql = ", :curr_date";
+						}
+						elseif($request_date < $curr_date)
+						{
+							$sql = ", :sql_request_date";
+						}
+						else
+						{
+							$pick_up_check = false;
+							$sql = ", NULL";
+						}
 						
 						//Insert statement for ReserveHis. For having a searchable history for all reserves that happens
 						$insert = $conn->prepare("insert into ReserveHis
 													(request_date, return_date, due_date, pick_up_date, total_cost, cust_id)
 													values
-													(:sql_request_date, NULL, :sql_due_date, :curr_date, :total_price, :cust_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
-
+													(:sql_request_date, NULL, :sql_due_date" . $sql . ", :total_price, :cust_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
 						//Binding the vars along with their respected datatype
 						$insert->bindValue(':sql_request_date', $sql_request_date, PDO::PARAM_STR);
 						$insert->bindValue(':sql_due_date', $sql_due_date, PDO::PARAM_STR);
-						$insert->bindValue(':curr_date', $curr_date, PDO::PARAM_STR);
+						if($pick_up_check == true)
+						{
+							$insert->bindValue(':curr_date', $curr_date, PDO::PARAM_STR);
+						}
 						$insert->bindValue(':total_price', $total_price, PDO::PARAM_INT);
 						$insert->bindValue(':cust_id', $sel_cust, PDO::PARAM_INT);
 						$insert->execute();
-						//print "Insert to Reserve History: " . $insert->errorCode();
-						//echo "</br>";
+						print "Insert to Reserve History: " . $insert->errorCode();
+						echo "</br>";
 						$rh_id = $conn->lastInsertId();
-						
+					
 						//Insert statement for Item Reservation
 						$insert = $conn->prepare("insert into Reserve
 													(request_date, due_date, pick_up_date, cust_id, rh_id)
 													values
-													(:sql_request_date, :sql_due_date, :curr_date, :cust_id, :rh_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
-
+													(:sql_request_date, :sql_due_date" . $sql . ", :cust_id, :rh_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
 						//Binding the vars along with their respected datatype
 						$insert->bindValue(':sql_request_date', $sql_request_date, PDO::PARAM_STR);
 						$insert->bindValue(':sql_due_date', $sql_due_date, PDO::PARAM_STR);
-						$insert->bindValue(':curr_date', $curr_date, PDO::PARAM_STR);
+						if($pick_up_check == true)
+						{
+							$insert->bindValue(':curr_date', $curr_date, PDO::PARAM_STR);
+						}
 						$insert->bindValue(':cust_id', $sel_cust, PDO::PARAM_INT);
 						$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
 						$insert->execute();
-						//print "Insert to Reserve: " . $insert->errorCode();
-						//echo "</br>";
+						print "Insert to Reserve: " . $insert->errorCode();
+						echo "</br>";
 						$_SESSION['rental_id'] = $conn->lastInsertId();
 
 						//Insert statement for Transaction
@@ -1217,102 +1294,63 @@
 						$insert->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
 						$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
 						$insert->execute();
-						//print "Insert to Transaction: " . $insert->errorCode();
-						//echo "</br>";
+						print "Insert to Transaction: " . $insert->errorCode();
+						echo "</br>";
 						$tran_id = $conn->lastInsertId();
-						
-					}
-					else
-					{
-						//Insert statement for ReserveHis. For having a searchable history for all reserves that happens
-						$insert = $conn->prepare("insert into ReserveHis
-													(request_date, return_date, due_date, pick_up_date, total_cost, cust_id)
-													values
-													(:sql_request_date, NULL, :sql_due_date, NULL, :total_price, :cust_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
 
-						//Binding the vars along with their respected datatype
-						$insert->bindValue(':sql_request_date', $sql_request_date, PDO::PARAM_STR);
-						$insert->bindValue(':sql_due_date', $sql_due_date, PDO::PARAM_STR);
-						$insert->bindValue(':total_price', $total_price, PDO::PARAM_INT);
-						$insert->bindValue(':cust_id', $sel_cust, PDO::PARAM_INT);
-						$insert->execute();
-						//print "Insert to Reserve History: " . $insert->errorCode();
-						//echo "</br>";
-						$rh_id = $conn->lastInsertId();
-						
-						//Insert statement for Item Reservation
-						$insert = $conn->prepare("insert into Reserve
-													(request_date, due_date, pick_up_date, cust_id, rh_id)
-													values
-													(:sql_request_date, :sql_due_date, NULL, :cust_id, :rh_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
-
-						//Binding the vars along with their respected datatype
-						$insert->bindValue(':sql_request_date', $sql_request_date, PDO::PARAM_STR);
-						$insert->bindValue(':sql_due_date', $sql_due_date, PDO::PARAM_STR);
-						$insert->bindValue(':cust_id', $sel_cust, PDO::PARAM_INT);
-						$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
-						$insert->execute();
-						//print "Insert to Reserve: " . $insert->errorCode();
-						//echo "</br>";
-						$_SESSION['rental_id'] = $conn->lastInsertId();
-
-						//Insert statement for Item Transaction
-						$insert = $conn->prepare("insert into Transaction
-													(time_stamp, cust_id, trans_type, comments, rh_id)
-													values
-													(:time_stamp, :cust_id, 'reserve', NULL, :rh_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
-						//Binding the vars along with their respected datatype
-						$insert->bindValue(':time_stamp', $current_date, PDO::PARAM_STR);
-						$insert->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
-						$insert->bindValue(':rh_id', $rh_id, PDO::PARAM_INT);
-						$insert->execute();
-						//print "Insert to Transaction: " . $insert->errorCode();
-						//echo "</br>";
-						$tran_id = $conn->lastInsertId();
-					}
-
-					//Start of the FOR loop to insert all the selected items into the ItemReserve, ItemTran, and an update for the Item Tables
-					foreach($array_of_items as $item_id)
-					{
-						//Insert statement for ItemReserve
-						$insert = $conn->prepare("insert into ItemReserve
-													(item_Backid, rental_id)
-													values
-													(:item_id, :rental_id)");
-						$insert->bindValue(':item_id', $item_id, PDO::PARAM_INT);
-						$insert->bindValue(':rental_id', $_SESSION['rental_id'], PDO::PARAM_INT);
-						$insert->execute();
-					
-						//If request_date is the same as the current date, then that means that the customer is picking up the item today
-						//We then will change the chosen item's status to 3 which is "Check-out"
-						if($_SESSION['request_date'] == $curr_date)
+						//Start of the FOR loop to insert all the selected items into the ItemReserve, ItemTran, and an update for the Item Tables
+						foreach($array_of_items as $item_id)
 						{
-							//Setting up the update query
-							//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, and 'In Wash' = 9
-							$update = $conn->prepare("update Item
-										set stat_id = 3
-										where item_Backid = :item_id");
-							$update->bindValue(':item_id', (int)$item_id, PDO::PARAM_INT);
-							$update->execute(); //execute the query
+							//Insert statement for ItemReserve
+							$insert = $conn->prepare("insert into ItemReserve
+														(item_Backid, rental_id)
+														values
+														(:item_id, :rental_id)");
+							$insert->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+							$insert->bindValue(':rental_id', $_SESSION['rental_id'], PDO::PARAM_INT);
+							$insert->execute();
+						
+							//If request_date is the same as the current date, then that means that the customer is picking up the item that day
+							//We then will change the chosen item's status to 3 which is "Check-out"
+							if($_SESSION['request_date'] <= $curr_date)
+							{
+								//Setting up the update query
+								//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, and 'In Wash' = 9
+								$update = $conn->prepare("update Item
+											set stat_id = 3
+											where item_Backid = :item_id");
+								$update->bindValue(':item_id', (int)$item_id, PDO::PARAM_INT);
+								$update->execute(); //execute the query
+							}
+							if($_SESSION['request_date'] > $curr_date)
+							{
+								//Setting up the update query
+								//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, and 'In Wash' = 9
+								$update = $conn->prepare("update Item
+											set stat_id = 7
+											where item_Backid = :item_id");
+								$update->bindValue(':item_id', (int)$item_id, PDO::PARAM_INT);
+								$update->execute(); //execute the query
+							}
+
+							//Insert statement for ItemTran
+							$insert = $conn->prepare("insert into ItemTran
+														(item_Backid, tran_id)
+														values
+														(:item_id, :tran_id)");
+							//Binding the vars along with their respected datatype
+							$insert->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+							$insert->bindValue(':tran_id', $tran_id, PDO::PARAM_INT);
+							$insert->execute();
 						}
 
-						//Insert statement for ItemTran
-						$insert = $conn->prepare("insert into ItemTran
-													(item_Backid, tran_id)
-													values
-													(:item_id, :tran_id)");
-						//Binding the vars along with their respected datatype
-						$insert->bindValue(':item_id', $item_id, PDO::PARAM_INT);
-						$insert->bindValue(':tran_id', $tran_id, PDO::PARAM_INT);
-						$insert->execute();
+						//remember to close the PDO connection
+						$conn = null;
 					}
-
-					//remember to close the PDO connection
-					$conn = null;
 ?>
 			</div>
 <?php
-					Receipt();
+						Receipt();
 ?>
 			<div class="background">
 <?php
@@ -1320,9 +1358,9 @@
 				elseif(isset($_POST["on_to_rental"])) //Select button on the Customer Selection page.
 														//Pushes users to the Rental Item Selecting page.
 				{
-					//the date the customer wants to take it
+					//the date the customer wants to take out the rental
 					$_SESSION['request_date'] = htmlspecialchars(strip_tags($_POST["pickUpDate"]));
-					//the date the customer wants to return it
+					//the date the customer wants to return the rental
 					$_SESSION['due_date'] = htmlspecialchars(strip_tags($_POST["returnDate"]));
 					
 					//Grab the user
@@ -1344,6 +1382,9 @@
 					$array_of_int_items = array_map('intval', $array_of_string_items);
 
 					$_SESSION["array_of_items"] = $array_of_int_items;         //input the array of item ids into session for later purposes
+					
+					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+					$_SESSION['refreshed'] = "none";
 					
 					CalPay();      //moves the user to the calculate payment page
 
@@ -1368,7 +1409,6 @@
 	//======================================================================
 	//Employee Section
 	//======================================================================
-
 	elseif($_SESSION['next_page'] == "Employee")
 	{
 	    if(isset($_POST["LogOut"]))
@@ -1436,12 +1476,9 @@
 					//Connecting to the Database
 					$conn = hsu_conn_sess();
 					$empl_id = $_SESSION['empl_id'];
-
 					$delete = $conn ->prepare("DELETE FROM Employee
 												WHERE empl_id = '$empl_id'");
-
 					$delete -> execute();
-
 					$conn = null;
 					Employee();
 				}
@@ -1456,8 +1493,6 @@
 					$empl_email = strip_tags($_POST['empl_email']);
 					$title = strip_tags($_POST['title']);
 					$access_lvl = strip_tags($_POST['access_lvl']);
-
-
 					$update = $conn ->prepare("UPDATE Employee
 												SET empl_fname = '$empl_fname',
 													empl_lname = '$empl_lname',
@@ -1466,14 +1501,10 @@
 													title = '$title',
 													access_lvl = '$access_lvl'
 												WHERE empl_id = '$empl_id'");
-
 					$update ->execute();
-
-
 					$conn = null;
 					//next inserts
 					EmployeeInfo();
-
 				}
 				/*elseif(isset($_POST["viewAct"])) //View Actions button on Customer Information page
 																													  //PrintReceipt/Cancel buttons Receipt page.
@@ -1487,61 +1518,71 @@
 				}
 				elseif(isset($_POST["newEmpl"]))
 				{
+					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+					$_SESSION['refreshed'] = "none";
+					
 					addempl();
 				}
 				elseif(isset($_POST["Addempl"]))
 				{
-					//Connecting to the Database
-					$conn = hsu_conn_sess();
-					
-					//set variables to the values input by user
-					$new_emplName = htmlspecialchars(strip_tags($_POST["empl_name"]));
-					$new_phone = htmlspecialchars(strip_tags($_POST["Phone"]));
-					$new_email = htmlspecialchars(strip_tags($_POST["email"]));
-					$access_lvl_granted = htmlspecialchars(strip_tags($_POST["access_lvl"]));
-					$title = htmlspecialchars(strip_tags($_POST["title"]));
-					$pass_w = htmlspecialchars(strip_tags($_POST["pass"]));
-
-					//Separate the first and last name for the insert into database
-					$f_lnames = explode(" ", $new_emplName);
-					$f_name = " ";
-					$l_name = " ";
-					foreach($f_lnames as $part)
+					//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
+					if($_SESSION['refreshed'] != "Addempl")
 					{
-						switch($part)  
+						echo "we got in the if tho";
+						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+						$_SESSION['refreshed'] = "Addempl";
+					
+						//Connecting to the Database
+						$conn = hsu_conn_sess();
+						
+						//set variables to the values input by user
+						$new_emplName = htmlspecialchars(strip_tags($_POST["empl_name"]));
+						$new_phone = htmlspecialchars(strip_tags($_POST["Phone"]));
+						$new_email = htmlspecialchars(strip_tags($_POST["email"]));
+						$access_lvl_granted = htmlspecialchars(strip_tags($_POST["access_lvl"]));
+						$title = htmlspecialchars(strip_tags($_POST["title"]));
+						$pass_w = htmlspecialchars(strip_tags($_POST["pass"]));
+						$user_n = htmlspecialchars(strip_tags($_POST["user"]));
+
+						//Separate the first and last name for the insert into database
+						$f_lnames = explode(" ", $new_emplName);
+						$f_name = " ";
+						$l_name = " ";
+						foreach($f_lnames as $part)
 						{
-							case " ":
-							case "":
-							case $f_name == " ":
-								$f_name = $part;
-								break;
-							case " ":
-							case "":
-							case $f_name != " ":
-							case $l_name == " ":
-								$l_name = $part;
-								break;break;
+							switch($part)  
+							{
+								case " ":
+								case "":
+								case $f_name == " ":
+									$f_name = $part;
+									break;
+								case " ":
+								case "":
+								case $f_name != " ":
+								case $l_name == " ":
+									$l_name = $part;
+									break;break;
+							}
 						}
+						
+						//set up insert statement
+						$insert = $conn->prepare("insert into Employee
+													(empl_id, empl_fname, empl_lname, phone_num, title, access_lvl, empl_email, user_n, pass_w, loc_id)
+													values
+													(Default, ?, ?, ?, ?, ?, ?, ?, ?, 1)");
+						//execute the statement with variables
+						$insert ->execute([$f_name, $l_name, $new_phone, $title, $access_lvl_granted, $new_email, $user_n, $pass_w]);
+						//print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+						//echo "\nPDO::errorInfo():\n";
+						//print_r($insert->errorInfo());
+						
+						//end connection
+						$conn = null;
 					}
-					$user_n = $f_name[0] . $l_name[0] . rand(0, 9) . rand(0, 9) . rand(0, 9);
-					
-					//set up insert statement
-					$insert = $conn->prepare("insert into Employee
-												(empl_id, empl_fname, empl_lname, phone_num, title, access_lvl, empl_email, user_n, pass_w)
-												values
-												(Default, ?, ?, ?, ?, ?, ?, ?, ?)");
-					//execute the statement with variables
-					$insert ->execute([$f_name, $l_name, $new_phone, $title, $access_lvl_granted, $new_email, $user_n, $pass_w]);
-					//print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
-					//echo "\nPDO::errorInfo():\n";
-					//print_r($insert->errorInfo());
-					
-					//end connection
-					$conn = null;
-					
 					Employee();
 				}
-
+				
 				else //A "catch all" thing where if there was ever a time a button has not been press and the page somehow moves on,
 					 //We just move on back the main section page
 					 //back to the main section menu.
