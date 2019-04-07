@@ -1506,9 +1506,8 @@
 					//next inserts
 					EmployeeInfo();
 				}
-				/*elseif(isset($_POST["viewAct"])) //View Actions button on Customer Information page
-																													  //PrintReceipt/Cancel buttons Receipt page.
-																													  //Pushs users to the View Transaction Page for customers
+				// TODO: Work on the view for users to see all the actions the selected employee have done so far. 
+				/*elseif(isset($_POST["viewAct"]))
 				{
 					EmployeeAction();
 				}*/

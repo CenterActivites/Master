@@ -185,18 +185,18 @@
 				
 				<table id="search_table">
 					<!-- Searchable functionals for a more narrower search in a table for styling purposes -->
-					
 					<tr>
 						<th>Status</th>
-						<th>DBW</th> 
-						<th>Public</th>
+						<th>Category</th>
 						<th>Location</th>
+						<th>Public</th>
+						<th>DBW</th> 
 					</tr>
 					<tr>
 						<!-- A status select where users can select a certain status of the items they just want to see -->
 						<td>
 							<div class="select_status">
-								<select id='change'  name='change'>
+								<select id='status'  name='status'>
 									<option value=0 selected="selected"> None </option>
 <?php
 									//Query for status name
@@ -214,19 +214,41 @@
 								</select>
 							</div>
 						</td>
-
-						<!-- A DBW search where users can see either only DBW items, non-DBW items, or both DBW and non-DBW items -->
+						
+						<!-- Category sort option -->
+						<td>
+							<div class="select_cat">
+								<select id='cat'  name='cat'>
+									<option value=0 selected="selected"> All </option>
+<?php
+									//Query for status name
+									foreach($conn->query("SELECT * FROM Category") as $row)
+									{
+										$curr_cat_name = $row['cat_name'];
+										$curr_cat_id = $row['cat_id'];
+?>
+										<option value="<?= $curr_cat_id ?>">
+											<?= $curr_cat_name ?>
+										</option>
+<?php
+									}
+?>
+								</select>
+							</div>
+						</td>
+						
+						<!-- A simple location search select where user can see items according to one location to another, or all locations -->
 						<td>
 							<div class="select">
-								<select id="dbw" name="dbw"> 
+								<select id="location" name="location">
 									<option value="none" selected="selected">
-										Include both
+										Both
 									</option>
-									<option value="yes">
-										Is DBW
+									<option value="ca">
+										Center Activites
 									</option>
-									<option value="no">
-										Non DBW
+									<option value="hbac">
+										Humboldt Bay Aquatic Center
 									</option>
 								</select>
 							</div>
@@ -248,19 +270,19 @@
 								</select>
 							</div>
 						</td>
-
-						<!-- A simple location search select where user can see items according to one location to another, or all locations -->
+						
+						<!-- A DBW search where users can see either only DBW items, non-DBW items, or both DBW and non-DBW items -->
 						<td>
 							<div class="select">
-								<select id="location" name="location">
+								<select id="dbw" name="dbw"> 
 									<option value="none" selected="selected">
-										Both
+										Include both
 									</option>
-									<option value="ca">
-										Center Activites
+									<option value="yes">
+										Is DBW
 									</option>
-									<option value="hbac">
-										Humboldt Bay Aquatic Center
+									<option value="no">
+										Non DBW
 									</option>
 								</select>
 							</div>
@@ -285,6 +307,7 @@
 				<input type="hidden" id="dbw_hidden" name="dbw_hidden" value="none"/>
 				<input type="hidden" id="public_hidden" name="public_hidden" value="none"/>
 				<input type="hidden" id="location_hidden" name="location_hidden" value="none"/>
+				<input type="hidden" id="cat_hidden" name="cat_hidden" value="none"/>
 				<input type="submit" id="excel_download" id="excel_download" value="Download Excel" />
 			</fieldset>
 		</form>
@@ -341,7 +364,7 @@
 	<!-- Hover function for the selects -->
 	<script type="text/javascript">
 		$(document).ready(function(){
-			$("#change, #dbw, #location, #public").hover(function(){
+			$("#status, #dbw, #location, #public, #cat").hover(function(){
 				$(this).attr('size', 
 			  $('option').length);
 			}, function() {
@@ -425,7 +448,7 @@
 	<script type="text/javascript">
 		$(document).ready(function()
 		{
-			$('#change').change(function()
+			$('#status').change(function()
 			{
 				var box_value = $(this).val();
 				$('#status_hidden').val(box_value);
@@ -434,11 +457,24 @@
 		});
 	</script>
 	
+	<!-- Little script that save the Category Value to a hidden input field -->
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			$('#cat').change(function()
+			{
+				var box_value = $(this).val();
+				$('#cat_hidden').val(box_value);
+				console.log("Category Hidden value changed to :" + box_value);
+			});
+		});
+	</script>
+	
 	<script type="text/javascript">
 	 //AJAX is asynchronous javascript
 	 //https://www.w3schools.com/xml/ajax_intro.asp
 		 $(function(){
-			 $('#change, #dbw, #public, #location').change(function(){
+			 $('#status, #dbw, #public, #location, #cat').change(function(){
 				 $.ajax({
 					 // this section of the script
 					 //1. finds where the helper file is located
@@ -450,7 +486,8 @@
 						'stat_id':$('#status_hidden').val(),
 						'dbw':$('#dbw_hidden').val(),
 						'public':$('#public_hidden').val(),
-						'location':$('#location_hidden').val()
+						'location':$('#location_hidden').val(),
+						'cat':$('#cat_hidden').val()
 					 },
 					 //4. sends the data gathered to this success function after it has quereied
 					 success:function(data){

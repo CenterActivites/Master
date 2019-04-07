@@ -12,6 +12,7 @@
 	$dbw_val = $_REQUEST['dbw'];
 	$public_val = $_REQUEST['public'];
 	$loc_val = $_REQUEST['location'];
+	$cat_val = $_REQUEST['cat'];
 	
 	if($dbw_val == 'yes')
 	{
@@ -51,6 +52,16 @@
 	{
 		$loc_val = "";
 	}
+	
+	
+	if($cat_val == 0)
+	{
+		$cat_val = "";
+	}
+	else
+	{
+		$cat_val = " and C.cat_id = " . $cat_val;
+	}
 
 	$display = array();
 	//so, if the selection vlaue = 0 I want the information to remain uncahnged.
@@ -58,7 +69,7 @@
 	{
 		$select_item = $connctn->prepare("SELECT item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 					FROM Item A, Inventory B, Category C, Status D
-					WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id" . $dbw_val . $public_val . $loc_val . "
+					WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id" . $dbw_val . $public_val . $loc_val . $cat_val . "
 					ORDER BY inv_name, item_modeltype");
 
 		$select_item->execute();
@@ -95,7 +106,7 @@
 
 		$select_item = $connctn->prepare("select item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 				from Item A, Inventory B, Category C, Status D
-				where A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and D.stat_id = :a" . $dbw_val . $public_val . $loc_val . "
+				where A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and D.stat_id = :a" . $dbw_val . $public_val . $loc_val . $cat_val . "
 				ORDER BY inv_name, item_modeltype");
 
 		$select_item->bindValue(':a', $int_value_stat, PDO::PARAM_INT);
