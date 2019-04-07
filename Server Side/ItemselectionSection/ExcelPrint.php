@@ -7,10 +7,11 @@
     error_reporting(E_ERROR | E_PARSE);
 	$usr =  "centerac_" . $username;
 	$connctn = new PDO($DB , $usr, $password, array('charset'=>'utf8'));
-
 	$stat_val = $_POST['status_hidden'];
 	$dbw_val = $_POST['dbw_hidden'];
 	$public_val = $_POST['public_hidden'];
+	$loc_val = $_POST['location_hidden'];
+	$cat_val = $_POST['cat_hidden'];
 	
 	if($dbw_val == 'yes')
 	{
@@ -38,6 +39,28 @@
 		$public_val = "";
 	}
 	
+	if($loc_val == 'ca')
+	{
+		$loc_val = " and A.loc_id = '1'";
+	}
+	elseif($loc_val == 'hbac')
+	{
+		$loc_val = " and A.loc_id = '2'";
+	}
+	else
+	{
+		$loc_val = "";
+	}
+	
+	if($cat_val == 0)
+	{
+		$cat_val = "";
+	}
+	else
+	{
+		$cat_val = " and C.cat_id = " . $cat_val;
+	}
+	
 	$objPHPExcel = new PHPExcel();
 	$objPHPExcel->getActiveSheet()->setCellValue('A1', 'Front ID');
 	$objPHPExcel->getActiveSheet()->setCellValue('B1', 'Item Size');
@@ -45,6 +68,7 @@
 	$objPHPExcel->getActiveSheet()->setCellValue('D1', 'Item Name');
 	$objPHPExcel->getActiveSheet()->setCellValue('E1', 'Public Use');
 	$objPHPExcel->getActiveSheet()->setCellValue('F1', 'Status');
+	$objPHPExcel->getActiveSheet()->setCellValue('G1', 'Usage');
 	
 	$row_count = 2;
 
@@ -53,13 +77,21 @@
 	{
 		$select_item = $connctn->prepare("SELECT item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 					FROM Item A, Inventory B, Category C, Status D
-					WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id" . $dbw_val . $public_val . "
-					ORDER BY inv_name, item_modeltype");
+					WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id" . $dbw_val . $public_val . $loc_val . $cat_val . "
+					ORDER BY inv_name, item_modeltype, item_Backid");
 
 		$select_item->execute();
 		$display_array = $select_item->fetchAll();
 		for($i = 0; $i < count($display_array); $i++)
 		{
+			$number_of_use = $connctn->prepare("select count(itemtran_id)
+												from Item A, Transaction B, ItemTran C
+												where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+			$number_of_use->bindValue(':a', $display_array[$i]['item_Backid'], PDO::PARAM_INT);
+			$number_of_use->execute();
+			$number_of_use = $number_of_use->fetchAll();
+			$curr_number_of_use = $number_of_use[0][0];
+			
 			$curr_item_backid = $display_array[$i]["item_Backid"];
 			$curr_item_size = $display_array[$i]["item_size"];
 			$curr_inv_name = $display_array[$i]["inv_name"];
@@ -89,6 +121,7 @@
 			$objPHPExcel->getActiveSheet()->setCellValue('D' . $row_count, $curr_inv_name);
 			$objPHPExcel->getActiveSheet()->setCellValue('E' . $row_count, $curr_pub_use);
 			$objPHPExcel->getActiveSheet()->setCellValue('F' . $row_count, $curr_stat_info);
+			$objPHPExcel->getActiveSheet()->setCellValue('G' . $row_count, $curr_number_of_use);
 			
 			$row_count++;
 		}
@@ -101,14 +134,23 @@
 
 		$select_item = $connctn->prepare("select item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 				from Item A, Inventory B, Category C, Status D
-				where A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and D.stat_id = :a" . $dbw_val . $public_val . "
-				ORDER BY inv_name, item_modeltype");
+				where A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and D.stat_id = :a" . $dbw_val . $public_val . $loc_val . $cat_val . "
+				ORDER BY inv_name, item_modeltype, item_Backid");
 
 		$select_item->bindValue(':a', $int_value_stat, PDO::PARAM_INT);
 		$select_item->execute();
 		$display_array = $select_item->fetchAll();
+		
 		for($i = 0; $i < count($display_array); $i++)
 		{
+			$number_of_use = $connctn->prepare("select count(itemtran_id)
+												from Item A, Transaction B, ItemTran C
+												where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+			$number_of_use->bindValue(':a', $display_array[$i]['item_Backid'], PDO::PARAM_INT);
+			$number_of_use->execute();
+			$number_of_use = $number_of_use->fetchAll();
+			$curr_number_of_use = $number_of_use[0][0];
+			
 			$curr_item_backid = $display_array[$i]["item_Backid"];
 			$curr_item_size = $display_array[$i]["item_size"];
 			$curr_inv_name = $display_array[$i]["inv_name"];
@@ -136,6 +178,7 @@
 			$objPHPExcel->getActiveSheet()->setCellValue('D' . $row_count, $curr_inv_name);
 			$objPHPExcel->getActiveSheet()->setCellValue('E' . $row_count, $curr_pub_use);
 			$objPHPExcel->getActiveSheet()->setCellValue('F' . $row_count, $curr_stat_info);
+			$objPHPExcel->getActiveSheet()->setCellValue('G' . $row_count, $curr_number_of_use);
 			
 			$row_count++;
 		}
