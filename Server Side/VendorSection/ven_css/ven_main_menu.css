@@ -1,0 +1,128 @@
+/*This is a comment, use it wisely*/
+
+body{
+  text-align: center;
+}
+
+
+#AVendor,#moreIn,#AddVendor,#cancel,#back,#editVen,#updateVen,#removeVen{
+    width: 15%;
+    background-color: #008000;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 20px;
+    font-family: "Times New Roman", Times, serif;
+    text-align: center;
+    color: #EEE8AA;
+    word-wrap: break-word;
+    white-space: normal;
+    box-sizing:content-box;
+
+}
+/*CSS3 uses this . system instead of a #. Don't listen to Sharon, go to W3.org*/
+/*it also uses class and not id but as you can see you can still use both*/
+#vendor_table{
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-family: "Times New Roman", Times, serif;
+  table-layout: fixed;
+  font-size: 20px;
+  width: 100%;
+  border:none;
+}
+
+#search_lable{
+  font-family: "Times New Roman", Times, serif;
+  font-size: 20px;
+  float: center;
+}
+
+input[type=text]{
+    width:80%;
+    padding: 5px;
+    border: 1px solid #ccc
+    box-sizing: border-box;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 15px;
+    text-align: center;
+    vertical-align:top;
+    display: table-cell;
+}
+#search{
+	width:20%;
+}
+
+#vendor_table tbody tr:hover {background-color: ddd;}
+
+#vendor_table td, #vendor_table th, #adding_vendor td, #adding_vendor th, 
+#vendor_info td, #vendor_info th, #editing_vendor td, #editing_vendor th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 20px;
+    font-family: "Times New Roman", Times, serif;
+
+}
+
+#vendor_table tr:nth-child(even){background-color: #f2f2f2;}
+#vendor_table tr:nth-child(odd){background-color: white;}
+
+#vendor_table th, #adding_vendor th, #vendor_info th, #editing_vendor th {
+    font-family: "Times New Roman", Times, serif;
+    padding-top: 12px;
+    width:20%;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #008000;
+    color: #EEE8AA;
+    text-align: center;
+}
+
+table ,tr td{
+    border:1px solid black;
+	word-wrap: break-word;
+}
+#vendor_table tbody {
+    display:block;
+    height:250px;
+    overflow-y:scroll;
+}
+#vendor_table thead, #vendor_table tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+thead {
+    width: 98.4%;
+}
+table {
+    width:100%;
+}
+
+#hide_me{
+  display: none;
+}
+
+#adding_vendor, #vendor_info, #editing_vendor{
+	margin-top: 25px;
+	margin-bottom: 15px;
+	width:50%;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	font-family: "Times New Roman", Times, serif;
+	table-layout: fixed;
+	font-size: 20px;
+	border:none;
+}
+
+#adding_vendor tr td, #editing_vendor tr td{
+	border:none;
+}
+
+#vendor_table tbody tr.highlight td { background:#89cff0; }

@@ -1,0 +1,197 @@
+#cust_table_info tbody tr.highlight td { background:#89cff0;}
+#cust_table_info_late tbody tr.highlight td { background:#89cff0;}
+#cust_table_info_pick tbody tr.highlight td { background:#89cff0;}
+
+#hide_me{
+  display: none;
+}
+
+#time_stamp_select {
+	float: left; 
+	padding-right: 10px; 
+	padding-left: 10px;
+	font-family: "Times New Roman", Times, serif;
+	font-size: 15px;
+}
+
+table ,tr td{
+    border:none;
+	word-wrap: break-word;
+}
+tbody {
+    display:block;
+    background: white;
+}
+
+#cust_table_info tbody {
+	display:block;
+    max-height:400px;
+    overflow-y:scroll;
+	overflow-x:hidden;
+    background: white;
+}
+
+#cust_table_info_pick tbody, #cust_table_info_late tbody {
+	display:block;
+    max-height:200px;
+    overflow-y:scroll;
+	overflow-x:hidden;
+    background: white;
+}
+
+thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+
+#cust_table_info thead {
+    width:98.2%;
+}
+
+table {
+    width:100%;
+}
+
+#comment_table {
+    width:50%;
+	font-size: 20px;
+	float: right; 
+	padding: 5px;
+	padding-right: 50px;
+	text-align: center;
+}
+
+#cust_table_info th, #cust_table_info_late th, #cust_table_info_pick th, #tran_infor_table th {
+    padding-top: 12px;
+    width: 15%;
+    padding-bottom: 12px;
+    background-color: #008000;
+    color: #EEE8AA;
+}
+
+#cust_table_info td, #cust_table_info th, 
+#cust_table_info_late td, #cust_table_info_late th, 
+#cust_table_info_pick td, #cust_table_info_pick th, 
+#tran_infor_table td, #tran_infor_table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+    font-size: 17px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+
+#cust_table_info tr:nth-child(even){background-color: #f2f2f2;}
+#cust_table_info tr:nth-child(odd){background-color: white;}
+
+#cust_table_info tbody tr:hover {background-color: ddd;}
+
+
+#cust_table_info_late tr:nth-child(even){background-color: #f2f2f2;}
+#cust_table_info_late tr:nth-child(odd){background-color: white;}
+
+#cust_table_info_late tbody tr:hover {background-color: ddd;}
+
+
+#cust_table_info_pick tr:nth-child(even){background-color: #f2f2f2;}
+#cust_table_info_pick tr:nth-child(odd){background-color: white;}
+
+#cust_table_info_pick tbody tr:hover {background-color: ddd;}
+
+#tran_infor_table tr:nth-child(even){background-color: #f2f2f2;}
+#tran_infor_table tr:nth-child(odd){background-color: white;}
+
+#tran_infor_table tbody tr:hover {background-color: ddd;}
+
+
+#search_lable{
+  font-family: "Times New Roman", Times, serif;
+  font-size: 30px;
+}
+
+
+#select,#custInfo,#rent,#newCust,#mainmenu,#viewReceipt,#backOnCustTran,#on_to_rental {
+    background-color: #008000;
+    color: white;
+    padding: 14px 20px;
+    white-space: normal;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 20px;
+    font-family: "Times New Roman", Times, serif;
+    position: relative;
+    text-align: center;
+    color: #EEE8AA;
+    box-sizing:content-box;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+#select:hover,#custInfo:hover,#rent:hover,#newCust:hover,#mainmenu:hover,#viewReceipt:hover,#backOnCustTran:hover, #on_to_rental:hover 
+{
+	background-color: #006400;
+}
+
+
+input[type=text], input[type=button]{
+    width:15%;
+    padding: 12px 20px;
+    margin-right: 20%
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 20px;
+    text-align: center;
+    vertical-align:top;
+    display: table-cell;
+    margin-right: 60%;
+}
+
+
+
+/* CSS for the pop-up date selection part */
+
+/* The Modal (background) */
+.dates {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  text-align: center;
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}

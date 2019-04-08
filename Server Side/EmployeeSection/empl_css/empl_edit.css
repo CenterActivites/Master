@@ -1,0 +1,66 @@
+#first_name_feild,#phone_num_field,#title_field {
+  float: left;
+  width: 35%;
+  font-family: "Times New Roman", Times, serif;
+  margin-left: 5%;
+  margin-bottom: 2%;
+}
+
+
+#last_name_field,#email_field,#access_lvl_field{
+  float: right;
+  width: 35%;
+  font-family: "Times New Roman", Times, serif;
+  margin-right: 5%;
+  margin-bottom: 2%;
+}
+
+#updateEmpl,#removeEmpl,#cancelOnEditEmpl {
+    width: 20%;
+    background-color: #008000;
+    color: white;
+    padding:5px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 20px;
+    font-family: "Times New Roman", Times, serif;
+    text-align: center;
+    color: #EEE8AA;
+    word-wrap: break-word;
+    white-space: normal;
+    box-sizing:content-box;
+}
+
+input[type=text], select,input[type=date] {
+    width:50%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 20px;
+    text-align: center;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+fieldset{
+  border-style: double;
+}
+
+#all_lable{
+  font-size: 20px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+#pageHeader{
+  border-style: double;
+  text-align: center;
+  font-size: 20px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+body{
+  text-align: center;
+}

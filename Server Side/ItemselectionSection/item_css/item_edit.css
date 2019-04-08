@@ -1,0 +1,77 @@
+input[type=text], select,input[type=date] {
+    width:50%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 20px;
+    text-align: center;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+#updateItem,#removeItem,#cancelEdit {
+    background-color: #008000;
+    color: white;
+    padding: 5px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 20px;
+    font-family: "Times New Roman", Times, serif;
+    color: #EEE8AA;
+    word-wrap: break-word;
+    white-space: normal;
+    box-sizing:content-box;
+}
+
+#updateItem:hover,#removeItem:hover,#cancelEdit:hover {
+    background-color: #008000;
+}
+
+#edit_inv_form{
+  align-items: center;
+}
+
+#main_div {
+    border-radius: 5px;
+    padding: 20px;
+    border: none;
+    align-items: center;
+}
+
+body{
+  text-align: center;
+}
+
+#sub_buttons{
+  border: none;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 20px;
+}
+
+#info_lable{
+  font-family: "Times New Roman", Times, serif;
+  font-size: 30px;
+  text-align: left;
+  word-wrap: break-word;
+}
+
+label{
+  font-size: 20px;
+  font-family: "Times New Roman", Times, serif;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+#field_front,#field_model,#field_size,#field_stat,#field_class,#field_loc,#field_price,#field_ven,#field_dbw,#field_date,#field_vin,#field_use,#field_notes{
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgba(0,128,0,.5);
+}
+
+#field_front,#field_size,#field_class,#field_price,#field_dbw,#field_vin{
+  width: 50%;
+  float:left;
+}

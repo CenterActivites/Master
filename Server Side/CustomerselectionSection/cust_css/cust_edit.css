@@ -1,0 +1,91 @@
+#first_name_feild,#empl_stat_field,#stu_id_field,#email_field{
+  float: left;
+  width: 35%;
+  font-family: "Times New Roman", Times, serif;
+  margin-left: 5%;
+  margin-bottom: 2%;
+}
+
+
+#last_name_field,#driver_id_field,#phone_num_field,#street_address{
+  float: right;
+  width: 35%;
+  font-family: "Times New Roman", Times, serif;
+  margin-right: 5%;
+  margin-bottom: 2%;
+}
+
+#city {
+	float:left;
+	width:33%;
+}
+#zip {
+	float:left;
+	width:33%;
+}
+#state {
+	float:left;
+	width:33%;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+
+#updateCust,#removeCust,#cancelOnEditCust {
+    width: 9%;
+    background-color: #008000;
+    padding:5px;
+    margin: 2px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: "Times New Roman", Times, serif;
+    text-align: center;
+    color: #EEE8AA;
+    word-wrap: break-word;
+    white-space: normal;
+    box-sizing:content-box;
+}
+
+input[type=text], select,input[type=date] {
+    width:50%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 20px;
+    text-align: center;
+    word-wrap: break-word;
+    white-space: normal;
+}
+
+#cust_city, #cust_stat, #cust_zip{
+    width:55%;
+}
+
+fieldset{
+  border-style: double;
+}
+
+#all_lable{
+  font-size: 20px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+#address_field{
+  width: 87%;
+  margin-right: 5%;
+  margin-left: 5%;
+}
+
+#pageHeader{
+  border-style: double;
+  text-align: center;
+  font-size: 20px;
+  font-family: "Times New Roman", Times, serif;
+}
+
+body{
+  text-align: center;
+}

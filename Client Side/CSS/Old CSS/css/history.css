@@ -1,0 +1,55 @@
+div#just-for-history1
+{
+	float:left;
+	position:relative;
+	left: 0%;
+	margin-left:1%;
+	margin-top:2%;
+	display:block;
+	height:auto;
+	width:20%; 
+	border:4px solid;
+	border-color:black;
+	background: rgba(179, 179, 179, 0.5);
+	padding:8px;
+}
+
+div#just-for-history2
+{
+	float:left;
+	position:relative;
+	left: 0%;
+	margin-left:1%;
+	margin-top:2%;
+	display:block;
+	height:auto;
+	width:45%; 
+	border:4px solid;
+	border-color:black;
+	background: rgba(179, 179, 179, 0.5);
+	padding:8px;
+}
+
+#search input#name
+{
+	width: 95%;
+}
+
+#search input#id
+{
+	width: 95%;
+}
+
+#search input#size
+{
+	width: 95%;
+}
+
+#search input#package
+{
+	width: 95%;
+}
+
+
+
+

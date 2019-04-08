@@ -1,0 +1,124 @@
+<?php
+  function addempl(){
+?>
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="../EmployeeSection/empl_css/empl_add.css"/>
+	</head>
+  <body>
+	<div id="pageHeader"> Adding New Employee </div>
+    <div>
+		<!-- had to figure out the domain so that we could navigate to our posthandler. The domain exisits in the index.php file. -->
+		<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id='new_cust'>
+			<fieldset style="border:none;">
+				<table>
+					<tr>
+						<td>
+							Name: <input type = "text" name = "empl_name" id = "empl_name" maxlength="40" value ="" required/>
+						</td>
+						<td>
+							Title: <input type = "text" name = "title" id = "title" maxlength="15" value ="" required/>
+						</td>
+					</tr>
+					
+					<tr>
+						<td>
+							Phone Number: <input type = "text" name = "Phone" id = "Phone" maxlength="12" value ="" required/>
+						</td>
+						<td>
+							Level of Access Given: <select name = "access_lvl" id="access_lvl" size="1" required>
+								<option hidden></option>
+								<option value = "1"> 1 </option>
+								<option value = "2"> 2 </option>
+								<option value = "3"> 3 </option>
+								<option value = "4"> 4 </option>
+							</select>
+						</td>
+					</tr>
+					
+					<tr>
+						<td colspan="2">
+							Email Address: <input type = "text" name = "email" id = "email" maxlength="50"  value ="" required/>
+						</td>
+					</tr>
+					
+					<tr>
+						<td colspan="2">
+							Password need to be at least 6 characters long. Must have at least 1 upper case, 1 lower case, and 1 number in it.
+							</br>
+							Password: <input type = "text" name = "pass" id = "pass" maxlength="14" minlength=6 value ="" required/>
+							</br>
+							Random Password Generator <input type = "button" name = "gen_pass" id = "gen_pass" />
+						</td>
+					</tr>
+					
+				</table>
+				<fieldset style="border:none;">
+					<input type="submit" name="Addempl" id="Addempl" value="Add New Employee"/>
+		</form>
+					<form action="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method = 'post'>
+						<input type="submit" name="cancel" id="cancel" value="Cancel" />
+					</form>
+				</fieldset>
+		</fieldset>
+	</div>
+  </body>
+  
+  <!-- Little script that save the item id to the hidden button we created a few lines up  -->
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#gen_pass").click(function(){
+				ran_num = Math.floor(Math.random() * 9) + 6; 
+				ran_pass = "";
+				possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+				for (var i = 0; i < ran_num; i++)
+				{
+					ran_pass += possible.charAt(Math.floor(Math.random() * possible.length));
+				}
+			
+				$('#pass').val(ran_pass);
+			});
+		});
+	</script>
+	
+	<!-- Little script for if the user didn't select an item, they get the "please select an item" alert -->
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#Addempl").click(function(){
+				name = $('#empl_name').val();
+				last_first_name = name.split(' ').filter(function(v){return v!==''});
+				
+				if(!(/\d/.test($('#pass').val())))
+				{
+					alert("Your password needs a number value in it");
+					return false;
+				}
+				if(!(/[a-z]/.test($('#pass').val())))
+				{
+					alert("Your password needs a lower case in it");
+					return false;
+				}
+				if(!(/[A-Z]/.test($('#pass').val())))
+				{
+					alert("Your password needs a upper case in it");
+					return false;
+				}
+				if(last_first_name.length <= 1)
+				{
+					alert("We need the employee's first and last name");
+					return false;
+				}
+				if(/[a-z]/.test($('#Phone').val()) || /[A-Z]/.test($('#Phone').val()))
+				{
+					alert("There are some letters in the phone number field....Why?");
+					return false;
+				}
+			});
+		});
+	</script>
+	
+</html>
+<?php
+}
+?>

@@ -1,0 +1,78 @@
+
+
+input[type=text], select {
+    width:100%;
+    padding: 12px 20px;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 15px;
+    text-align: center;
+    vertical-align:middle;
+    word-wrap: break-word;
+    white-space: normal;
+
+}
+
+#updateInv,#removeInv,#cancel_inv_edit {
+    width: 10%;
+    background-color: #008000;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 20px;
+    font-family: "Times New Roman", Times, serif;
+    color: #EEE8AA;
+    word-wrap: break-word;
+    white-space: normal;
+    box-sizing:content-box;
+}
+
+#updateInv:hover,#removeInv:hover,#cancel_inv_edit:hover {
+    background-color: #008000;
+}
+
+#inv_lable{
+  font-family: "Times New Roman", Times, serif;
+  font-size: 20px;
+  text-align: left;
+}
+
+#holds_info_inv_set{
+  border: none;
+}
+
+#holds_buttons{
+  border: none;
+}
+
+#inv_name_fieldset,#stu_day_price_fieldset,#stu_weekend_price_fieldset,#stu_week_price_fieldset,#reg_day_price_fieldset,#cat_fieldset,#regular_week_price_fieldset,#regular_weekend_price_fieldset{
+  margin-left: auto;
+  margin-right: auto;
+  background-color: rgba(0,128,0,.5);
+}
+
+#inv_name_fieldset,#stu_day_price_fieldset,#stu_weekend_price_fieldset,#stu_week_price_fieldset{
+  width: 50%;
+  float:left;
+}
+
+#pageheader{
+  text-align: center;
+  font-family: "Times New Roman", Times, serif;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 40px;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+body{
+  text-align: center;
+}

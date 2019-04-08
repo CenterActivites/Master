@@ -1,0 +1,41 @@
+#vend_table {
+    font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+	border: 1px solid black;
+}
+
+#vend_tabletd, #vend_table th {
+    border: 1px solid #265415;
+    padding: 8px;
+
+}
+
+#vend_table tr:nth-child(even){background-color: #f2f2f2;
+	border: 1px solid black;}
+
+#vend_table tr:hover {
+	background-color: #ddd;
+}
+
+#vend_table tr{
+	font-size: 20pt;
+    border: 1px solid black;
+}
+
+
+
+#vend_table th {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    text-align: left;
+    background-color: #265415;
+    color: white;
+	border: 1px solid black;
+	text-align: center;
+}
+
+td#vend_table{
+	border: 1px solid black;
+} 
+
