@@ -36,6 +36,7 @@
 		}
 		else
 		{
+			$_SESSION['empl_id'] = $display_array[0][0];
 			return $connctn;
 		}
 		

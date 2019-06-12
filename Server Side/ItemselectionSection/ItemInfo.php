@@ -48,7 +48,7 @@
 					$conn = hsu_conn_sess();
 					
 					//Item query
-					foreach($conn->query("SELECT item_Backid, A.inv_id, item_modeltype, inv_name, cat_name, item_Frontid, item_size, stat_name, loc_name, notes, pur_price,pur_date,public,vin_num,dbw_own
+					foreach($conn->query("SELECT item_Backid, A.inv_id, item_modeltype, inv_name, cat_name, item_Frontid, item_size, stat_name, loc_name, pur_price,pur_date,public,vin_num,dbw_own
 											FROM Item A, Inventory B, Category C, Status D, Location E
 											WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and A.loc_id = E.loc_id and item_Backid = '$item_backid'") as $row)
 					{
@@ -66,9 +66,6 @@
 						$curr_item_public=$row["public"];
 						$curr_item_vin_num=$row["vin_num"];
 						$curr_item_dbw_own=$row["dbw_own"];
-						$curr_item_notes = $row["notes"];
-						
-						$item_backid = (int)$curr_item_backid;
 
 						$number_of_use = $conn->prepare("select count(itemtran_id)
 															from Item A, Transaction B, ItemTran C
@@ -76,8 +73,14 @@
 						$number_of_use->bindValue(':a', $item_backid, PDO::PARAM_INT);
 						$number_of_use->execute();
 						$number_of_use = $number_of_use->fetchAll();
-
 						$curr_number_of_use = $number_of_use[0][0];
+						
+						$notes = $conn->prepare("select note
+													from Notes a, NotesItem b
+													where a.note_id = b.note_id and b.item_Backid = :a");
+						$notes->bindValue(':a', $item_backid, PDO::PARAM_INT);
+						$notes->execute();
+						$notes = $notes->fetchAll();
 
 
 						if($curr_item_public == 1){
@@ -148,7 +151,18 @@
 								</tr>
 								<tr>
 									<th>Notes:</th>
-										<td class="editcol"><?= $curr_item_notes?></td>
+										<td class="editcol">
+<?php
+											if($notes != null || $notes != "")
+											{
+												foreach($notes as $note)
+												{
+													echo $note["note"];
+													echo "</br>";
+												}
+											}
+?>
+										</td>
 								</tr>
 							</table>
 						</div>

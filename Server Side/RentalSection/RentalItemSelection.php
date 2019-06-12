@@ -24,7 +24,19 @@
 		$sel_cust = $_SESSION['sel_user'];
 		$cust_request_date = $_SESSION['request_date'];
 		$cust_due_date = $_SESSION['due_date'];
+		$curr_loc = $_POST['rent_location'];
+		$on_site_check = $_POST['on_site_button'];
 		
+		//Storing the on-site check and location of the rental to session
+		$_SESSION['on_site'] = $on_site_check;
+		$_SESSION['loc'] = $curr_loc;
+		
+		$curr_date = Date("Y-m-d");
+		
+		//Creating the current customer's padding request and padding due dates for the later sql select
+		$cust_padded_request_date = date('Y-m-d', strtotime($cust_request_date. ' - 2 days'));;
+		$cust_padded_due_date = date('Y-m-d', strtotime($cust_due_date. ' + 2 days'));
+	
 		//MYSQl select query to see if the selected customer is a student or not
 		$is_student = $conn->prepare("SELECT is_student
 										FROM Customer
@@ -34,10 +46,9 @@
 		$is_student = $is_student->fetchAll();
 		
 		//Grabbing the list of items that have been reserved already to see if the current request dates will not come into conflict with each other
-		$list_of_reserve = $conn->prepare("select B.item_Backid, request_date, due_date
-										from Item A, ItemTran B, Transaction C, Reserve E
-										where A.item_Backid = B.item_Backid and B.tran_id = C.trans_id and C.rh_id = E.rh_id and 
-												E.pick_up_date is null;");
+		$list_of_reserve = $conn->prepare("select item_Backid, request_date, due_date
+										from Rental a, Reserve1 b
+										where a.rent_id = b.rent_id and a.pick_up_date is null;");
 		$list_of_reserve->execute();
 		$list_of_reserve = $list_of_reserve->fetchAll();
 		
@@ -55,6 +66,7 @@
 			//Checks if the customer's request date and the reserve request date are the same
 			if($reserve_request_date == $cust_request_date)
 			{
+				//Used for Debugging :: echo "Both request dates are the same, conflict" . "</br>";
 				//If are then that is a conflict since the item is already been reserved by someone else
 				array_push($list_of_conflicts, $item_id);
 			}
@@ -71,6 +83,7 @@
 				//Does the check with the reserve due date with cleaning and customer's request date
 				if($pad_reserve_due_date > $cust_request_date or $pad_reserve_due_date == $cust_request_date)
 				{
+					//Used for Debugging :: echo "Cust request date conflict with reserve due date" . "</br>";
 					//If there is conflict then push the item id to the conflict array
 					array_push($list_of_conflicts, $item_id);
 				}
@@ -86,6 +99,7 @@
 				//Does the check with the customer's due date with cleaning and reserve's request date
 				if($pad_cust_due_date > $reserve_request_date or $pad_cust_due_date == $reserve_request_date)
 				{
+					//Used for Debugging :: echo "Cust due date conflict with reserve request date" . "</br>";
 					//If there is conflict then push the item id to the conflict array
 					array_push($list_of_conflicts, $item_id);
 				}
@@ -93,32 +107,6 @@
 		}
  ?>
 	<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
-	
-		<label for="rent_location"> Location </label>
-		<select name="rent_location" class="rent_location" id="rent_location">
-<?php
-			foreach($conn->query("SELECT loc_name, loc_id
-									FROM Location") as $row)
-			{
-				if($row['loc_name'] == 'Center Activities')
-				{
-?>
-					<option value="<?= $row['loc_id'] ?>" selected='selected' >
-						<?= $row['loc_name'] ?>
-					</option>
-<?php
-				}
-				else
-				{
-?>
-					<option value="<?= $row['loc_id'] ?>">
-						<?= $row['loc_name'] ?>
-					</option>
-<?php
-				}
-			}
-?>
-		</select>
 		
 		<fieldset style="border:none; word-wrap: break-word;">
 			<div id="div_for_selection" name="div_for_selection"  style="float:left; width:65%;">
@@ -137,15 +125,14 @@
 					</thead>
 					<tbody id='select_empty'>
 <?php
-						$item_list = array();
-						
 						//Query for item selection with Items status 'Ready'
-						foreach($conn->query("SELECT item_Backid, inv_name, item_size, item_Frontid, item_modeltype 
-												FROM Item a, Inventory c, Status b 
-												WHERE a.inv_id = c.inv_id and a.stat_id = b.stat_id and a.loc_id = 1 and a.stat_id = 1") as $row)
+						foreach($conn->query("SELECT item_Backid, inv_name, item_size, item_Frontid, item_modeltype
+												FROM Item a, Inventory c, Status b
+												WHERE a.inv_id = c.inv_id and a.stat_id = b.stat_id and a.loc_id = " . $curr_loc . " and (a.stat_id = 1 or a.stat_id = 7)
+												ORDER BY inv_name, item_modeltype, item_Backid") as $row)
 						{
 							//Check if the selected customer is a student or not.
-							if($is_student[0][0] == 'no' || $is_student[0][0] == 'No')
+							if($is_student[0][0] == 'no' || $is_student[0][0] == 'No' || $cust_request_date > $curr_date)
 							{
 								//If the selected customer is not a student, then check each item is the item is Outdoor Nation or not
 								//Basically we're filtering out the Outdoor Nation items when the selected customer is not a student
@@ -158,7 +145,6 @@
 										$curr_item_size = $row["item_size"];
 										$curr_item_frontid = $row["item_Frontid"];
 										$curr_item_modeltype = $row["item_modeltype"];
-										$item_list[] = array($curr_item_backid=>array("name"=>$curr_inv_name, "size"=>$curr_item_size, "front_id"=>$curr_item_frontid, "model"=>$curr_item_modeltype));
 										if($curr_item_size == null) 
 										{
 											$curr_item_size = "No Size";
@@ -184,7 +170,6 @@
 									$curr_item_size = $row["item_size"];
 									$curr_item_frontid = $row["item_Frontid"];
 									$curr_item_modeltype = $row["item_modeltype"];
-									$item_list[] = array($curr_item_backid=>array("name"=>$curr_inv_name, "size"=>$curr_item_size, "front_id"=>$curr_item_frontid, "model"=>$curr_item_modeltype));
 									if($curr_item_size == null)   
 									{
 										$curr_item_size = "No Size";
@@ -243,11 +228,23 @@
 				<fieldset id='fieldset_label' style="border:none; text-align: center;">
 					<label id='header_for_table' style="font-size: 20px"> Packages: </label>
 				</fieldset>
-				<select name="pack" id="pack" multiple="multiple" size="9" class="pack">
+				<select name="pack" id="pack" multiple="multiple" class="pack">
 					<option value=0 selected="selected"> None </option>
 <?php
+					if($on_site_check == NULL)
+					{
+						$pack_query = "SELECT pack_name, a.pack_id
+										FROM Packages a, PackLoc b
+										WHERE a.pack_id = b.pack_id and b.loc_id =" . $curr_loc;
+					}
+					else
+					{
+						$pack_query = "SELECT pack_name, a.pack_id
+										FROM Packages a, PackLoc b, OnSitePrices c
+										WHERE a.pack_id = b.pack_id and c.pack_id = a.pack_id and b.loc_id =" . $curr_loc;
+					}
 					//Query for package name
-					foreach($conn->query("SELECT * FROM Packages") as $row)
+					foreach($conn->query($pack_query) as $row)
 					{
 						$curr_pack_name = $row['pack_name'];
 						$curr_pack_id = $row['pack_id'];
@@ -277,6 +274,7 @@
 		
 	    <fieldset style="border:none;">
 			<input type="hidden" name="item_array" id="item_array"/>  <!-- input tag for the returning the list of selected items from Cart -->
+			<input type="hidden" id="loc_hidden" name="loc_hidden" value="<?= $curr_loc ?>"/>
             <input type="submit" name="calPay" id="calPay" value="Continue to Payments" style="float: left; margin-left:40%;"/>    <!-- Sends the user onto the next page, the CalculatePayments page -->
 	</form>
 	<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
@@ -284,7 +282,6 @@
 	</form>
 	    </fieldset>
 </body>
-
 
 	<!-- JavaScript Starts here -->
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
@@ -459,7 +456,7 @@
 	<script type="text/javascript">
 		$(function() 
 		{
-			$('.pack').change(function() //Starts the script when the user select a package from the package selection field
+			$('#pack').change(function() //Starts the script when the user select a package from the package selection field
 			{
 				$.ajax(
 				{
@@ -467,7 +464,8 @@
 					type: "post",
 					data: 
 					{
-						'pack_value': $(this).val() //assigning the value of the selected package to "pack_value"
+						'pack_value': $(this).val(), //assigning the value of the selected package to "pack_value"
+						'loc_id' : $('#loc_hidden').val()
 					},
 					success: function(data) //When the AJAX call is successful, the script does the following
 					{
@@ -480,7 +478,7 @@
 						
 						var item_display = document.getElementById('select_empty'); //Grabs the "item_selection" select tag
 						var cart = $("#item_array").val(); //Also grab the "cart_array" input tag for processing the cart for display
-						var cart_array = cart.split(","); //Turns the cart string into a cart array by separating the string by the "|||" char
+						var cart_array = cart.split(","); //Turns the cart string into a cart array by separating the string by the "," char
 						
 						//The next following lines creates a filtered cart for easy use for displaying purposes
 						var filtered_cart_array = cart_array.filter(function () { return true });
@@ -524,6 +522,12 @@
 											if(item_size == null || item_size == "")
 											{
 												item_size = "No Size";
+											}
+											
+											//Sees if the item_modeltype from the item data is null, if is then it sets the item_modeltype field to " "
+											if(item_modeltype == null)
+											{
+												item_modeltype = " ";
 											}
 											
 											//Create a tr tag

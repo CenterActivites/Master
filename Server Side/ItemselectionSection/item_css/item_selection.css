@@ -6,7 +6,6 @@
 
 #search_fieldset{
   border: none;
-  margin-right: 20%;
 }
 
 #searchItem{
@@ -71,7 +70,6 @@ body{
 
 #table_div{
 	width:100%;
-	height:100%;
 	overflow:hidden;
 }
 

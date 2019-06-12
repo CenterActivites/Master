@@ -27,18 +27,11 @@ input[type=text], select,input[type=date] {
 }
 
 #updateItem:hover,#removeItem:hover,#cancelEdit:hover {
-    background-color: #008000;
+    background-color: #006400;
 }
 
 #edit_inv_form{
   align-items: center;
-}
-
-#main_div {
-    border-radius: 5px;
-    padding: 20px;
-    border: none;
-    align-items: center;
 }
 
 body{
@@ -65,13 +58,44 @@ label{
   white-space: normal;
 }
 
-#field_front,#field_model,#field_size,#field_stat,#field_class,#field_loc,#field_price,#field_ven,#field_dbw,#field_date,#field_vin,#field_use,#field_notes{
-  margin-left: auto;
-  margin-right: auto;
-  background-color: rgba(0,128,0,.5);
+table {
+	width:85%;
+	margin-left: auto;
+	margin-right: auto;
 }
 
-#field_front,#field_size,#field_class,#field_price,#field_dbw,#field_vin{
-  width: 50%;
-  float:left;
+table td{
+    border: 1px solid #ddd;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
+    text-align: center;
+    font-size: 17px;
+    font-family: "Times New Roman", Times, serif;
+    width:50%;
+}
+
+#edit_table tbody td:hover 
+{
+	background-color: #B0B0B0;
+	color: #F5F5F5;
+}
+
+#field_front:hover, #field_model:hover, #field_size:hover, #field_stat:hover, #field_class:hover, #field_loc:hover, #field_price:hover, #field_ven:hover, #field_dbw:hover, #field_date:hover, #field_vin:hover, #field_use:hover, #field_notes:hover
+{
+	background-color: #B0B0B0;
+	color: #F5F5F5;
+}
+
+select:hover{
+  max-height: 11em;
+}
+
+#dbw_own:hover, #pub_use:hover{
+  height: 2.5em;
+}
+
+#ven:hover{
+  height: 8.5em;
 }

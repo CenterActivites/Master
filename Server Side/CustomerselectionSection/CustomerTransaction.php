@@ -10,11 +10,11 @@
 			
 		</head>
 		<body>
-			<div id="pageHeader" style="font-size: 35px; text-align: center;"> Customer Transactions </div>
+			<div id="pageHeader" style="font-size: 35px; text-align: center;"> Customer Rentals </div>
 			<div>
 				<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
 					<fieldset style="border: none;">
-						<legend style="font-size: 20px;"> TimeStamps: </legend>
+						<legend style="font-size: 20px;"> All Rentals: </legend>
 							<!-- TimeStamp Select Table -->
 							<select name="time_stamp_select" id="time_stamp_select" size="6" class="time_stamp_select">
 <?php
@@ -25,10 +25,10 @@
 								$cust_id = (int)$_SESSION['cust_id'];
 								
 								//Does a select sql statement to grab all transactions that is involved with the selected customer
-								$trans = $connctn->prepare("SELECT trans_id, time_stamp, trans_type
-															FROM Transaction
+								$trans = $connctn->prepare("SELECT rent_id, request_date, due_date
+															FROM Rental
 															WHERE cust_id = :a
-															ORDER BY time_stamp desc");
+															ORDER BY request_date desc");
 															
 								$trans->bindValue(':a', $cust_id, PDO::PARAM_INT);
 								$trans->execute();
@@ -42,20 +42,17 @@
 								for($i=0; $i<$array_size; $i++)
 								{
 									//Set the data to the correct fields
-									$curr_trans_id = $trans_display[$i]['trans_id'];
-									$curr_time_stamp = $trans_display[$i]['time_stamp'];
-									$curr_trans_type = $trans_display[$i]['trans_type'];
+									$curr_rent_id = $trans_display[$i]['rent_id'];
+									$curr_request_date = $trans_display[$i]['request_date'];
+									$curr_due_date = $trans_display[$i]['due_date'];
 									
 									//Format the timestamp that was given from the database into a more readable timestamp
-									$curr_time_stamp = date('h:i a F d, Y', strtotime($curr_time_stamp));
-									if($curr_trans_type == "return")
-									{
-										$curr_trans_type = $curr_trans_type . "&nbsp;&nbsp;";
-									}
+									$curr_new_format_request_date = date('F d, Y', strtotime($curr_request_date));
+									$curr_new_format_due_date = date('F d, Y', strtotime($curr_due_date));
 ?>
 									<!-- Display the fields -->
-									<option value="<?= $curr_trans_id ?>">
-										<?= $curr_trans_type ?> &nbsp; : &nbsp; <?= $curr_time_stamp ?> 
+									<option value="<?= $curr_rent_id ?>">
+										<?= $curr_new_format_request_date ?> &nbsp; -- &nbsp; <?= $curr_new_format_due_date ?> 
 									</option>
 <?php
 								}
@@ -81,7 +78,7 @@
 							</tr>
 						</thead>
 						<tbody id='empty'>
-							<tr> <td colspan="4"> Please Select a TimeStamp to See Items Involved With the Tranaction </td> </tr>
+							<tr> <td colspan="4"> Please Select a TimeStamp to See Items Involved With the Rental </td> </tr>
 						</tbody>
 					</table>
 			</div>
@@ -89,7 +86,7 @@
 					<!-- Bottom Buttons -->
 					<div>
 						<input type="hidden" name="cust_id" id="cust_id" value="<?= $cust_id ?>"/> 
-						<input type="submit" name="viewReceipt" id="viewReceipt" value="View Receipt of Transactions" /> &nbsp;
+						<input type="submit" name="viewReceipt" id="viewReceipt" value="View Receipt of Rental" /> &nbsp;
 						<input type="submit" name="backOnCustTran" id="backOnCustTran" value="Back" onclick="back()"/> &nbsp;
 					</div>
 				</form>
@@ -113,7 +110,8 @@
 						selected_text = selected_text.split(" ");
 						
 						//Then set the first string to the div tab "item_info_label" which will be displayed for the user to see
-						document.getElementById('item_info_label').innerHTML = "Tranaction Type: " + selected_text[0];
+						document.getElementById('item_info_label').innerHTML = "Request Date: " + selected_text[0] + " " + selected_text[1] + " " + selected_text[2] + "</br>" +
+																				"Due Date: " + selected_text[6] + " " + selected_text[7] + " " + selected_text[8] + "</br>";
 					});
 				});
 			</script>

@@ -30,6 +30,11 @@
 	margin-right:auto;
 }
 
+#first_name_feild:hover, #last_name_field:hover, #empl_stat_field:hover, #driver_id_field:hover, #stu_id_field:hover, #phone_num_field:hover, #email_field:hover, #street_address:hover, #address_field:hover
+{
+	background-color: #B0B0B0;
+	color: #F5F5F5;
+}
 
 #updateCust,#removeCust,#cancelOnEditCust {
     width: 9%;
@@ -46,6 +51,11 @@
     word-wrap: break-word;
     white-space: normal;
     box-sizing:content-box;
+}
+
+#updateCust:hover, #removeCust:hover, #cancelOnEditCust:hover
+{
+	background-color: #006400;
 }
 
 input[type=text], select,input[type=date] {

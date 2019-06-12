@@ -101,7 +101,7 @@ h1{
   width:5%;
 }
 
-#backoniteminfo,#editItem,#editInv,#mainmenu {
+#backoniteminfo,#editItem,#editInv {
     width: 10%;
     background-color: #008000;
     color: white;
@@ -118,6 +118,11 @@ h1{
     white-space: normal;
     box-sizing:content-box;
 
+}
+
+#backoniteminfo:hover, #editItem:hover, #editInv:hover
+{
+	background-color: #006400;
 }
 
 #page_header{

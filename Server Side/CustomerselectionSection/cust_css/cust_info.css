@@ -47,7 +47,7 @@ th, td {
 }
 
 
-#viewTran,#editCust,#back{
+#viewTran, #editCust, #back{
     width: 10%;
     background-color: #008000;
     color: white;
@@ -63,4 +63,9 @@ th, td {
     word-wrap: break-word;
     white-space: normal;
     box-sizing:content-box;
+}
+
+#viewTran:hover, #editCust:hover, #back:hover
+{
+	background-color: #006400;
 }

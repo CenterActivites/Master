@@ -82,10 +82,13 @@ function Login()
 
 </style>
 
-<div class="login">
+<div class="login" style="text-align: center;">
+	</br>
+	</br>
+	</br>
 	<div id="centeractivities_logo">
 		<center>
-			<img src="http://www2.humboldt.edu/centeractivities/sites/default/themes/bootstrap_centeractivites/images/hLDMlme.png">
+			<img src="https://centeractivities.humboldt.edu/Content/Images/humboldtstate-logo-rec.png">
 		</center>
 	</div>
 		

@@ -21,10 +21,10 @@
 			$connctn = hsu_conn_sess();
 			
 			//We do a mysql select here to get all the items that are being "reserved" for the customer to be picked up
-			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, request_date
-									FROM Inventory a, Item b, Reserve c, ItemReserve d
-									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rental_id = c.rental_id
-									and c.cust_id = :a");
+			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, request_date, c.rent_id
+									FROM Inventory a, Item b, Rental c, Reserve1 d
+									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rent_id = c.rent_id and rental_status = 'On-Going'
+									and c.cust_id = :a and c.pick_up_date is NULL");
 			$items->bindValue(':a', $cust_id, PDO::PARAM_INT);
 			$items->execute();
 			$display_array = $items->fetchAll();
@@ -47,6 +47,9 @@
 					//Start of the FOR loop
 					for($i=0; $i<$array_size; $i++)
 					{
+						//The following two lines is for formatting reasons. Basically to make the date we get from the database more readable for users
+						$curr_request_date = strtotime($display_array[$i]['request_date']);
+						$curr_request_date = date('M d, Y', $curr_request_date);
 ?>
 						<tr>
 							
@@ -56,12 +59,6 @@
 							<!-- Displaying the item name and front id to the screen -->
 							<td> <?= $display_array[$i]['inv_name'] ?> </td>
 							<td> <?= $display_array[$i]['item_Frontid'] ?> </td>
-<?php
-							//The following two lines is for formatting reasons. Basically to make the date we get from the database more readable for users
-							$curr_request_date = strtotime($display_array[$i]['request_date']);
-							$curr_request_date = date('M d, Y', $curr_request_date);
-?>
-							<!-- Display the newly formated date -->
 							<td> <?= $curr_request_date ?> </td>
 						</tr>
 <?php
@@ -74,10 +71,13 @@
 					<textarea name="comments" id="comments" rows="4" cols="50"></textarea> </br>
 					
 					<!-- Following are inputs that are either hidden or buttons -->
-					<input type="hidden" name="item_to_be_pick_up" id="item_to_be_pick_up"  />  <!-- Hidden input tag keep track of which items are selected to be returned -->
+					<input type="hidden" name="item_to_be_pick_up" id="item_to_be_pick_up"  />  <!-- Hidden input tag keep track of which items are selected to be picked up -->
+					<input type="hidden" name="rent_id" id="rent_id" value="<?= $display_array[0]['rent_id'] ?>"/>  <!-- Hidden input tag keep track of which items are selected to be picked up -->
+					<input type="hidden" name="item_leftover" id="item_leftover"  value='0'/>  <!-- Hidden input tag keep track if there are items that the customer isn't picking up -->
 					<input type="submit" name="Checkout" id="Checkout" value="Checkout" /> &nbsp; <!-- Checkout Button -->
 					<input type="submit" name="cancelReserve" id="cancelReserve" value="Cancel Reserve" /> &nbsp; <!-- Cancel Reserve Button. Which will cancel the Reserve entireally -->
-					<input type="submit" name="cancel" id="cancel" value="Cancel" /> &nbsp; <!-- Plain old Cancel button. Which just take user back to the Homepage. Used mainly for accidentally selecting the wrong customer -->
+					<input type="submit" name="mod_rental" id="mod_rental" value="Modify Rental" /> &nbsp; <!-- Modify Button. Which will modify the Reserve -->
+					<input type="submit" name="back" id="back" value="Back" /> &nbsp; <!-- Plain old Cancel button. Which just take user back to the Homepage. Used mainly for accidentally selecting the wrong customer -->
 				</div>
 			</form>
 			</div>
@@ -115,6 +115,10 @@
 								var get_val = $("#item_to_be_pick_up").val();
 								$("#item_to_be_pick_up").val(get_val + "," + box_value);
 							}
+						});
+						$('#item_table').find('input[type="checkbox"]:unchecked').each(function () 
+						{
+							$("#item_to_be_pick_up").val('1');
 						});
 						
 						//Checks if the user had selected any items for pick-up
@@ -156,6 +160,24 @@
 						}
 					});
 					
+				});
+			</script>
+			
+			<script type="text/javascript">
+				$(document).ready(function()
+				{
+					//Toggle script that either checks or uncheck the hidden checkbox
+					$("#cancelReserve").click(function()
+					{
+						if(confirm("You are about to cancel a rental reserve. Are you sure?"))
+						{
+							return true;
+						}
+						else
+						{
+							return false;
+						}
+					});
 				});
 			</script>
 		
