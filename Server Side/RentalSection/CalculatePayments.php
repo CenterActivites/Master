@@ -56,7 +56,7 @@
 		
 		//Doing calculation of the taxs and the total price with tax
 		$tax_amount = (int)$calcuated['total_price'] * ((float)$loc_tax[0]['loc_tax'] / 100);
-		$tax_amount = round($tax_amount, 2, PHP_ROUND_HALF_DOWN);
+		$tax_amount = round($tax_amount, 2);
 		$total_price_with_tax = (float)$calcuated['total_price'] + (float)$tax_amount;
 		
 		//Saving the total price of rental, the array of prices for each item, and the total price with tax for receipt page
