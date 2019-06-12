@@ -31,6 +31,10 @@ input[type=text], select {
     box-sizing:content-box;
 }
 
+#add:hover,#cancel:hover {
+    background-color: #006400;
+}
+
 #pageHeader{
   background-color: #008000;
   color: white;
@@ -50,4 +54,8 @@ input[type=text], select {
 
 body{
   text-align: center;
+}
+
+select:hover{
+   max-height: 10em;
 }

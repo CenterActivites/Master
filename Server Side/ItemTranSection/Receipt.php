@@ -35,7 +35,7 @@
 				
 				<!-- Printing script for the print receipt button -->
 				<script type="text/javascript">
-					function myFunction() 
+					function printfunction() 
 					{
 						window.print();
 					}
@@ -138,7 +138,7 @@
 										Thank you for renting out our gear, Hope to see you again.
 									</p>
 									<!-- Printing Button -->
-									<button type="button" id="no_print" class="btn btn-success btn-lg btn-block" onclick="myFunction()">
+									<button type="button" id="no_print" class="btn btn-success btn-lg btn-block" onclick="printfunction()">
 										Print Receipt <span id="no_print" class="glyphicon glyphicon-chevron-right"></span>
 									</button>
 								</div>
@@ -156,11 +156,31 @@
 					$due_date = date("F j, Y", strtotime($_SESSION['due_date']));
 					
 					//Grabbing the array of items that are being rented out along with the total calculated price and each item price
-					$total_price = $_SESSION['total_price'];
-					$receipt_prices = $_SESSION['receipt_prices'];
+					$total_price = $_SESSION['sub_total_price'];
+					$on_site_check = $_SESSION['on_site'];
 					$tax_amount = $_POST['tax_amount'];
-					$total_price_with_tax = $_POST['total_price_with_tax'];;
+					$total_price_with_tax = $_SESSION['total_price'];
+					$loc_id = $_SESSION['loc'];
+					if($on_site_check == NULL)
+					{
+						
+						$array_of_items = $_SESSION['array_of_items'];
+						$receipt_prices = $_SESSION['receipt_prices'];
+						$receipt = "";
+					}
+					else
+					{
+						$pack_name = $_SESSION['pack_name'];
+						$receipt = "(On-Site Rental)";
+					}
 					
+					$loc_info = $conn->prepare("select loc_name, loc_address, loc_city, loc_state, loc_zip, loc_phone_num
+												from Location
+												where loc_id = :loc_id");
+					$loc_info->bindValue(':loc_id', $loc_id, PDO::PARAM_INT);
+					$loc_info->execute();
+					$loc_info = $loc_info->fetchAll();
+
 ?>
 					<!-- Styling and structure are basically the same as the return tranaction receipt -->
 					<div class="container" id="section_to_print">
@@ -169,13 +189,13 @@
 								<div class="row">
 									<div class="col-xs-6 col-sm-6 col-md-6">
 										<address>
-											<strong>Center Activites</strong>
+											<strong><?= $loc_info[0]['loc_name'] ?></strong>
 											<br>
-												1 Harpst St
+												<?= $loc_info[0]['loc_address'] ?>
 											<br>
-												Arcata, CA 95521
+												<?= $loc_info[0]['loc_city'] ?>, <?= $loc_info[0]['loc_state'] ?> <?= $loc_info[0]['loc_zip'] ?>
 											<br>
-												Phone: (707) 826-3357
+												Phone: <?= $loc_info[0]['loc_phone_num'] ?>
 										</address>
 									</div>
 									<div class="col-xs-6 col-sm-6 col-md-6 text-right">
@@ -195,7 +215,7 @@
 								</div>
 								<div class="row">
 									<div class="text-center">
-										<h1>Receipt</h1>
+										<h1>Receipt <?= $receipt ?></h1>
 									</div>
 									</span>
 									<table class="table table-hover">
@@ -208,13 +228,28 @@
 										</thead>
 										<tbody>
 <?php
-											foreach($receipt_prices as $receipt_items)
+											if($on_site_check == NULL)
+											{
+												foreach($array_of_items as $item_id)
+												{
+?>
+													<tr>
+														<td class="col-md-6"><em> <?= $receipt_prices[$item_id]['name'] ?> </em></h4></td>
+														<td class="col-md-1 text-center"> <?= $receipt_prices[$item_id]['id'] ?> </td>
+														<td class="col-md-1 text-center"> $<?= $receipt_prices[$item_id]['price'] ?> </td>
+														<td></td>
+													</tr>
+<?php
+													$count++;
+												}
+											}
+											else
 											{
 ?>
 												<tr>
-													<td class="col-md-6"><em> <?= $receipt_items['name'] ?> </em></h4></td>
-													<td class="col-md-1 text-center"> <?= $receipt_items['id'] ?> </td>
-													<td class="col-md-1 text-center"> $<?= $receipt_items['price'] ?> </td>
+													<td class="col-md-6"><em> <?= $pack_name ?> </em></h4></td>
+													<td class="col-md-1 text-center"> </td>
+													<td class="col-md-1 text-center"> $<?= $total_price_with_tax ?> </td>
 													<td></td>
 												</tr>
 <?php
@@ -246,7 +281,7 @@
 											</tr>
 										</tbody>
 									</table>
-									<button type="button" id="no_print" class="btn btn-success btn-lg btn-block" onclick="myFunction()">
+									<button type="button" id="no_print" class="btn btn-success btn-lg btn-block" onclick="printfunction()">
 										Print Receipt <span id="no_print" class="glyphicon glyphicon-chevron-right"></span>
 									</button>
 								</div>

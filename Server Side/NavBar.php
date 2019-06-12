@@ -23,7 +23,7 @@
 					.navbar:hover 
 					{
 						opacity: 0.9;
-						filter: alpha(opacity=100); /* For IE8 and earlier */
+						filter: alpha(opacity=100);
 					}
 
 					.navbar input
@@ -36,6 +36,7 @@
 						text-decoration: none;
 						font-size: 13px;
 						background: #333;
+						border:none;
 					}
 
 					.navbar input:hover
@@ -44,10 +45,6 @@
 						color: black;
 					}
 					
-					.highlight
-					{ 
-						background:#008000;
-					}
 				</style>
 				
 				<style type="text/css" media="print">
@@ -81,6 +78,14 @@
 					$lvl_4 = "type = 'hidden'";
 				}
 				
+				if($display_array[0][0] == "4" || $display_array[0][0] == "3")
+				{
+					$lvl_3 = "type = 'submit'";
+				}
+				else
+				{
+					$lvl_3 = "type = 'hidden'";
+				}
 ?>
 				<div class="no_print">
 					<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post">
@@ -90,6 +95,7 @@
 							<input type="submit" name="ViewInv" id="ViewInv" value="View/Edit Inventory" />
 							<input type="submit" name="ViewVen" id="ViewVen" value="View/Edit Vendors" />
 							<input type="submit" name="ReturnI" id="ReturnI" value="Item Return" />
+							<input <?= $lvl_3 ?>  name="Report" id="Report" value="Report" />
 							<input <?= $lvl_4 ?>  name="Empl" id="Empl" value="Employees" />
 							<input type="submit" name="LogOut" id="log_out" value="Log Out" />
 						</div>

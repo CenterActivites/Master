@@ -22,44 +22,107 @@
 	//Grabbing the dates they want to rent the items out for
 	$request_date_format = $_SESSION['request_date'];
 	$due_date_format = $_SESSION['due_date'];
+	$loc = $_SESSION['loc'];
+	$on_site_check = $_SESSION['on_site'];
 	
-	$loc = strip_tags($_POST['rent_location']);
-	
-	//Grabbing the tax of the location
-	$loc_tax = $conn->prepare("select loc_tax
-									from Location
-									where loc_id = :loc_id");
-	$loc_tax->bindValue(':loc_id', $loc, PDO::PARAM_INT);
-	$loc_tax->execute();
-	$loc_tax = $loc_tax->fetchAll();
-	
-	//Access level view check. Only users who have level 3 and 4 can add new Inventory includes new prices.
-	//Level 2 and up can only add new items
-	$lvl_access = $_SESSION['lvl_access'];
-	if($lvl_access == "4" || $lvl_access == "3")
+	if($on_site_check == NULL)
 	{
-		$displayput = "<input name='tax_input' id='tax_input' value=" . $loc_tax[0]['loc_tax'] . ">%</input>";
+		//Grabbing the tax of the location
+		$loc_tax = $conn->prepare("select loc_tax
+										from Location
+										where loc_id = :loc_id");
+		$loc_tax->bindValue(':loc_id', $loc, PDO::PARAM_INT);
+		$loc_tax->execute();
+		$loc_tax = $loc_tax->fetchAll();
+		
+		//Access level view check. Only users who have level 3 and 4 can add new Inventory includes new prices.
+		//Level 2 and up can only add new items
+		$lvl_access = $_SESSION['lvl_access'];
+		if($lvl_access == "4" || $lvl_access == "3")
+		{
+			$displayput = "<input name='tax_input' id='tax_input' value=" . $loc_tax[0]['loc_tax'] . ">%</input>";
+		}
+		else
+		{
+			$displayput = "<output>" . $loc_tax[0]['loc_tax'] . "%</output>";
+		}
+		
+		//Calls the priceCal function to calcuate the prices for the rental
+		// input :: request date, due date, array of selected items for rental, and the customer id
+		// output :: a array that consist of the total cost of rental, without tax, and a array of individually pricing for each items
+		// Example of output :: $returned_array[0]['total_price'] = the total price int
+		//						$returned_array[0]['receipt_prices'] = array of prices per item
+		$calcuated = priceCal($request_date_format, $due_date_format, $array_of_items, $sel_cust);
+		
+		//Doing calculation of the taxs and the total price with tax
+		$tax_amount = (int)$calcuated['total_price'] * ((float)$loc_tax[0]['loc_tax'] / 100);
+		$tax_amount = round($tax_amount, 2, PHP_ROUND_HALF_DOWN);
+		$total_price_with_tax = (float)$calcuated['total_price'] + (float)$tax_amount;
+		
+		//Saving the total price of rental, the array of prices for each item, and the total price with tax for receipt page
+		$_SESSION['sub_total_price'] = $calcuated['total_price'];
+		$_SESSION['receipt_prices'] = $calcuated['receipt_prices'];
+		$_SESSION['total_price'] = $total_price_with_tax;
+		
+		$sub_total = $calcuated['total_price']; 
+		$total = $total_price_with_tax;
 	}
 	else
 	{
-		$displayput = "<output>" . $loc_tax[0]['loc_tax'] . "%</output>";
+		//Grab the package value. if customer didnt select a package then the value would be 0
+		$pack_select = $_POST['pack'];
+		
+		//Grab the customer's student and employee's status. If the customer is employee and the rental is a pick-up, then the rental is free. If the customer is a student, the student discount prices will be applied
+		$if_student = $conn->prepare("select is_student, is_employee
+										from Customer
+										where cust_id = :sel_cust");
+		$if_student->bindValue(':sel_cust', $sel_cust, PDO::PARAM_INT);
+		$if_student->execute();  //excute the query. Also is the query went wrong somewhere, the "or die($conn->error)" part can tell us what is wrong with the select statement
+		$if_student_row = $if_student->fetchAll();
+		
+		if(!($if_student_row[0]['is_employee'] == 'Yes'))
+		{
+			if($if_student_row[0]['is_student'] == 'yes' || $if_student_row[0]['is_student'] == 'Yes')
+			{
+				$_price = $conn->prepare("SELECT stu_price
+											FROM OnSitePrices a
+											WHERE a.pack_id = :pack_select");
+				$_price->bindValue(':pack_select', $pack_select, PDO::PARAM_INT);
+				$_price->execute();
+				$price = $_price->fetchAll();
+				$price = $price[0]['stu_price']; 
+			}
+			else
+			{
+				$_price = $conn->prepare("SELECT reg_price
+											FROM OnSitePrices a
+											WHERE a.pack_id = :pack_select");
+				$_price->bindValue(':pack_select', $pack_select, PDO::PARAM_INT);
+				$_price->execute();
+				$price = $_price->fetchAll();
+				$price = $price[0]['reg_price']; 
+			}
+		}
+		else
+		{
+			$price = 0;
+		}
+		$sub_total = ""; 
+		$total = $price;
+		$displayput = "";
+		
+		$pack_name = $conn->prepare("SELECT pack_name
+									FROM Packages
+									WHERE pack_id = :pack_select");
+		$pack_name->bindValue(':pack_select', $pack_select, PDO::PARAM_INT);
+		$pack_name->execute();
+		$pack_name = $pack_name->fetchAll();
+		$pack_name = $pack_name[0]['pack_name'];
+		
+		$_SESSION['pack_name'] = $pack_name;
+		$_SESSION['sub_total_price'] = $sub_total;
+		$_SESSION['total_price'] = $total;
 	}
-	
-	//Calls the priceCal function to calcuate the prices for the rental
-	// input :: request date, due date, array of selected items for rental, and the customer id
-	// output :: a array that consist of the total cost of rental, without tax, and a array of individually pricing for each items
-	// Example of output :: $returned_array[0]['total_price'] = the total price int
-	//						$returned_array[0]['receipt_prices'] = array of prices per item
-	$calcuated = priceCal($request_date_format, $due_date_format, $array_of_items, $sel_cust);
-	
-	//Saving the total price of rental and the array of prices for each item for receipt page
-	$_SESSION['total_price'] = $calcuated[0]['total_price'];
-	$_SESSION['receipt_prices'] = $calcuated[0]['receipt_prices'];
-	
-	//Doing calculation of the taxs and the total price with tax
-	$tax_amount = (int)$calcuated[0]['total_price'] * ((float)$loc_tax[0]['loc_tax'] / 100);
-	$tax_amount = round($tax_amount, 2, PHP_ROUND_HALF_DOWN);
-	$total_price_with_tax = (float)$calcuated[0]['total_price'] + (float)$tax_amount;
 	
 ?>
 	<fieldset id='fieldset_label' style="border:none; text-align:center;">
@@ -85,7 +148,7 @@
 				</th>
 				<td>
 					<!-- prints the subtotal price to the screen --> 
-					<output name="subtotalCost"  id="subtotalCost" for="subtotalCost"><?= $calcuated[0]['total_price'] ?></output>
+					<output name="subtotalCost"  id="subtotalCost" for="subtotalCost"><?= $sub_total ?></output>
 				</td>
 			</tr>
 			
@@ -103,7 +166,7 @@
 					Total Cost:
 				</th>
 				<td>
-					<output name="totalCost" id="totalCost" for="totalCost"><?= $total_price_with_tax ?></output>
+					<output name="totalCost" id="totalCost" for="totalCost"><?= $total ?></output>
 				</td>
 			</tr>
 		
@@ -141,7 +204,6 @@
 		<div>
 			<fieldset style="border:none;">
 				<!-- Two hidden inputs for keeping the total price of the rental including tax down and the tax amount for receipt page -->
-				<input type="hidden" name="total_price_with_tax" id="total_price_with_tax" value="<?= $total_price_with_tax  ?>"/>
 				<input type="hidden" name="tax_amount" id="tax_amount" value="<?= (float)$tax_amount  ?>"/>
 				
 				<!-- Input button that will take users either to the receipt page or back to the customer selection  -->

@@ -22,7 +22,7 @@
 
 <?php
 //query for selevted data in Items table
-foreach($conn->query("SELECT stat_id, loc_name, pur_price, ven_id, dbw_own, pur_date, vin_num, public, notes, inv_id
+foreach($conn->query("SELECT stat_id, loc_name, pur_price, ven_id, dbw_own, pur_date, vin_num, public, inv_id
 						FROM Item A, Location B
 						WHERE A.loc_id = B.loc_id and item_Backid = '$item_backid'") as $row)
 
@@ -35,7 +35,6 @@ foreach($conn->query("SELECT stat_id, loc_name, pur_price, ven_id, dbw_own, pur_
 							$curr_item_pur_date = $row["pur_date"];
 							$curr_item_vin_num = $row["vin_num"];
 							$curr_pub_use = $row["public"];
-							$curr_item_notes = $row["notes"];
 							$curr_inv_id = $row["inv_id"];
 						}
 
@@ -68,13 +67,20 @@ foreach($conn->query("SELECT stat_id, loc_name, pur_price, ven_id, dbw_own, pur_
 							<select name="status" id="status" size="1"  required >
 <?php
 							foreach($conn->query("SELECT  stat_id, stat_name
-													FROM Status") as $row)
+													FROM Status
+													ORDER BY stat_name") as $row)
 							{
 								$cur_stat_name = $row["stat_name"];
 								$cur_stat_id = $row["stat_id"];
+								
+								$item_status = "";
+								if($curr_stat_id == $cur_stat_id)
+								{
+									$item_status = "selected";
+								}
 								// what I need to do is get the original status of the item to fill this box.
 ?>
-								<option id ='statinf' value ="<?= $cur_stat_id ?>"> <?=$cur_stat_name?> </option>
+								<option id ='statinf' value ="<?= $cur_stat_id ?>" <?=$item_status?>> <?=$cur_stat_name?> </option>
 <?php
 							}
 ?>
@@ -88,12 +94,19 @@ foreach($conn->query("SELECT stat_id, loc_name, pur_price, ven_id, dbw_own, pur_
 							<select name="Classification" id="Classification" size="1" required>
 <?php
 								foreach($conn->query("SELECT  inv_id, inv_name
-														FROM Inventory") as $row)
+														FROM Inventory
+														ORDER BY inv_name") as $row)
 								{
 									$cur_inv_name = $row["inv_name"];
 									$cur_inv_id = $row["inv_id"];
+									
+									$inv_selection = "";
+									if($curr_inv_id == $cur_inv_id)
+									{
+										$inv_selection = "selected";
+									}
 ?>
-									<option id ='Classification_op' value ="<?= $cur_inv_id ?>"> <?=$cur_inv_name?> </option>
+									<option id ='Classification_op' value ="<?= $cur_inv_id ?>" <?=$inv_selection?>> <?=$cur_inv_name?> </option>
 <?php
 								}
 ?>
@@ -142,8 +155,14 @@ foreach($conn->query("SELECT stat_id, loc_name, pur_price, ven_id, dbw_own, pur_
 								{
 									$cur_ven_name = $row["ven_name"];
 									$cur_ven_id = $row["ven_id"];
+									
+									$ven_selection = "";
+									if($curr_item_ven_id == $cur_ven_id)
+									{
+										$ven_selection = "selected";
+									}
 ?>
-									<option id ='statinf' value ="<?= $cur_ven_id ?>"> <?=$cur_ven_name?> </option>
+									<option id ='statinf' value ="<?= $cur_ven_id ?>" <?=$ven_selection?>> <?=$cur_ven_name?> </option>
 <?php
 								}
 ?>
@@ -155,8 +174,20 @@ foreach($conn->query("SELECT stat_id, loc_name, pur_price, ven_id, dbw_own, pur_
 						<td>
 							<label>Owned by DBW</label></br>
 							<select name = "dbw_own" id="dbw_own" size="1" required>
-														<option value = "0"> No </option>
-														<option value = "1"> Yes </option>
+<?php
+								if($curr_dbw_own == 1)
+								{
+									$yes_DBW_own = "selected";
+									$no_DBW_own = "";
+								}
+								else
+								{
+									$no_DBW_own = "selected";
+									$yes_DBW_own = "";
+								}
+?>														
+								<option value = "0"> No </option>
+								<option value = "1"> Yes </option>
 							</select>
 						</td>
 						<td>
@@ -173,8 +204,20 @@ foreach($conn->query("SELECT stat_id, loc_name, pur_price, ven_id, dbw_own, pur_
 						<td>
 							<label>Public Use</label></br>
 							<select name = "pub_use" id="pub_use" size="1" required>
-														<option value = "0"> No </option>
-														<option value = "1"> Yes </option>
+<?php
+								if($curr_pub_use == 1)
+								{
+									$yes_pub_use = "selected";
+									$no_pub_use = "";
+								}
+								else
+								{
+									$no_pub_use = "selected";
+									$yes_pub_use = "";
+								}
+?>														
+								<option value = "0" <?=$yes_pub_use?>> No </option>
+								<option value = "1" <?=$no_pub_use?>> Yes </option>
 							</select>
 						</td>
 					</tr>
@@ -182,7 +225,7 @@ foreach($conn->query("SELECT stat_id, loc_name, pur_price, ven_id, dbw_own, pur_
 					<tr>
 						<td colspan="2">
 							<label>Notes</label></br>
-							<input type = "text" name = "curr_item_notes" id = "curr_item_notes" value ="<?= $curr_item_notes ?>" />
+							<input type = "text" name = "curr_item_notes" id = "curr_item_notes" value ="" />
 						</td>
 					</tr>
 				

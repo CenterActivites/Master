@@ -143,9 +143,9 @@
 		
 		for($i = 0; $i < count($display_array); $i++)
 		{
-			$number_of_use = $connctn->prepare("select count(itemtran_id)
-												from Item A, Transaction B, ItemTran C
-												where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+			$number_of_use = $connctn->prepare("select count(A.rent_id)
+												from Rental A, CheckOut B
+												where A.rent_id = B.rent_id and B.item_Backid = :a");
 			$number_of_use->bindValue(':a', $display_array[$i]['item_Backid'], PDO::PARAM_INT);
 			$number_of_use->execute();
 			$number_of_use = $number_of_use->fetchAll();

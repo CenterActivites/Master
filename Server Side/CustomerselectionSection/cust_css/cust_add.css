@@ -69,6 +69,11 @@ table td{
 	margin-top: 20px;
 }
 
+#Addcust:hover, #cancel:hover
+{
+	background-color: #006400;
+}
+
 #pageHeader{
   background-color: #008000;
   color: white;
@@ -88,4 +93,10 @@ table td{
 
 body{
   text-align: center;
+}
+
+#cust_add_table tbody td:hover 
+{
+	background-color: #B0B0B0;
+	color: #F5F5F5;
 }

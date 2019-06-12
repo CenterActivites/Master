@@ -13,19 +13,19 @@
 		$connctn->query("SET CHARACTER SET utf8");
 		
 		//Grabs the time_stamp sent by the AJAX call
-		$trans_id = $_REQUEST['trans_id'];
+		$rent_id = $_REQUEST['trans_id'];
 		$cust_id = $_REQUEST['cust_id'];
 		
 		//Checks if the pack_value is 0, if is then user just want all items. 
 		$int_cust_id = (int)$cust_id;
-		$int_trans_id = (int)$trans_id;
+		$int_rent_id = (int)$rent_id;
 		
-		$transaction = $connctn->prepare("SELECT inv_name, item_modeltype, item_size, item_Frontid, comments
-											FROM Transaction b, ItemTran c, Item d, Inventory e
-											WHERE b.trans_id = c.tran_id and c.item_Backid = d.item_Backid 
-													and d.inv_id = e.inv_id and b.cust_id = :a and b.trans_id = :z"); 
+		$transaction = $connctn->prepare("SELECT inv_name, item_modeltype, item_size, item_Frontid, pick_up_date, return_date
+											FROM Item a, Inventory b, Rental c, Reserve1 d
+											WHERE a.inv_id = b.inv_id and a.item_Backid = d.item_Backid and c.rent_id = d.rent_id
+													and c.cust_id = :a and c.rent_id = :z"); 
 		$transaction->bindValue(':a', $int_cust_id, PDO::PARAM_INT);
-		$transaction->bindValue(':z', $int_trans_id, PDO::PARAM_INT);
+		$transaction->bindValue(':z', $int_rent_id, PDO::PARAM_INT);
 		$transaction->execute();
 		$display_array = $transaction->fetchAll();
 		$connctn = null;

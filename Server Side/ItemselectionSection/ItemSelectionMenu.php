@@ -67,7 +67,6 @@
 				</fieldset>
 			</br>
 				<div id="table_div" >
-
 					<table id="table_info" class = "fixed" >
 						<thead>
 							<tr>
@@ -91,7 +90,7 @@
 							foreach($conn->query("SELECT item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 													FROM Item A, Inventory B, Category C, Status D
 													WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id
-													ORDER BY inv_name, item_modeltype") as $row)
+													ORDER BY inv_name, item_modeltype, item_Backid") as $row)
 							{
 								$curr_item_backid = $row["item_Backid"];
 								$curr_item_size = $row["item_size"];
@@ -103,9 +102,9 @@
 
 								$item_backid = (int)$curr_item_backid;
 								
-								$number_of_use = $conn->prepare("select count(itemtran_id)
-																	from Item A, Transaction B, ItemTran C
-																	where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+								$number_of_use = $conn->prepare("select count(A.rent_id)
+																	from Rental A, CheckOut B
+																	where A.rent_id = B.rent_id and B.item_Backid = :a");
 								$number_of_use->bindValue(':a', $item_backid, PDO::PARAM_INT);
 								$number_of_use->execute();
 								$number_of_use = $number_of_use->fetchAll();
@@ -172,13 +171,11 @@
 			<fieldset id="search_fieldset">
 		</form>
 				</br>
-				</br>
 				<label id="search_lable">Search: </label> 
 				<input type = "text" name = "searchItem" id = "searchItem" placeholder="Item Id, Size, Model, Name, Status" /> </br>
 				</br>
 		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id="inv">
 				<label id="search_lable">Sort By: </label>
-				</br>
 				</br>
 				
 				<link rel="stylesheet" type="text/css" href="../ItemselectionSection/item_css/select_style.css"/>
@@ -614,7 +611,7 @@
 						 console.log("Status Update");
 					 },
 					 error: function(XMLHttpRequest, textStatus, errorThrown) { 
-						 console.log("Something went wrong");
+						 console.log("Status Update went wrong");
 					 }       
 				 });
 			 });

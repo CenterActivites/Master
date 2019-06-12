@@ -11,7 +11,7 @@ select {
   background-image: none;
 }
 /* Custom Select */
-.select, .select_status {
+.select, .select_status, .select_cat {
   position: relative;
   display: block;
   width: 100%;
@@ -36,7 +36,7 @@ select::-ms-expand {
   display: none;
 }
 /* Arrow */
-.select::after, .select_status::after {
+.select::after, .select_status::after, .select_cat::after{
   content: '\25BC';
   position: absolute;
   top: 0;
@@ -47,7 +47,7 @@ select::-ms-expand {
   pointer-events: none;
 }
 /* Transition */
-.select:hover, .select_status:hover{
+.select:hover, .select_status:hover, .select_cat:hover{
   color: ddd;
 }
 
@@ -55,7 +55,11 @@ select::-ms-expand {
   height: 11em;
 }
 
-.select::after, .select_status::after {
+.select_cat:hover{
+  height: 6.5em;
+}
+
+.select::after, .select_status::after , .select_cat::after{
   -webkit-transition: .25s all ease;
   -o-transition: .25s all ease;
   transition: .25s all ease;

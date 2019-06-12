@@ -102,8 +102,8 @@
 									//MYSQL select query for all customers with rentals out there. We grab the following data
 									//The customer's id, first and last name, phone number, e-mail, and the due date for the rentals
 									foreach($conn->query("SELECT b.cust_id, f_name, l_name, c_phone, c_email, due_date
-															FROM Customer a, Reserve b
-															WHERE a.cust_id = b.cust_id and b.pick_up_date IS NOT NULL
+															FROM Customer a, Rental b
+															WHERE a.cust_id = b.cust_id and b.pick_up_date IS NOT NULL and b.return_date is NULL
 															GROUP BY b.cust_id
 															ORDER BY due_date, l_name, f_name") as $row)
 									{
@@ -160,26 +160,52 @@
 					</div>
 			</fieldset>
 		
-		<!-- Modal content. The box that appears when the "Rental" button is clicked -->
-		<div id="myModal" class="dates">
-			<div class="modal-content">
-				<span class="close">&times;</span>
-				
-				<!-- The "Pick up" and "Return" date inputs. Have it where users can not select past dates for rentals -->
-				Pick up Date: <input type = "date" name = "pickUpDate" id = "pickUpDate" min="<?php echo date('Y-m-d'); ?>"/>
-				&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-				Return Date: <input type = "date" name = "returnDate" id = "returnDate" min="<?php echo date('Y-m-d'); ?>"/>
-				</br>
-				<input type="submit" name="on_to_rental" id="on_to_rental" value="Continue" /><br />
+			<!-- Modal content. The box that appears when the "Rental" button is clicked -->
+			<div id="myModal" class="dates">
+				<div class="modal-content">
+					<span class="close">&times;</span>
+					
+					<label for="rent_location"> Location: </label>
+					<select name="rent_location" class="rent_location" id="rent_location">
+<?php
+						foreach($conn->query("SELECT loc_name, loc_id
+												FROM Location") as $row)
+						{
+?>
+							<option value="<?= $row['loc_id'] ?>">
+								<?= $row['loc_name'] ?>
+							</option>
+<?php
+						}
+?>
+					</select>
+					
+					</br>
+					</br>
+					
+					<div id='on_site_rental' name='on_site_rental' style="display: none;">
+						<label for="on_site_button"> On-Site Rental: </label>
+						<input type='checkbox' name='on_site_button' id='on_site_button' value="1">
+					</div>
+					
+					</br>
+					<div id='input_dates' name='input_dates' style='display: block;'>
+						<!-- The "Pick up" and "Return" date inputs. Have it where users can not select past dates for rentals   min="<?php //echo date('Y-m-d'); ?>"-->
+						Pick up Date: <input type = "date" name = "pickUpDate" id = "pickUpDate"/>
+						&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+						Return Date: <input type = "date" name = "returnDate" id = "returnDate"/>
+					</div>
+					</br>
+					<input type="submit" name="on_to_rental" id="on_to_rental" value="Continue" /><br />
+				</div>
 			</div>
-		</div>
+				
+			<fieldset style="border:none;">
 			
-	    <fieldset style="border:none;">
-		
-			<!-- The Search bar -->
-			<label id='search_lable'>Search:</label> <input type = "text" name = "searchCust" id = "searchCust" placeholder="Search for names..." /> <br/>   <!-- Search bar -->
-			</br>
-			</br>
+				<!-- The Search bar -->
+				<label id='search_lable'>Search:</label> <input type = "text" name = "searchCust" id = "searchCust" placeholder="Search for names..." /> <br/>   <!-- Search bar -->
+				</br>
+				</br>
 <?php
 				//Again since both Item Return and Customer section both uses this page, there will some buttons that will only appear in Customer and some will only appear in Item Return 
 				if($_SESSION["itemReturn"] != "Yes")
@@ -199,7 +225,7 @@
 ?>
 	
 		</form>
-		</fieldset>
+			</fieldset>
 </div>
 </body>
 
@@ -313,6 +339,88 @@
 				{
 					alert("Please Enter in the Requested Dates");
 					return false;
+				}
+			});
+		});
+	</script>
+	
+	<!-- A little Javascript that when the Location HBAC, the radio button for the on-site or not will appear below the location selection -->
+	<script type="text/javascript">
+		$(function() 
+		{
+			//when the location select is changed
+			$('.rent_location').change(function()
+			{
+				//Log it
+				console.log("Rental Location Change");
+				
+				//Checks if the new selected location is HBAC. 
+				if($("#rent_location").val() == 2)
+				{
+					//If so then we display the on-site checkbox
+					document.getElementById("on_site_rental").style.display = "block"; 
+				}
+				else
+				{
+					//If not, we make sure the on-site checkbox is hidden again
+					document.getElementById("on_site_rental").style.display = "none"; 
+					
+					//Set the pick-up and return-dates to be nothing
+					$('#pickUpDate').val("");
+					$('#returnDate').val("");
+					
+					//if the on-site check-box is checked, uncheck it
+					if($("#on_site_button").is(':checked'))
+					{
+						$('#on_site_button').prop('checked', false);
+						
+						//And we will re-display both dates inputs
+						document.getElementById("input_dates").style.display = "block"; 
+					}
+				}
+			});
+		});
+	</script>
+	
+	<!-- A little Javascript that when the 'on site' checkbox input is click inndicating that the rental is on-site, we will then just default both 'Pick up Date' and 'Return Date' to the current date -->
+	<script type="text/javascript">
+		$(function() 
+		{
+			//When the on-site checkbox is changed
+			$("#on_site_button").on('change', function()
+			{
+				//Log it
+				console.log("On-Site Rental");
+				
+				//Checks if the checkbox have been changed to uncheck
+				if (!this.checked) {
+					//If so then set both pick-up and return date to be nothing
+					$('#pickUpDate').val("");
+					$('#returnDate').val("");
+					
+					//And we will re-display both dates inputs
+					document.getElementById("input_dates").style.display = "block"; 
+				}
+				else
+				{
+					//If the checkbox have been checked
+					
+					//Get the current date
+					var today = new Date();
+					
+					//Format it so we can input it in the pick-up and return dates. Format has to be :::: YEAR(0000) - MONTH(00) - DAY(00)
+					var dd = String(today.getDate()).padStart(2, '0');
+					var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+					var yyyy = today.getFullYear();
+					today = yyyy + '-' + mm + '-' + dd;
+					
+					//Set the both dates to the current date
+					$('#pickUpDate').val(today);
+					$('#returnDate').val(today);
+					
+					//And we will hid both dates inputs
+					document.getElementById("input_dates").style.display = "none"; 
+					
 				}
 			});
 		});

@@ -28,25 +28,29 @@
 						<td>
 							Level of Access Given: <select name = "access_lvl" id="access_lvl" size="1" required>
 								<option hidden></option>
-								<option value = "1"> 1 </option>
-								<option value = "2"> 2 </option>
-								<option value = "3"> 3 </option>
-								<option value = "4"> 4 </option>
+								<option value = "1"> Front Desk Access Level </option>
+								<option value = "2"> Inventory Room Access Level </option>
+								<option value = "3"> Supervisor Access Level </option>
+								<option value = "4"> Admin Level </option>
 							</select>
 						</td>
 					</tr>
 					
 					<tr>
-						<td colspan="2">
+						<td>
 							Email Address: <input type = "text" name = "email" id = "email" maxlength="50"  value ="" required/>
+						</td>
+						<td>
+							Username: <input type = "text" name = "user" id = "user" maxlength="20" minlength=3 value ="" required/>
 						</td>
 					</tr>
 					
 					<tr>
 						<td colspan="2">
-							Password need to be at least 6 characters long. Must have at least 1 upper case, 1 lower case, and 1 number in it.
+							Password need to be at least 4 characters long. Must have
+							at least 1 upper case, 1 lower case, and 1 number in it.
 							</br>
-							Password: <input type = "text" name = "pass" id = "pass" maxlength="14" minlength=6 value ="" required/>
+							Password: <input type = "text" name = "pass" id = "pass" maxlength="20" minlength=6 value ="" required/>
 							</br>
 							Random Password Generator <input type = "button" name = "gen_pass" id = "gen_pass" />
 						</td>
@@ -64,17 +68,31 @@
 	</div>
   </body>
   
-  <!-- Little script that save the item id to the hidden button we created a few lines up  -->
+  <!-- Random Password Generator -->
 	<script type="text/javascript">
 		$(document).ready(function(){
 			$("#gen_pass").click(function(){
-				ran_num = Math.floor(Math.random() * 9) + 6; 
+				ran_num = Math.floor(Math.random() * 9) + 4;
 				ran_pass = "";
 				possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 				for (var i = 0; i < ran_num; i++)
 				{
 					ran_pass += possible.charAt(Math.floor(Math.random() * possible.length));
+				}
+				
+				if(!(/\d/.test(ran_pass)))
+				{
+					x = Math.floor((Math.random() * 10) + 1);
+					ran_pass += x;
+				}
+				if(!(/[a-z]/.test(ran_pass)))
+				{
+					ran_pass += 'a';
+				}
+				if(!(/[A-Z]/.test(ran_pass)))
+				{
+					ran_pass += 'A';
 				}
 			
 				$('#pass').val(ran_pass);

@@ -1,11 +1,12 @@
 <?php
 	//Item Selection Page. Where users are going to select the items the customers want to rent out 
-	function RentalItemSelect()
+	function ModifyRental()
 	{
 ?>
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="../RentalSection/rental_css.css"/>
+	<link rel="stylesheet" type="text/css" href="../ItemTranSection/Modal.css"/>
 	<link rel="stylesheet" type="text/css" href="../CSS/toggle.css">
 	<link rel="stylesheet" type="text/css" href="../CSS/Mult_column_select.css">
 	
@@ -13,7 +14,7 @@
 <body>
 
     <fieldset id='fieldset_label' style="border:none; text-align: center;">
-		<label id='header_for_table' style="font-size: 25px"> Item Selection </label>
+		<label id='header_for_table' style="font-size: 25px"> Modify Rental </label>
 	</fieldset>
     <div style="text-align:center;"> 
 <?php
@@ -21,29 +22,29 @@
         $conn = hsu_conn_sess();
 		
 		//Grabs the selected customer and their request dates for the rental
-		$sel_cust = $_SESSION['sel_user'];
-		$cust_request_date = $_SESSION['request_date'];
-		$cust_due_date = $_SESSION['due_date'];
-		$curr_loc = $_POST['rent_location'];
-		$on_site_check = $_POST['on_site_button'];
+		$sel_cust = $_SESSION['cust_id'];
+		$curr_rental = $_POST['rent_id'];
 		
-		//Storing the on-site check and location of the rental to session
-		$_SESSION['on_site'] = $on_site_check;
+		//Setting up the cart_array that will be stored in the cart hidden input so that once the user finished selecting the changes, we can process the new cart
+		$cart_array = ""; 
+		
+		//Here we're going to be grabbing the 'rent_id' from the Rental table to allow us to pull up all needed information for the pick-up
+		$rental_info = $conn->prepare("select request_date, due_date, loc_id, sub_total_cost
+											from Rental
+											where rent_id = :a");
+		$rental_info->bindValue(':a', $curr_rental, PDO::PARAM_INT);
+		$rental_info->execute();
+		$rental_info = $rental_info->fetchAll();
+		
+		$cust_request_date = $rental_info[0]['request_date'];
+		$cust_due_date = $rental_info[0]['due_date'];
+		$curr_loc = $rental_info[0]['loc_id'];
+		
 		$_SESSION['loc'] = $curr_loc;
-		
-		$curr_date = Date("Y-m-d");
 		
 		//Creating the current customer's padding request and padding due dates for the later sql select
 		$cust_padded_request_date = date('Y-m-d', strtotime($cust_request_date. ' - 2 days'));;
 		$cust_padded_due_date = date('Y-m-d', strtotime($cust_due_date. ' + 2 days'));
-	
-		//MYSQl select query to see if the selected customer is a student or not
-		$is_student = $conn->prepare("SELECT is_student
-										FROM Customer
-										WHERE cust_id = :sel_cust");
-		$is_student->bindValue(':sel_cust', $sel_cust, PDO::PARAM_INT);
-		$is_student->execute();
-		$is_student = $is_student->fetchAll();
 		
 		//Grabbing the list of items that have been reserved already to see if the current request dates will not come into conflict with each other
 		$list_of_reserve = $conn->prepare("select item_Backid, request_date, due_date
@@ -107,7 +108,6 @@
 		}
  ?>
 	<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
-		
 		<fieldset style="border:none; word-wrap: break-word;">
 			<div id="div_for_selection" name="div_for_selection"  style="float:left; width:65%;">
 				<fieldset id='fieldset_label' style="border:none; text-align: center;">
@@ -131,37 +131,9 @@
 												WHERE a.inv_id = c.inv_id and a.stat_id = b.stat_id and a.loc_id = " . $curr_loc . " and (a.stat_id = 1 or a.stat_id = 7)
 												ORDER BY inv_name, item_modeltype, item_Backid") as $row)
 						{
-							//Check if the selected customer is a student or not.
-							if($is_student[0][0] == 'no' || $is_student[0][0] == 'No' || $cust_request_date > $curr_date)
-							{
-								//If the selected customer is not a student, then check each item is the item is Outdoor Nation or not
-								//Basically we're filtering out the Outdoor Nation items when the selected customer is not a student
-								if(!(strpos($row["inv_name"], "Outdoor Nation") !== false))
-								{
-									$curr_item_backid = $row["item_Backid"];
-									if(!(in_array($curr_item_backid, $list_of_conflicts)))
-									{
-										$curr_inv_name = $row["inv_name"];
-										$curr_item_size = $row["item_size"];
-										$curr_item_frontid = $row["item_Frontid"];
-										$curr_item_modeltype = $row["item_modeltype"];
-										if($curr_item_size == null) 
-										{
-											$curr_item_size = "No Size";
-										}
-?>
-										<tr id='table_row_info'>
-											<td id = "hide_me"><input type="radio" id ="item_id" name="item_id[]" value = "<?= $curr_item_backid ?>"/></td>
-											<td id = 'td_front'><?= $curr_item_frontid?></td>
-											<td><?= $curr_item_size ?></td>
-											<td><?= $curr_item_modeltype ?></td>
-											<td><?= $curr_inv_name ?></td>
-										</tr>
-<?php
-									}
-								}
-							}
-							else
+							//If the selected customer is not a student, then check each item is the item is Outdoor Nation or not
+							//Basically we're filtering out the Outdoor Nation items when the selected customer is not a student
+							if(!(strpos($row["inv_name"], "Outdoor Nation") !== false))
 							{
 								$curr_item_backid = $row["item_Backid"];
 								if(!(in_array($curr_item_backid, $list_of_conflicts)))
@@ -170,7 +142,7 @@
 									$curr_item_size = $row["item_size"];
 									$curr_item_frontid = $row["item_Frontid"];
 									$curr_item_modeltype = $row["item_modeltype"];
-									if($curr_item_size == null)   
+									if($curr_item_size == null) 
 									{
 										$curr_item_size = "No Size";
 									}
@@ -210,11 +182,51 @@
 						</tr>
 					</thead>
 					<tbody id='cart_empty'>
-						<tr>
-							<td colspan="5" id="delete_me">
-								Cart Empty
-							</td>							
-						</tr>
+<?php
+						//We do a mysql select here to get all the items that are being "reserved" for the customer to be picked up
+						$cart_items = $conn->prepare("SELECT a.item_Backid, inv_name, item_size, item_Frontid, item_modeltype
+													FROM Item a, Inventory c, Reserve1 d
+													WHERE a.inv_id = c.inv_id and a.item_Backid = d.item_Backid and d.rent_id = :a
+													ORDER BY inv_name, item_modeltype, item_Backid");
+						$cart_items->bindValue(':a', $curr_rental, PDO::PARAM_INT);
+						$cart_items->execute();
+						$cart_items = $cart_items->fetchAll();
+						
+						//Query for item selection with Items status 'Ready'
+						foreach($cart_items as $row)
+						{
+							//Here we populate the cart_array
+							//Check if the cart is empty, which only be in the beginning, we just make the cart equal to the first item_Backid
+							if($cart_array == "")
+							{
+								$cart_array = $row["item_Backid"];
+							}
+							//Once the first item is entered into the cart, we then add on to the cart with a ',' separating each item_Backid
+							else
+							{
+								$cart_array = $cart_array . "," . $row["item_Backid"];
+							}
+							
+							$curr_item_backid = $row["item_Backid"];
+							$curr_inv_name = $row["inv_name"];
+							$curr_item_size = $row["item_size"];
+							$curr_item_frontid = $row["item_Frontid"];
+							$curr_item_modeltype = $row["item_modeltype"];
+							if($curr_item_size == null) 
+							{
+								$curr_item_size = "No Size";
+							}
+?>
+							<tr id='table_row_info'>
+								<td id = "hide_me"><input type="radio" id ="item_id" name="item_id[]" value = "<?= $row["item_Backid"] ?>"/></td>
+								<td id = 'td_front'><?= $curr_item_frontid?></td>
+								<td><?= $curr_item_size ?></td>
+								<td><?= $curr_item_modeltype ?></td>
+								<td><?= $curr_inv_name ?></td>
+							</tr>
+<?php
+						}
+?>
 					</tbody>
 				</table>
 			</div>
@@ -231,18 +243,10 @@
 				<select name="pack" id="pack" multiple="multiple" class="pack">
 					<option value=0 selected="selected"> None </option>
 <?php
-					if($on_site_check == NULL)
-					{
-						$pack_query = "SELECT pack_name, a.pack_id
-										FROM Packages a, PackLoc b
-										WHERE a.pack_id = b.pack_id and b.loc_id =" . $curr_loc;
-					}
-					else
-					{
-						$pack_query = "SELECT pack_name, a.pack_id
-										FROM Packages a, PackLoc b, OnSitePrices c
-										WHERE a.pack_id = b.pack_id and c.pack_id = a.pack_id and b.loc_id =" . $curr_loc;
-					}
+					$pack_query = "SELECT pack_name, a.pack_id
+									FROM Packages a, PackLoc b
+									WHERE a.pack_id = b.pack_id and b.loc_id =" . $curr_loc;
+	
 					//Query for package name
 					foreach($conn->query($pack_query) as $row)
 					{
@@ -272,13 +276,31 @@
 		</br>
 		</br>
 		
+		<!-- Modal content. The box that appears when the "Rental" button is clicked -->
+		<div id="myModal" class="dates">
+			<div class="modal-content">
+				<span class="close">&times;</span>
+				
+				<label id="label_for_price_div" for="price_div"></label>
+				<div id="price_div" name="price_div">
+				</div>
+				</br>
+				<input type="submit" name="finished" id="finished" value="Finished" /><br />
+			</div>
+		</div>
+		
 	    <fieldset style="border:none;">
-			<input type="hidden" name="item_array" id="item_array"/>  <!-- input tag for the returning the list of selected items from Cart -->
+			<input type="hidden" name="item_array" id="item_array" value="<?= $cart_array ?>"/>  <!-- input tag for the returning the list of selected items from Cart -->
 			<input type="hidden" id="loc_hidden" name="loc_hidden" value="<?= $curr_loc ?>"/>
-            <input type="submit" name="calPay" id="calPay" value="Continue to Payments" style="float: left; margin-left:40%;"/>    <!-- Sends the user onto the next page, the CalculatePayments page -->
+			<input type="hidden" id="request_date" name="request_date" value="<?= $cust_request_date ?>"/>
+			<input type="hidden" id="due_date" name="due_date" value="<?= $cust_due_date ?>"/>
+			<input type="hidden" id="cust_id" name="cust_id" value="<?= $sel_cust ?>"/>
+			<input type="hidden" id="rent_id" name="rent_id" value="<?= $curr_rental ?>"/>
+			<input type="hidden" id="sub_org_cost" name="sub_org_cost" value="<?= $rental_info[0]['sub_total_cost'] ?>"/>
+			<input type="button" name="continue" id="continue" value="Continue" style="float: left; margin-left:40%;"/>    <!-- Sends the user onto the next page, the CalculatePayments page -->
 	</form>
 	<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
-		<input type="submit" name="cancel" id="cancel" value="Cancel" style="float: left; margin-left:20px;"/><br />     <!-- Sends the user back to customer selection page -->
+			<input type="submit" name="cancel" id="cancel" value="Cancel" style="float: left; margin-left:20px;"/><br />     <!-- Sends the user back to customer selection page -->
 	</form>
 	    </fieldset>
 </body>
@@ -286,13 +308,6 @@
 	<!-- JavaScript Starts here -->
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
 	<script type="text/javascript" src="jquery.quicksearch.js"></script>  <!-- Plugin for the item Search function -->
-
-	<!-- Make sure the cart is empty everytime -->
-	<script type="text/javascript">
-		$(document).ready(function(){
-			$("#item_array").val("");
-		});
-	</script>
 	
 	<!-- Little script set the selection item id values to the item array hidden input, and move it to the cart -->
 	<script type="text/javascript">
@@ -478,7 +493,7 @@
 						
 						var item_display = document.getElementById('select_empty'); //Grabs the "item_selection" select tag
 						var cart = $("#item_array").val(); //Also grab the "cart_array" input tag for processing the cart for display
-						var cart_array = cart.split(","); //Turns the cart string into a cart array by separating the string by the "," char
+						var cart_array = cart.split(","); //Turns the cart string into a cart array by separating the string by the "|||" char
 						
 						//The next following lines creates a filtered cart for easy use for displaying purposes
 						var filtered_cart_array = cart_array.filter(function () { return true });
@@ -637,6 +652,51 @@
 					document.getElementById('pack_infor').innerHTML = " ";
 				}
 			});
+		});
+	</script>
+	
+	<!-- Modal script got from online with little adjustments -->
+	<script type="text/javascript">
+		$(document).ready(function()
+		{
+			//Grabs the hidden div called 'myModal" and the span tag
+			var modal = document.getElementById('myModal');
+			var span = document.getElementsByClassName("close")[0];
+			
+			//Once the Continue button is clicked
+			$("#continue").click(function()
+			{	
+				$.ajax(
+				{
+					url: "../ItemTranSection/Repricing_for_mod_reserve.php", //The file where the php select query is at
+					type: "post",
+					data: 
+					{
+						'new_cart': $("#item_array").val(),
+						'request_date': $("#request_date").val(),
+						'due_cart': $("#due_date").val(),
+						'cust_id': $("#cust_id").val(),
+					},
+					success: function(data) //When the AJAX call is successful, the script does the following
+					{
+						console.log("Data: " + data);
+						var new_price = JSON.parse(data); //Grabs the data that is in JSON format and parse it so it is usable
+						console.log('Data: ' + new_price['total_price']);
+						
+						//Then set the first string to the div tab "item_info_label" which will be displayed for the user to see
+						document.getElementById('label_for_price_div').innerHTML = "New price: " + "</br>";
+						document.getElementById('price_div').innerHTML = new_price['total_price'] + "</br>";
+					}
+				});
+				
+				modal.style.display = "block";
+			});
+			
+			//Once the close/span, on the right top corner, is clicked; we re-hid the div
+			span.onclick = function(){
+				console.log("Close click");
+				modal.style.display = "none";
+			};
 		});
 	</script>
 	

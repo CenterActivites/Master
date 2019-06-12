@@ -70,16 +70,16 @@
 		$select_item = $connctn->prepare("SELECT item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 					FROM Item A, Inventory B, Category C, Status D
 					WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id" . $dbw_val . $public_val . $loc_val . $cat_val . "
-					ORDER BY inv_name, item_modeltype");
+					ORDER BY inv_name, item_modeltype, item_Backid");
 
 		$select_item->execute();
 		$display_array = $select_item->fetchAll();
 		foreach($display_array as $row)
 		{
 			
-			$number_of_use = $connctn->prepare("select count(itemtran_id)
-												from Item A, Transaction B, ItemTran C
-												where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+			$number_of_use = $connctn->prepare("select count(A.rent_id)
+												from Rental A, CheckOut B
+												where A.rent_id = B.rent_id and B.item_Backid = :a");
 			$number_of_use->bindValue(':a', $row['item_Backid'], PDO::PARAM_INT);
 			$number_of_use->execute();
 			$number_of_use = $number_of_use->fetchAll();
@@ -107,7 +107,7 @@
 		$select_item = $connctn->prepare("select item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 				from Item A, Inventory B, Category C, Status D
 				where A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and D.stat_id = :a" . $dbw_val . $public_val . $loc_val . $cat_val . "
-				ORDER BY inv_name, item_modeltype");
+				ORDER BY inv_name, item_modeltype, item_Backid");
 
 		$select_item->bindValue(':a', $int_value_stat, PDO::PARAM_INT);
 		$select_item->execute();
@@ -115,9 +115,9 @@
 		foreach($display_array as $row)
 		{
 			
-			$number_of_use = $connctn->prepare("select count(itemtran_id)
-												from Item A, Transaction B, ItemTran C
-												where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+			$number_of_use = $connctn->prepare("select count(A.rent_id)
+												from Rental A, CheckOut B
+												where A.rent_id = B.rent_id and B.item_Backid = :a");
 			$number_of_use->bindValue(':a', $row['item_Backid'], PDO::PARAM_INT);
 			$number_of_use->execute();
 			$number_of_use = $number_of_use->fetchAll();

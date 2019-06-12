@@ -5,7 +5,8 @@ body{
 }
 
 
-#AVendor,#moreIn,#AddVendor,#cancel,#back,#editVen,#updateVen,#removeVen{
+#AVendor, #moreIn, #AddVendor, #cancel, #back, #editVen, #updateVen, #removeVen
+{
     width: 15%;
     background-color: #008000;
     color: white;
@@ -21,8 +22,13 @@ body{
     word-wrap: break-word;
     white-space: normal;
     box-sizing:content-box;
-
 }
+
+#AVendor:hover, #moreIn:hover, #AddVendor:hover, #cancel:hover, #back:hover, #editVen:hover, #updateVen:hover, #removeVen:hover
+{
+	background-color: #006400;
+}
+
 /*CSS3 uses this . system instead of a #. Don't listen to Sharon, go to W3.org*/
 /*it also uses class and not id but as you can see you can still use both*/
 #vendor_table{

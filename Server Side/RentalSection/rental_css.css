@@ -38,7 +38,8 @@ table ,tr td{
 	margin-right:auto;
 }
 
-#finalize,#cancelFinal,#calPay,#cancel{
+#finalize,#cancelFinal,#calPay,#cancel,#continue,#finished
+{
     background-color: #008000;
     color: white;
     padding: 14px 20px;
@@ -174,6 +175,8 @@ input[type=text]{
 	vertical-align:top; 
 	overflow:hidden;
 	margin-top:3%;
+	width:25%;
+	max-height:200px;
 }
 
 #pack{
@@ -181,6 +184,7 @@ input[type=text]{
     font-size: 18px;
 	padding:10px; 
 	margin:-5px -20px -5px -5px;
+	max-height:200px;
 }
 
 

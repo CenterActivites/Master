@@ -21,10 +21,10 @@
 	        <input type = "text" name = "new_front_id" id = "new_front_id" placeholder="Item ID" required/>
 			
 			<!-- The Item Model/Brand input field -->
-			<input type = "text" name = "new_item_name" id = "new_item_name" placeholder="Item Model/Brand" required/>
+			<input type = "text" name = "new_item_name" id = "new_item_name" placeholder="Item Model/Brand"/>
 			
 			<!-- The Item Size input field -->
-			<input type = "text" name = "new_size" id = "new_size" placeholder="Item's Size" required/><br/>
+			<input type = "text" name = "new_size" id = "new_size" placeholder="Item's Size"/><br/>
 			
 			<!-- The Item Inventory select field -->
 			<select name="inventory" id="inventory" size="1" required placeholder="Inventory Classification" >
@@ -32,7 +32,8 @@
 <?php
 					//inventory query
 				foreach($conn->query("SELECT  inv_id, inv_name
-										FROM Inventory") as $row)
+										FROM Inventory
+										ORDER BY inv_name") as $row)
 				{
 					$cur_inv_name = $row["inv_name"];
 					$cur_inv_id = $row["inv_id"];
@@ -49,7 +50,8 @@
 <?php
 				// status query
 				foreach($conn->query("SELECT  stat_id, stat_name
-										FROM Status") as $row)
+										FROM Status
+										ORDER BY stat_name") as $row)
 				{
 					$cur_stat_name = $row["stat_name"];
 					$cur_stat_id = $row["stat_id"];
@@ -77,7 +79,8 @@
 <?php
 				//vendor query
 				foreach($conn->query("SELECT  ven_id, ven_name
-										FROM Vendor") as $row)
+										FROM Vendor
+										ORDER BY ven_name") as $row)
 				{
 					$cur_ven_name = $row["ven_name"];
 					$cur_ven_id = $row["ven_id"];
@@ -99,7 +102,7 @@
 			<input type="text" name ="new_purchase_date" id = "new_purchase_date" placeholder="Purchase Date" onfocus="(this.type='date')" onblur="(this.type='text')" required/>
 			
 			<!-- The Item Vin Id input field -->
-			<input type = "text" name = "new_vin" id = "new_vin" placeholder="Vin Number" required/>
+			<input type = "text" name = "new_vin" id = "new_vin" placeholder="Vin Number" />
 			
 			<!-- The Item Public usage select field -->
 	        <select name="pub_use" id="pub_use" size="1" required>
@@ -109,7 +112,7 @@
 			</select></br>
 			
 			<!-- The Item Notes input field -->
-	        <input type = "text" name = "new_notes" id = "new_notes" placeholder="Notes" required/>
+	        <input type = "text" name = "new_notes" id = "new_notes" placeholder="Notes"/>
 			
 			<fieldset style="border:none">
 				<input type="submit" name="add2" id="add2" value="Add"/>

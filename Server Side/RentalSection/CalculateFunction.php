@@ -1,9 +1,11 @@
 <?php
 	function priceCal($request_date_format, $due_date_format, $array_of_items, $sel_cust)
 	{
-
-		//PDO Connection to the Databse
-		$conn = hsu_conn_sess();
+		require('/home/centerac/public_html/connect_info.php');
+		require('/home/centerac/public_html/DB.php');
+		error_reporting(E_ERROR | E_PARSE);
+		$usr =  "centerac_" . $username;
+		$conn = new PDO($DB , $usr, $password, array('charset'=>'utf8'));
 		
 		//Grab the customer's student and employee's status. If the customer is employee and the rental is a pick-up, then the rental is free. If the customer is a student, the student discount prices will be applied
 		$if_student = $conn->prepare("select is_student, is_employee
@@ -17,6 +19,9 @@
 		
 		if(!($request_date_format == $curr_date && $if_student_row[0]['is_employee'] == 'Yes'))
 		{
+			//Grab the package value. if customer didnt select a package then the value would be 0
+			$pack_select = $_POST['pack'];
+			
 			//Creating a date array of int for both the request and due dates
 			$request_date = array_map('intval', explode("-", $request_date_format));
 			$due_date = array_map('intval', explode("-", $due_date_format));
@@ -105,8 +110,8 @@
 				}
 				$diff++;
 			}
-			/* ***************Dont delete this, used for debugging the pricing function.
-			echo "request date: " . $request_date_format . "</br>";
+			// ***************  Dont delete this, used for debugging the pricing function. ***************  
+			/*echo "request date: " . $request_date_format . "</br>";
 			echo "due date: " . $due_date_format . "</br>";
 			echo "diff: " . $diff . "</br>";*/
 			
@@ -151,8 +156,8 @@
 					$days++;
 				}
 			}
-			/* ***************Dont delete this, used for debugging the pricing function.
-			echo "days: " . $days . "</br>";
+			// ***************  Dont delete this, used for debugging the pricing function. ***************  
+			/*echo "days: " . $days . "</br>";
 			echo "weekends: " . $weekends . "</br>";
 			echo "weeks: " . $weeks . "</br>";*/
 			
@@ -205,7 +210,7 @@
 						}
 					}
 					$total_price = $total_price + $curr_item_total_pricing;
-					$receipt_prices[] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing);
+					$receipt_prices[$item_id] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing);
 				}
 			}
 			//Else if the $pack_select is other than 0, that means the user did select a package which we will have to account to
@@ -251,7 +256,7 @@
 					}
 				}
 				$total_price = $total_price + $curr_item_total_pricing; //Adding up the prices by multiplying the correct correlating days or weekends or weeks
-				$receipt_prices[] = array("id"=>" ", "name"=>$price[0]['pack_name'], "price"=>$curr_item_total_pricing); //Also save the amount for reciept purposes
+				$receipt_prices[$item_id] = array("id"=>" ", "name"=>$price[0]['pack_name'], "price"=>$curr_item_total_pricing); //Also save the amount for reciept purposes
 				
 				//Grabs all item_id that is associated with that package
 				$items_in_pack = $conn->prepare("select a.item_Backid
@@ -311,13 +316,14 @@
 								}
 							}
 							$total_price = $total_price + $curr_item_total_pricing;
-							$receipt_prices[] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing);
+							$receipt_prices[$item_id] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing);
 						}
 					}
 				}
 			}
 			
-			$return_array[] = array("total_price"=>$total_price, "receipt_prices"=>$receipt_prices);
+			$return_array['total_price'] = $total_price;
+			$return_array['receipt_prices'] = $receipt_prices;
 			
 			return $return_array;
 
@@ -333,9 +339,10 @@
 				$_price->execute();
 				$price = $_price->fetchAll();
 				
-				$receipt_prices[] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>0);
+				$receipt_prices[$item_id] =  array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>0);
 			}
-			$return_array[] = array("total_price"=>0, "receipt_prices"=>$receipt_prices);
+			$return_array['total_price'] = 0;
+			$return_array['receipt_prices'] = $receipt_prices;
 			
 			return $return_array;
 		}

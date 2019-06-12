@@ -21,9 +21,9 @@
 			
 			//Does a mysql select to the database to grab item front id, name, back id, and the due date of the item
 			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date
-									FROM Inventory a, Item b, Reserve c, ItemReserve d
-									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rental_id = c.rental_id
-									and c.cust_id = :a");
+									FROM Inventory a, Item b, Rental c, CheckOut d
+									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rent_id = c.rent_id
+									and c.cust_id = :a and c.return_date is NULL");
 			$items->bindValue(':a', $cust_id, PDO::PARAM_INT);
 			$items->execute();
 			$display_array = $items->fetchAll();
@@ -85,6 +85,7 @@
 					
 					<!-- Following are 1 hidden input and 2 input buttons -->
 					<input type="hidden" name="item_to_be_return" id="item_to_be_return"  />  <!-- Hidden input tag keep track of which items are selected to be returned -->
+					<input type="hidden" name="item_leftover" id="item_leftover"  value='0'/>  <!-- Hidden input tag keep track if there are items that isn't being selected for returned -->
 					<input type="submit" name="Checkin" id="Checkin" value="Checkin" /> &nbsp;
 					<input type="submit" name="cancel" id="cancel" value="Cancel" /><br />
 				</div>
@@ -120,6 +121,10 @@
 								var get_val = $("#item_to_be_return").val();
 								$("#item_to_be_return").val(get_val + "," + box_value);
 							}
+						});
+						$('#item_table').find('input[type="checkbox"]:unchecked').each(function () 
+						{
+							$("#item_leftover").val('1');
 						});
 						
 						//Checks if the user had selected any items for pick-up
