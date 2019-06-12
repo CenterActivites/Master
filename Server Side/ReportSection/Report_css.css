@@ -1,0 +1,160 @@
+
+#report_option_selection, #create_print {
+    font-family: "Times New Roman", Times, serif;
+    border:1px solid transparent;
+    width: 20%;
+    margin-left: auto;
+    margin-right: auto;
+	float: left;
+	background-color: White;
+}
+
+#report_option_selection td, #create_print td, #report_option_selection th, #create_print th{
+    padding: 3px;
+    text-align: center;
+    font-size: 15px;
+    font-family: "Times New Roman", Times, serif;
+}
+
+#report_option_selection tr:nth-child(even), #report_view_table tr:nth-child(even), #create_print tr:nth-child(even){
+	background-color: #f2f2f2;
+}
+
+#report_option_selection tr:nth-child(odd), #report_view_table tr:nth-child(odd), #create_printtr :nth-child(odd){
+	background-color: white;
+}
+
+#report_option_selection tr:hover, #report_view_table tr:hover, #create_print tr:hover{
+	background-color: #ddd;
+}
+
+#report_option_selection th, #create_print th{
+    font-family: "Times New Roman", Times, serif;
+    padding-top: 12px;
+    width:1%;
+    padding-bottom: 12px;
+    text-align: center;
+    background-color: #008000;
+    color: #EEE8AA;
+	font-size: 12px;
+	word-wrap: break-word;
+}
+
+#report_option_selection td, #create_print td{
+  width:1%;
+}
+
+#report_option_selection tbody tr.highlight td { background:#89cff0;}
+
+#create_print {
+	clear: left;
+}
+
+
+
+
+
+
+#report_view_table table{
+    border:1px solid black;
+}
+
+#report_view_table tbody {
+    display:block;
+    max-height:700px;
+    overflow-y:scroll;
+	overflow-x:hidden;
+    background: white;
+}
+#report_view_table thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+#report_view_table thead {
+    width: 99%;
+    box-sizing:content-box;
+}
+#report_view_table table {
+    width:100%;
+}
+
+#report_view_table th{
+    padding-top: 12px;
+    width: 15%;
+    padding-bottom: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+#report_view_table td, #report_view_table th {
+    padding: 8px;
+    text-align: left;
+	word-wrap: break-word;
+}
+
+#report_view_table td {
+    margin:15%;
+}
+
+#report_view_table {
+  border-collapse: collapse;
+  margin-left: 20px;
+  width: 80%;
+}
+
+
+
+tr:hover {background-color:#f5f5f5;}
+
+input[type="button"], input[type="submit"] {
+    width: 5%;
+    background-color: #008000;
+    color: white;
+    padding: 14px 20px;
+    margin: 2px 0;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 15px;
+    font-family: "Times New Roman", Times, serif;
+    text-align: center;
+    color: #EEE8AA;
+    word-wrap: break-word;
+    white-space: normal;
+    box-sizing:content-box;
+
+}
+
+input[type="button"]:hover, input[type="submit"]:hover
+{
+	background-color: #006400;
+}
+
+#print, #create_report, #excel_download {
+	width:75%
+}
+
+
+
+#print_report_view_table {
+	width: 100%;
+	visibility: hidden;
+	float:left;
+	word-wrap: break-word;
+	font-size: 10px; /* This is where to change the font sizes on either the download or print report */
+}
+
+#print_report_view_table thead, tbody tr {
+    display:table;
+    width:100%;
+    table-layout:fixed;
+}
+
+
+#print_report_view_table td, #print_report_view_table th {
+    padding: 8px;
+    text-align: left;
+	border-bottom: 1px solid #ddd;
+}
+
