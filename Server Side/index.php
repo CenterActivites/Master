@@ -31,6 +31,19 @@
 	<script type="text/javascript">
 		$.backstretch("Images/humboldt-activities-center.jpg", {speed: 150});
 	</script>
+	
+	
+	<!-- Little script to disable the 'enter' button from submitting the form -->
+	<script type="text/javascript">
+		$(document).ready(function() {
+		  $(window).keydown(function(event){
+			if(event.keyCode == 13) {
+			  event.preventDefault();
+			  return false;
+			}
+		  });
+		});
+	</script>
 
 
 <?php
@@ -376,7 +389,7 @@
 						//Grabbing the item array/list that were returned
 						$item_to_pick_up = $_POST["item_to_be_pick_up"];
 						$items_leftover = $_POST["item_leftover"];
-						$rent_id = $_POST["rent_id"];
+						$rent_id = $_SESSION["rent_id"];
 						
 						$items_to_pick_up = explode(',', $item_to_pick_up); //Filtering throught the array/list. Dropping all empty spots
 						$_SESSION["item_array"] = $items_to_pick_up; //Enter the newly filtered array/list into SESSION
@@ -458,7 +471,7 @@
 					$conn = hsu_conn_sess();
 					
 					//Grab the Rental id
-					$rent_id = $_POST["rent_id"];
+					$rent_id = $_SESSION["rent_id"];
 					
 					//Update the rental_status to Cancelled
 					$update = $conn->prepare("update Rental
@@ -466,9 +479,9 @@
 												where rent_id = :b");
 					$update->bindValue(':b', $rent_id, PDO::PARAM_INT);
 					$update->execute(); //execute the query
-					//print $update -> errorCode();
-					//echo "\nPDO::errorInfo():\n";
-					//print_r($update->errorInfo());
+					print $update -> errorCode();
+					echo "\nPDO::errorInfo():\n";
+					print_r($update->errorInfo());
 					
 					//Find all items that were under the rental
 					$items = $conn->prepare("SELECT item_Backid
@@ -514,6 +527,8 @@
 						$conn = hsu_conn_sess();
 						
 						$curr_rental = $_POST['rent_id'];
+						$subtotal_price = $_POST['sub_total_price'];
+						$total_price = $_POST['total_price_with_tax'];
 
 						//Grab the array of items selected
 						$array_of_items = $_SESSION['mod_item_array'];
@@ -576,8 +591,10 @@
 								$update->execute(); //execute the query
 								
 								$delete = $conn->prepare("delete from Reserve1
-													where item_Backid = :a");
+													where item_Backid = :a and
+															rent_id = :b");
 								$delete->bindValue(':a', $item, PDO::PARAM_INT);
+								$delete->bindValue(':b', $curr_rental, PDO::PARAM_INT);
 								$delete->execute();
 								/*echo "Delete " . $item . " from Reserve1:: ";
 								print $delete -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
@@ -587,31 +604,18 @@
 							}
 						}
 						
-						//Grabbing the tax of the location
-						$loc_tax = $conn->prepare("select loc_tax
-													from Location a, Rental b
-													where a.loc_id = b.loc_id and rent_id = :c");
-						$loc_tax->bindValue(':c', $rent_id, PDO::PARAM_INT);
-						$loc_tax->execute();
-						$loc_tax = $loc_tax->fetchAll();
-						
-						//Calculating the tax for the rental
-						$tax_amount = (int)$mod_reserve['total_price'] * ((float)$loc_tax[0]['loc_tax'] / 100);
-						$tax_amount = round($tax_amount, 2, PHP_ROUND_HALF_DOWN);
-						$total_price_with_tax = (float)$mod_reserve['total_price'] + (float)$tax_amount;
-						
 						$update = $conn->prepare("update Rental
-												set total_cost = :a, sub_total_cost = :b
-												where rent_id = :c");
-						$update->bindValue(':a', $mod_reserve['total_price'], PDO::PARAM_INT);
-						$update->bindValue(':b', $total_price_with_tax, PDO::PARAM_INT);
-						$update->bindValue(':c', $rent_id, PDO::PARAM_INT);
+													set total_cost = :a, sub_total_cost = :b
+													where rent_id = :c");
+						$update->bindValue(':a', $total_price, PDO::PARAM_INT);
+						$update->bindValue(':b', $subtotal_price, PDO::PARAM_INT);
+						$update->bindValue(':c', $curr_rental, PDO::PARAM_INT);
 						$update->execute(); //execute the query
-						/*echo "Update to Rental:: ";
-						print $update -> errorCode();
-						echo "\nPDO::errorInfo():\n";
-						print_r($update->errorInfo());
-						echo "</br>";*/
+						//echo "Update to Rental:: ";
+						//print $update -> errorCode();
+						//echo "</br>" . "\nPDO::errorInfo():\n";
+						//print_r($update->errorInfo());
+						//echo "</br>";
 					}
 					ItemToPickUp();
 				}
@@ -917,19 +921,35 @@
 
 					$item_id = htmlspecialchars(strip_tags($_POST["item_Backid"]));
 
+					/*$note_id = $conn->prepare("SELECT note_id
+												FROM NotesItem
+												WHERE item_Backid = '$item_id'");
+					$note_id ->execute();
+					$note_id = $note_id->fetchAll();*/
+					
+					$remove =$conn -> prepare("DELETE FROM NotesItem
+												WHERE item_Backid = '$item_id'");
+
+					$remove ->execute();
+					
+					/*foreach($note_id as $id)
+					{
+						$remove =$conn -> prepare("DELETE FROM Notes
+													WHERE note_id = :a");
+						$remove->bindValue(':a', $id['note_id'], PDO::PARAM_INT);
+						$remove ->execute();
+					}*/
+					
 					$remove =$conn -> prepare("DELETE FROM Item
 												WHERE item_Backid = '$item_id'");
 
 					$remove ->execute();
-
-
-					//print $remove->errorCode();
-
+					/*print $remove -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+					echo "\nPDO::errorInfo():\n";
+					print_r($remove->errorInfo());
+					echo "</br>";*/
 
 					$conn = null;
-
-
-
 					Itemselection();
 				}
 				else if(isset($_POST["removeInv"]))
@@ -938,13 +958,15 @@
 					$conn = hsu_conn_sess();
 
 					$inv_id = htmlspecialchars(strip_tags($_POST["inv_id"]));
-
-
+					
 					$remove =$conn -> prepare("DELETE FROM Inventory
 												WHERE inv_id = '$inv_id'");
 
 					$remove ->execute();
-
+					/*print $remove -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+					echo "\nPDO::errorInfo():\n";
+					print_r($remove->errorInfo());
+					echo "</br>";*/
 					$conn = null;
 
 					Itemselection();
@@ -977,7 +999,7 @@
 												WHERE inv_id = '$inv_id'");
 
 					$update ->execute();
-					print $update -> errorCode();
+					//print $update -> errorCode();
 					$conn = null;
 
 					Itemselection();
@@ -1001,25 +1023,27 @@
 					$item_pub_use = htmlspecialchars(strip_tags($_POST["pub_use"]));
 					$item_notes = htmlspecialchars(strip_tags($_POST["curr_item_notes"]));
 					$item_class = htmlspecialchars(strip_tags($_POST["Classification"]));
-
-					$insert = $conn->prepare("insert into Notes
-												(note)
-												values
-												(:a)");
-					//Binding the vars along with their respected datatype
-					$insert->bindValue(':a', $item_notes, PDO::PARAM_INT);
-					$insert->execute();
-					$note_id = $conn->lastInsertId();
 					
-					$insert = $conn->prepare("insert into NotesItem
-												(note_id, item_Backid)
-												values
-												(:a, :b)");
-					//Binding the vars along with their respected datatype
-					$insert->bindValue(':a', $note_id, PDO::PARAM_INT);
-					$insert->bindValue(':b', $item_backid, PDO::PARAM_INT);
-					$insert->execute();
-					$note_id = $conn->lastInsertId();
+					if($item_notes != "")
+					{
+						$insert = $conn->prepare("insert into Notes
+													(note)
+													values
+													(:a)");
+						//Binding the vars along with their respected datatype
+						$insert->bindValue(':a', $item_notes, PDO::PARAM_INT);
+						$insert->execute();
+						$note_id = $conn->lastInsertId();
+						
+						$insert = $conn->prepare("insert into NotesItem
+													(note_id, item_Backid)
+													values
+													(:a, :b)");
+						//Binding the vars along with their respected datatype
+						$insert->bindValue(':a', $note_id, PDO::PARAM_INT);
+						$insert->bindValue(':b', $item_backid, PDO::PARAM_INT);
+						$insert->execute();
+					}
 					
 					$update = $conn ->prepare("UPDATE Item
 												SET item_modeltype = '$item_name',
@@ -1036,6 +1060,10 @@
 													inv_id = '$item_class'
 												WHERE item_Backid = '$item_backid'");
 					$update ->execute();
+					/*print $update -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+					echo "\nPDO::errorInfo():\n";
+					print_r($update->errorInfo());
+					echo "</br>";*/
 					$conn = null;
 
 					Itemselection();
@@ -1125,29 +1153,34 @@
 						$insert -> bindValue(':pur_date', $date_pur, PDO::PARAM_STR);
 						$insert -> bindValue(':vin_num', $vin_num, PDO::PARAM_INT);
 						$insert -> bindValue(':public', $pub, PDO::PARAM_INT);
+						$insert -> execute();
+						/*print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+						echo "\nPDO::errorInfo():\n";
+						print_r($insert->errorInfo());
+						echo "</br>";*/
 						$item_backid = $conn->lastInsertId();
 						
-						$insert = $conn->prepare("insert into Notes
-													(note)
-													values
-													(:a)");
-						//Binding the vars along with their respected datatype
-						$insert->bindValue(':a', $notes, PDO::PARAM_INT);
-						$insert->execute();
-						$note_id = $conn->lastInsertId();
-						
-						$insert = $conn->prepare("insert into NotesItem
-													(note_id, item_backid)
-													values
-													(:a, :b)");
-						//Binding the vars along with their respected datatype
-						$insert->bindValue(':a', $note_id, PDO::PARAM_INT);
-						$insert->bindValue(':b', $item_backid, PDO::PARAM_INT);
-						$insert->execute();
-						$note_id = $conn->lastInsertId();
-
-						$insert ->execute();
-						//print $insert->errorCode(); // <<----- The code to print the error code
+						if($notes != "")
+						{
+							$insert = $conn->prepare("insert into Notes
+														(note)
+														values
+														(:a)");
+							//Binding the vars along with their respected datatype
+							$insert->bindValue(':a', $notes, PDO::PARAM_INT);
+							$insert->execute();
+							$note_id = $conn->lastInsertId();
+							
+							$insert = $conn->prepare("insert into NotesItem
+														(note_id, item_backid)
+														values
+														(:a, :b)");
+							//Binding the vars along with their respected datatype
+							$insert->bindValue(':a', $note_id, PDO::PARAM_INT);
+							$insert->bindValue(':b', $item_backid, PDO::PARAM_INT);
+							$insert->execute();
+							//print $insert->errorCode(); // <<----- The code to print the error code
+						}
 
 						$conn = null;
 					}
@@ -1440,13 +1473,16 @@
 						$request_date = $_SESSION['request_date'];
 						$due_date = $_SESSION['due_date'];
 						$sel_cust = $_SESSION['sel_user'];
-						$total_price = (int)$_SESSION['total_price'];
+						$total_price = $_POST['total_price_with_tax'];
 						
 						//Formatting the both request and due dates into the mysql format which is YYYY-MM-DD
 						$sql_request_date = date('Y-m-d', strtotime($request_date));
 						$sql_due_date = date('Y-m-d', strtotime($due_date));
-						$sub_total_price = $_SESSION['sub_total_price'];
+						$sub_total_price = $_POST['sub_total_price'];
 						$receipt_prices = $_SESSION['receipt_prices'];
+						
+						$_SESSION['sub_total_price'] = $sub_total_price;
+						$_SESSION['total_price_with_tax'] = $total_price;
 						
 						//The following "if" statement sees if the request date is the current date. If so then the customer probably is picking up the item right there and then.
 						//So if then the code will have to insert the current date instead of NULL as it usually is for a future date
@@ -1482,10 +1518,10 @@
 						$insert->execute();
 						
 						//The following is just a way to help Debug PDO inserts if something went wrong
-						/*print "Insert to Rental: ";
-						echo "\nPDO::errorInfo():\n";
-						print_r($insert->errorInfo());
-						echo "</br>";*/
+						//print "Insert to Rental: ";
+						//echo "\nPDO::errorInfo():\n";
+						//print_r($insert->errorInfo());
+						//echo "</br>";
 						$rent_id = $conn->lastInsertId();
 						
 						//Start of the FOR loop to insert all the selected items into the Reserve1 and maybe CheckOut if the cust is picking up today
@@ -1501,10 +1537,10 @@
 							$insert->bindValue(':c', $item_id, PDO::PARAM_INT);
 							$insert->bindValue(':d', $_SESSION['empl_id'], PDO::PARAM_INT);
 							$insert->execute();
-							print "Insert to Reserve: ";
-							echo "\nPDO::errorInfo():\n";
-							print_r($insert->errorInfo());
-							echo "</br>";
+							//print "Insert to Reserve: ";
+							//echo "\nPDO::errorInfo():\n";
+							//print_r($insert->errorInfo());
+							//echo "</br>";
 						
 							//If request_date is the same as the current date, then that means that the customer is picking up the item that day
 							//We then will change the chosen item's status to 3 which is "Check-out"

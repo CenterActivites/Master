@@ -17,7 +17,131 @@
 	$to_date_value = $_REQUEST['to_date'];
 	
 	switch ($choosen_report) 
-	{
+	{	
+		case "revenue":
+			
+			if($from_date_value != "" && $to_date_value != "")
+			{
+				$dates_to_narrow = "request_date BETWEEN '" . $from_date_value . "' AND '" . $to_date_value . "' and ";
+			}
+			elseif($from_date_value != "" && $to_date_value == "")
+			{
+				$current_date = date('Y-m-d');
+				$dates_to_narrow = "request_date BETWEEN '" . $from_date_value . "' AND '" . $current_date . "' and ";
+			}
+			else
+			{
+				$dates_to_narrow = "";
+			}
+			
+			if($loc_val == 'ca')
+			{
+				$loc_val = "a.loc_id = '1' and ";
+			}
+			elseif($loc_val == 'hbac')
+			{
+				$loc_val = "a.loc_id = '2' and ";
+			}
+			else
+			{
+				$loc_val = "";
+			}
+			
+			if($cat_val == 0)
+			{
+				$cat_val = "";
+			}
+			else
+			{
+				$cat_val = "e.cat_id = " . $cat_val . " and ";
+			}
+			
+			if($dbw_val == 'yes')
+			{
+				$dbw_val = "a.dbw_own = 1 and ";
+			}
+			elseif($dbw_val == 'no')
+			{
+				$dbw_val = "a.dbw_own = 0 and ";
+			}
+			else
+			{
+				$dbw_val = "";
+			}
+			
+			$report = "SELECT item_Frontid, inv_name, item_modeltype, SUM(cost_at_time)
+						FROM Item a, Inventory b, Rental c, Category e, Reserve1 f
+						WHERE a.inv_id = b.inv_id and
+								a.item_Backid = f.item_Backid and 
+								e.cat_id = b.cat_id and
+								" . $dbw_val . $loc_val . $cat_val . $dates_to_narrow . "
+								c.rent_id = f.rent_id
+						GROUP BY a.item_Backid
+						ORDER BY inv_name, item_Frontid, item_modeltype";
+			break;
+			
+		case "num_rent":
+			
+			if($from_date_value != "" && $to_date_value != "")
+			{
+				$dates_to_narrow = "request_date BETWEEN '" . $from_date_value . "' AND '" . $to_date_value . "' and ";
+			}
+			elseif($from_date_value != "" && $to_date_value == "")
+			{
+				$current_date = date('Y-m-d');
+				$dates_to_narrow = "request_date BETWEEN '" . $from_date_value . "' AND '" . $current_date . "' and ";
+			}
+			else
+			{
+				$dates_to_narrow = "";
+			}
+			
+			if($loc_val == 'ca')
+			{
+				$loc_val = "a.loc_id = '1' and ";
+			}
+			elseif($loc_val == 'hbac')
+			{
+				$loc_val = "a.loc_id = '2' and ";
+			}
+			else
+			{
+				$loc_val = "";
+			}
+			
+			if($cat_val == 0)
+			{
+				$cat_val = "";
+			}
+			else
+			{
+				$cat_val = "e.cat_id = " . $cat_val . " and ";
+			}
+			
+			if($dbw_val == 'yes')
+			{
+				$dbw_val = "a.dbw_own = 1 and ";
+			}
+			elseif($dbw_val == 'no')
+			{
+				$dbw_val = "a.dbw_own = 0 and ";
+			}
+			else
+			{
+				$dbw_val = "";
+			}
+			
+			$report = "SELECT item_Frontid, inv_name, item_modeltype, count(d.rent_id)
+						FROM Item a, Inventory b, Rental c, CheckOut d, Category e
+						WHERE a.inv_id = b.inv_id and
+								a.item_Backid = d.item_Backid and 
+								e.cat_id = b.cat_id and
+								" . $dbw_val . $loc_val . $cat_val . $dates_to_narrow . "
+								c.rent_id = d.rent_id
+						GROUP BY a.item_Backid
+						ORDER BY inv_name, item_Frontid, item_modeltype";
+			break;
+			
 		case "over_due":
 			
 			if($dbw_val == 'yes')
@@ -274,7 +398,7 @@
 						ORDER BY cat_name, inv_name, item_modeltype, item_Backid";
 			break;
 		default:
-			echo "Something went wrong";
+			echo "Something went wrong in the Helper";
 	}
 	
 	

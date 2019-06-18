@@ -159,7 +159,7 @@
 					$total_price = $_SESSION['sub_total_price'];
 					$on_site_check = $_SESSION['on_site'];
 					$tax_amount = $_POST['tax_amount'];
-					$total_price_with_tax = $_SESSION['total_price'];
+					$total_price_with_tax = $_SESSION['total_price_with_tax'];
 					$loc_id = $_SESSION['loc'];
 					if($on_site_check == NULL)
 					{

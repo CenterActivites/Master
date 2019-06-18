@@ -342,7 +342,7 @@
 					
 					$('#num_rentals_button').click(function() //Starts the script when the user click one of the option buttons on the side
 					{
-						//$('#chosen_report').val($('#num_rentals').val());
+						$('#chosen_report').val($('#num_rentals').val());
 						$('#report_label').val("Rental Amounts Report");
 						$("#dates").css("display", "");
 						$('#from_date').val("");
@@ -360,7 +360,7 @@
 					
 					$('#revenue_button').click(function() //Starts the script when the user click one of the option buttons on the side
 					{
-						//$('#chosen_report').val($('#revenue').val());
+						$('#chosen_report').val($('#revenue').val());
 						$('#report_label').val("Revenue Report");
 						$("#dates").css("display", "");
 						$('#from_date').val("");
@@ -848,8 +848,175 @@
 										print_report_view_table_body.appendChild(tr);
 									}
 								}
-								else if($('#chosen_report').val() == "over_due")
+								else if($('#chosen_report').val() == "num_rent")
 								{
+									//Create the tr tag for the header of the table
+									var tr = document.createElement('tr');
+								
+									//Populate the tr tag
+									tr.innerHTML = "<th> Item's ID </th>" + 
+													"<th> Item's Model </th>" + 
+													"<th> Item's Name </th>" + 
+													"<th> Number of Usage </th>";
+							
+									//Add the tr tag to the tbody of the item selection list
+									report_view_table_header.appendChild(tr);
+									
+									//Create the tr tag for the header of the table
+									var tr = document.createElement('tr');
+								
+									//Populate the tr tag
+									tr.innerHTML = "<th> Item's ID </th>" + 
+													"<th> Item's Model </th>" + 
+													"<th> Item's Name </th>" + 
+													"<th> Number of Usage </th>";
+							
+									print_report_view_table_header.appendChild(tr);
+									
+									//Here the script starts processing all the item data it got from the AJAX call by looping through it in a FOR loop
+									for(var i = 0; i < json_object.length; i++)
+									{
+										var obj = json_object[i]; //First it grabs the current item in the data
+										
+										//Sets all the item data to its corresponding fields
+										item_Frontid = obj['item_Frontid'];
+										item_modeltype = obj['item_modeltype'];
+										inv_name = obj['inv_name'];
+										usage = obj['count(d.rent_id)'];
+										
+										if(item_modeltype == null)
+										{
+											item_modeltype = "";
+										}
+										
+										if(item_Frontid == null)
+										{
+											item_Frontid = "";
+										}
+									
+										//Create a tr tag
+										var tr = document.createElement('tr');
+										
+										//Populate the tr tag
+										tr.innerHTML = "<td>" + item_Frontid + "</td>" + 
+														"<td>" + item_modeltype + "</td>" + 
+														"<td>" + inv_name + "</td>" + 
+														"<td>" + usage + "</td>" ;
+							
+										//Add the tr tag to the tbody of the item selection list
+										report_view_table_body.appendChild(tr);
+										
+										//Create a tr tag
+										var tr = document.createElement('tr');
+										
+										//Populate the tr tag
+										tr.innerHTML = "<td>" + item_Frontid + "</td>" + 
+														"<td>" + item_modeltype + "</td>" + 
+														"<td>" + inv_name + "</td>" + 
+														"<td>" + usage + "</td>" ;
+							
+										print_report_view_table_body.appendChild(tr);
+									}
+								}
+								else if($('#chosen_report').val() == "revenue")
+								{
+									//Create the tr tag for the header of the table
+									var tr = document.createElement('tr');
+								
+									//Populate the tr tag
+									tr.innerHTML = "<th> Item's ID </th>" + 
+													"<th> Item's Model </th>" + 
+													"<th> Item's Name </th>" + 
+													"<th> Revenue From the Item </th>";
+							
+									//Add the tr tag to the tbody of the item selection list
+									report_view_table_header.appendChild(tr);
+									
+									//Create the tr tag for the header of the table
+									var tr = document.createElement('tr');
+								
+									//Populate the tr tag
+									tr.innerHTML = "<th> Item's ID </th>" + 
+													"<th> Item's Model </th>" + 
+													"<th> Item's Name </th>" + 
+													"<th> Revenue From the Item </th>";
+							
+									print_report_view_table_header.appendChild(tr);
+									
+									total_revenue = 0;
+									//Here the script starts processing all the item data it got from the AJAX call by looping through it in a FOR loop
+									for(var i = 0; i < json_object.length; i++)
+									{
+										var obj = json_object[i]; //First it grabs the current item in the data
+										
+										//Sets all the item data to its corresponding fields
+										item_Frontid = obj['item_Frontid'];
+										item_modeltype = obj['item_modeltype'];
+										inv_name = obj['inv_name'];
+										revenue_by_item = obj['SUM(cost_at_time)'];
+										
+										total_revenue = total_revenue + Number(revenue_by_item);
+										
+										if(item_modeltype == null)
+										{
+											item_modeltype = "";
+										}
+										
+										if(item_Frontid == null)
+										{
+											item_Frontid = "";
+										}
+									
+										//Create a tr tag
+										var tr = document.createElement('tr');
+										
+										//Populate the tr tag
+										tr.innerHTML = "<td>" + item_Frontid + "</td>" + 
+														"<td>" + item_modeltype + "</td>" + 
+														"<td>" + inv_name + "</td>" + 
+														"<td>" + revenue_by_item + "</td>" ;
+							
+										//Add the tr tag to the tbody of the item selection list
+										report_view_table_body.appendChild(tr);
+										
+										//Create a tr tag
+										var tr = document.createElement('tr');
+										
+										//Populate the tr tag
+										tr.innerHTML = "<td>" + item_Frontid + "</td>" + 
+														"<td>" + item_modeltype + "</td>" + 
+														"<td>" + inv_name + "</td>" + 
+														"<td>" + revenue_by_item + "</td>" ;
+							
+										print_report_view_table_body.appendChild(tr);
+									}
+									
+									//Create a tr tag
+									var tr = document.createElement('tr');
+									
+									//Populate the tr tag
+									tr.innerHTML = "<td></td>" + 
+													"<td></td>" + 
+													"<td> Total Revenue Generated: </td>" + 
+													"<td>" + total_revenue + "</td>" ;
+							
+									//Add the tr tag to the tbody of the item selection list
+									report_view_table_body.appendChild(tr);
+									
+									//Create a tr tag
+									var tr = document.createElement('tr');
+									
+									//Populate the tr tag
+									tr.innerHTML = "<td></td>" + 
+													"<td></td>" + 
+													"<td> Total Revenue Generated: </td>" + 
+													"<td>" + total_revenue + "</td>" ;
+							
+									print_report_view_table_body.appendChild(tr);
+								}
+								else
+								{
+									console.log("OOOOH NOOOO, Something went wrong in the Javascript");
 									
 								}
 								

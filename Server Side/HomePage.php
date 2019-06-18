@@ -113,11 +113,10 @@
 							<tbody>
 <?php
 								//"Customer who are picking up their rental soon" query
-								$select_item = $conn->prepare("SELECT b.cust_id, f_name, l_name, c_phone,c_email, request_date
+								$select_item = $conn->prepare("SELECT f_name, l_name, c_phone,c_email, request_date, rent_id
 																	FROM Customer a, Rental b
 																	WHERE a.cust_id = b.cust_id and b.pick_up_date IS NULL and b.rental_status = 'On-Going'
-																	GROUP BY b.cust_id
-																	ORDER BY request_date");
+																	ORDER BY request_date, l_name, f_name");
 								$select_item->execute();
 								$display_array = $select_item->fetchAll();
 								
@@ -127,7 +126,7 @@
 									{
 										$curr_f_name = $row["f_name"]; //each row is a object that has a f_name, l_name, cust_id, c_email, and request_date
 										$curr_l_name = $row["l_name"];
-										$curr_cust_id = $row["cust_id"];
+										$curr_rent_id = $row["rent_id"];
 										$curr_c_email = $row["c_email"];
 										$curr_c_phone = $row["c_phone"];
 										$curr_request_date = $row["request_date"];
@@ -137,7 +136,7 @@
 										$curr_request_date = date('M d, Y', $curr_request_date);
 ?>
 										<tr>
-											<td id = "hide_me"><input id ="radio_in" type="radio"  name="item_id[]" value = "<?= $curr_cust_id ?>"/></td>
+											<td id = "hide_me"><input id ="rent_id" type="radio"  name="rent_id" value = "<?= $curr_rent_id ?>"/></td>
 											<td><?= $curr_f_name ?></td>
 											<td><?= $curr_l_name ?></td>
 											<td><?= $curr_c_email ?></td>
@@ -174,17 +173,6 @@
 	<!-- JavaScript Starts here -->
 	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"> </script>
 	<script type="text/javascript" src="jquery.quicksearch.js"></script>  <!-- Plugin for the item Search function -->
-
-	<!-- Creating a hidden input that will handle cust_id values that will be pasted on to the next page -->
-	<script type="text/javascript">
-		$(function(){
-			$('<input>').attr({
-				type: 'hidden',
-				id:'cust_id',
-				name: 'cust_id'
-			}).appendTo('#button');
-		});
-	</script>
 	
 	<!-- Little script that checks if a customer have been selected for the next page -->
 	<script type="text/javascript">
@@ -197,19 +185,6 @@
 				}
 			});
 		});
-	</script>
-
-	<!-- Little script set the cust_id values to the hidden input that was created in the last couple of lines -->
-	<script type="text/javascript">
-	$(document).ready(function(){
-		$("#table_div").click(function(){
-			$('input[type="radio"]:checked').each(function(){
-				var box_value = $(this).val();
-				$('#cust_id').val(box_value);
-				console.log("Cust_id: " + $(this).val());
-			});
-		});
-	});
 	</script>
 
 	<script type="text/javascript">

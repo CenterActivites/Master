@@ -40,7 +40,7 @@
 		$lvl_access = $_SESSION['lvl_access'];
 		if($lvl_access == "4" || $lvl_access == "3")
 		{
-			$displayput = "<input name='tax_input' id='tax_input' value=" . $loc_tax[0]['loc_tax'] . ">%</input>";
+			$displayput = "<input type='text' name='tax_input' id='tax_input' value='" . $loc_tax[0]['loc_tax'] . "'>%</input>";
 		}
 		else
 		{
@@ -56,16 +56,13 @@
 		
 		//Doing calculation of the taxs and the total price with tax
 		$tax_amount = (int)$calcuated['total_price'] * ((float)$loc_tax[0]['loc_tax'] / 100);
-		$tax_amount = round($tax_amount, 2, PHP_ROUND_HALF_DOWN);
+		$tax_amount = round($tax_amount, 2);
 		$total_price_with_tax = (float)$calcuated['total_price'] + (float)$tax_amount;
 		
 		//Saving the total price of rental, the array of prices for each item, and the total price with tax for receipt page
-		$_SESSION['sub_total_price'] = $calcuated['total_price'];
 		$_SESSION['receipt_prices'] = $calcuated['receipt_prices'];
-		$_SESSION['total_price'] = $total_price_with_tax;
 		
-		$sub_total = $calcuated['total_price']; 
-		$total = $total_price_with_tax;
+		$sub_total = $calcuated['total_price'];
 	}
 	else
 	{
@@ -148,13 +145,13 @@
 				</th>
 				<td>
 					<!-- prints the subtotal price to the screen --> 
-					<output name="subtotalCost"  id="subtotalCost" for="subtotalCost"><?= $sub_total ?></output>
+					<input type="text" name="subtotalCost"  id="subtotalCost" value="<?= $sub_total ?>" readonly />
 				</td>
 			</tr>
 			
 			<tr>
 				<th>
-					Tax: (Change the tax rate if needed)
+					Tax:
 				</th>
 				<td>
 					<?= $displayput ?>
@@ -166,7 +163,7 @@
 					Total Cost:
 				</th>
 				<td>
-					<output name="totalCost" id="totalCost" for="totalCost"><?= $total ?></output>
+					<output name="totalCost" id="totalCost" for="totalCost"><?= $total_price_with_tax ?></output>
 				</td>
 			</tr>
 		
@@ -203,8 +200,10 @@
 		</div>
 		<div>
 			<fieldset style="border:none;">
-				<!-- Two hidden inputs for keeping the total price of the rental including tax down and the tax amount for receipt page -->
-				<input type="hidden" name="tax_amount" id="tax_amount" value="<?= (float)$tax_amount  ?>"/>
+				<!-- Three hidden inputs for keeping the total price of the rental including tax down, the tax amount for receipt page, and subtotal cost of the rental -->
+				<input type="hidden" name="tax_amount" id="tax_amount" value="<?= $tax_amount  ?>"/>
+				<input type="hidden" name="total_price_with_tax" id="total_price_with_tax" value="<?= $total_price_with_tax  ?>"/>
+				<input type="hidden" name="sub_total_price" id="sub_total_price" value="<?= $sub_total  ?>"/>
 				
 				<!-- Input button that will take users either to the receipt page or back to the customer selection  -->
 				<input type="submit" name="finalize" id="finalize" value="Finalize" />
@@ -219,12 +218,13 @@
 	<script type="text/javascript">
 		$(document).ready(function(){
 			//When the tax input changes, indicating that the user have inputed a new tax rate
-			$("#tax_input").on("input", function() {
+			$("#tax_input, #subtotalCost").on("input", function() {
 				//Grab the subtotal price of the rental
 				subtotal_price = $('#subtotalCost').val();
+				tax_amount = $('#tax_input').val();
 				
 				//Calculate the tax amount with the new tax rate
-				tax_amount = subtotal_price * (this.value / 100);
+				tax_amount = subtotal_price * (tax_amount / 100);
 				
 				//Make sure the new tax amount is 2 decimals long
 				tax_amount = tax_amount.toFixed(2);
@@ -236,7 +236,16 @@
 				$('#totalCost').val(total_price_with_tax);
 				$('#total_price_with_tax').val(total_price_with_tax);
 				$('#tax_amount').val(parseFloat(tax_amount));
+				$('#sub_total_price').val(subtotal_price);
 			});
+			
+			$( "#subtotalCost" ).dblclick(function()
+			{
+				document.getElementById('subtotalCost').readOnly = false;
+			});
+			
+			
+			
 		});
 	</script>
 
