@@ -14,20 +14,26 @@
 		<body style="text-align: center;">
 <?php
 			//Grabbing the selected customer id and setting it in SESSION
-			$cust_id = strip_tags($_POST['cust_id']);
-			$_SESSION["cust_id"] = $cust_id;
+			$rent_id = strip_tags($_POST['rent_id']);
+			$_SESSION["rent_id"] = $rent_id;
 			
 			//Connecting to the Database
 			$connctn = hsu_conn_sess();
 			
 			//We do a mysql select here to get all the items that are being "reserved" for the customer to be picked up
-			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, request_date, c.rent_id
+			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, request_date, cust_id
 									FROM Inventory a, Item b, Rental c, Reserve1 d
-									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rent_id = c.rent_id and rental_status = 'On-Going'
-									and c.cust_id = :a and c.pick_up_date is NULL");
-			$items->bindValue(':a', $cust_id, PDO::PARAM_INT);
+									WHERE a.inv_id = b.inv_id and 
+											b.item_Backid = d.item_Backid and 
+											d.rent_id = c.rent_id and 
+											rental_status = 'On-Going' and 
+											c.rent_id = :a and 
+											c.pick_up_date is NULL");
+			$items->bindValue(':a', $rent_id, PDO::PARAM_INT);
 			$items->execute();
 			$display_array = $items->fetchAll();
+			
+			$_SESSION["cust_id"] = $display_array[0]['cust_id'];
 			
 			//Grab the size of the data we got from the select statement for the following FOR loop
 			$array_size = count($display_array);
@@ -72,7 +78,6 @@
 					
 					<!-- Following are inputs that are either hidden or buttons -->
 					<input type="hidden" name="item_to_be_pick_up" id="item_to_be_pick_up"  />  <!-- Hidden input tag keep track of which items are selected to be picked up -->
-					<input type="hidden" name="rent_id" id="rent_id" value="<?= $display_array[0]['rent_id'] ?>"/>  <!-- Hidden input tag keep track of which items are selected to be picked up -->
 					<input type="hidden" name="item_leftover" id="item_leftover"  value='0'/>  <!-- Hidden input tag keep track if there are items that the customer isn't picking up -->
 					<input type="submit" name="Checkout" id="Checkout" value="Checkout" /> &nbsp; <!-- Checkout Button -->
 					<input type="submit" name="cancelReserve" id="cancelReserve" value="Cancel Reserve" /> &nbsp; <!-- Cancel Reserve Button. Which will cancel the Reserve entireally -->
@@ -116,7 +121,7 @@
 								$("#item_to_be_pick_up").val(get_val + "," + box_value);
 							}
 						});
-						$('#item_table').find('input[type="checkbox"]:unchecked').each(function () 
+						$('#item_table').find('input[type="checkbox"]:not:checked').each(function () 
 						{
 							$("#item_to_be_pick_up").val('1');
 						});
