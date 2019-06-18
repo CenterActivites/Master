@@ -23,15 +23,15 @@
 		
 		//Grabs the selected customer and their request dates for the rental
 		$sel_cust = $_SESSION['cust_id'];
-		$curr_rental = $_POST['rent_id'];
+		$curr_rental = $_SESSION['rent_id'];
 		
 		//Setting up the cart_array that will be stored in the cart hidden input so that once the user finished selecting the changes, we can process the new cart
 		$cart_array = ""; 
 		
 		//Here we're going to be grabbing the 'rent_id' from the Rental table to allow us to pull up all needed information for the pick-up
 		$rental_info = $conn->prepare("select request_date, due_date, loc_id, sub_total_cost
-											from Rental
-											where rent_id = :a");
+										from Rental
+										where rent_id = :a");
 		$rental_info->bindValue(':a', $curr_rental, PDO::PARAM_INT);
 		$rental_info->execute();
 		$rental_info = $rental_info->fetchAll();
@@ -41,6 +41,15 @@
 		$curr_loc = $rental_info[0]['loc_id'];
 		
 		$_SESSION['loc'] = $curr_loc;
+		
+		
+		$tax_amount = $conn->prepare("select loc_tax
+										from Location
+										where loc_id = :a");
+		$tax_amount->bindValue(':a', $curr_loc, PDO::PARAM_INT);
+		$tax_amount->execute();
+		$tax_amount = $tax_amount->fetchAll();
+		$tax_amount = $tax_amount[0]['loc_tax'];
 		
 		//Creating the current customer's padding request and padding due dates for the later sql select
 		$cust_padded_request_date = date('Y-m-d', strtotime($cust_request_date. ' - 2 days'));;
@@ -281,9 +290,15 @@
 			<div class="modal-content">
 				<span class="close">&times;</span>
 				
-				<label id="label_for_price_div" for="price_div"></label>
-				<div id="price_div" name="price_div">
-				</div>
+				<label for="subtotal_price" id="label_for_subtotal"> Subtotal Price: </label>
+				<input name="subtotal_price" id="subtotal_price" value="" readonly />
+				
+				</br>
+				</br>
+				
+				<label for="total_price" id="label_for_total"> Total Price: </label>
+				<input name="total_price" id="total_price" value="" readonly />
+				
 				</br>
 				<input type="submit" name="finished" id="finished" value="Finished" /><br />
 			</div>
@@ -297,6 +312,13 @@
 			<input type="hidden" id="cust_id" name="cust_id" value="<?= $sel_cust ?>"/>
 			<input type="hidden" id="rent_id" name="rent_id" value="<?= $curr_rental ?>"/>
 			<input type="hidden" id="sub_org_cost" name="sub_org_cost" value="<?= $rental_info[0]['sub_total_cost'] ?>"/>
+			
+			<input type="hidden" name="tax_amount" id="tax_amount" value="<?= $tax_amount  ?>"/>
+			<input type="hidden" name="total_price_with_tax" id="total_price_with_tax" value="<?= $total_price_with_tax  ?>"/>
+			<input type="hidden" name="sub_total_price" id="sub_total_price" value="<?= $sub_total  ?>"/>
+			
+			
+			
 			<input type="button" name="continue" id="continue" value="Continue" style="float: left; margin-left:40%;"/>    <!-- Sends the user onto the next page, the CalculatePayments page -->
 	</form>
 	<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
@@ -674,18 +696,36 @@
 					{
 						'new_cart': $("#item_array").val(),
 						'request_date': $("#request_date").val(),
-						'due_cart': $("#due_date").val(),
+						'due_date': $("#due_date").val(),
 						'cust_id': $("#cust_id").val(),
 					},
 					success: function(data) //When the AJAX call is successful, the script does the following
 					{
-						console.log("Data: " + data);
 						var new_price = JSON.parse(data); //Grabs the data that is in JSON format and parse it so it is usable
 						console.log('Data: ' + new_price['total_price']);
 						
 						//Then set the first string to the div tab "item_info_label" which will be displayed for the user to see
-						document.getElementById('label_for_price_div').innerHTML = "New price: " + "</br>";
-						document.getElementById('price_div').innerHTML = new_price['total_price'] + "</br>";
+						$("#subtotal_price").val(new_price['total_price']);
+						subtotal_price = new_price['total_price'];
+						
+						tax_amount = $('#tax_amount').val();
+						console.log("tax amount: " + tax_amount);
+						
+						//Calculate the tax amount with the new tax rate
+						tax_amount = subtotal_price * (tax_amount / 100);
+						
+						//Make sure the new tax amount is 2 decimals long
+						tax_amount = tax_amount.toFixed(2);
+						
+						//Add subtotal price with new tax amount
+						total_price_with_tax = parseFloat(subtotal_price) + parseFloat(tax_amount);
+						
+						console.log(total_price_with_tax);
+						
+						//And set the values to the output "total_price" for viewing purposes and to the hidden inputs for receipt purposes
+						$('#total_price').val(total_price_with_tax);
+						$('#total_price_with_tax').val(total_price_with_tax);
+						$('#sub_total_price').val(subtotal_price);
 					}
 				});
 				
@@ -697,8 +737,38 @@
 				console.log("Close click");
 				modal.style.display = "none";
 			};
+			
+			$("#subtotal_price").on("input", function() {
+				//Grab the subtotal price of the rental
+				subtotal_price = $('#subtotal_price').val();
+				tax_amount = $('#tax_amount').val();
+				
+				//Calculate the tax amount with the new tax rate
+				tax_amount = subtotal_price * (tax_amount / 100);
+				
+				//Make sure the new tax amount is 2 decimals long
+				tax_amount = tax_amount.toFixed(2);
+				
+				console.log(tax_amount);
+				
+				//Add subtotal price with new tax amount
+				total_price_with_tax = parseFloat(subtotal_price) + parseFloat(tax_amount);
+				
+				//And set the values to the output "total_price" for viewing purposes and to the hidden inputs for receipt purposes
+				$('#total_price').val(total_price_with_tax);
+				$('#total_price_with_tax').val(total_price_with_tax);
+				$('#sub_total_price').val(subtotal_price);
+			});
+			
+			$( "#subtotal_price" ).dblclick(function()
+			{
+				document.getElementById('subtotal_price').readOnly = false;
+			});
+			
+			
 		});
 	</script>
+	
 	
 </html>
 
