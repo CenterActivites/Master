@@ -168,16 +168,19 @@
 						</div>
 <?php
 					}
-					$comments = $conn->prepare("select comments, time_stamp
-												from ItemTran A, Transaction B
-												where A.tran_id = B.trans_id and A.item_Backid = :a");
+					$comments = $conn->prepare("select note, timestamp
+												from Notes A, NotesItem B
+												where A.note_id = B.note_id and
+														B.item_Backid = :a");
 					$comments->bindValue(':a', $item_backid, PDO::PARAM_INT);
 					$comments->execute();
 					$comments = $comments->fetchAll();
 					
-					$customer = $conn->prepare("select time_stamp, f_name, l_name
-												from ItemTran A, Transaction B, Customer C
-												where A.tran_id = B.trans_id and B.cust_id = C.cust_id and A.item_Backid = :a
+					$customer = $conn->prepare("select pick_up_date, return_date, l_name, f_name
+												from Rental A, Customer B, CheckIn C
+												where A.cust_id = B.cust_id and 
+														A.rent_id = C.rent_id and 
+														C.item_Backid = :a
 												group by time_stamp, l_name, f_name");
 					$customer->bindValue(':a', $item_backid, PDO::PARAM_INT);
 					$customer->execute();
@@ -190,32 +193,34 @@
 						</thead>
 						<tbody id="comment_tbody">
 <?php
-							//$any_comments is to check if there is any comments have been made about the item
-							$any_comments = false;
-							foreach($comments as $row)
-							{
-								if($row['comments'] != "")
-								{
-									echo "<tr>";
-									echo "<td>";
-									echo $row['time_stamp'];
-									echo "</td>";
-									echo "<td>";
-									echo $row['comments'];
-									echo "</td>";
-									echo "</tr>";
-									
-									//If there is any comments, then this is true
-									$any_comments = true;
-								}
-							}
-							if($any_comments == false)
+							if($comments == null)
 							{
 								echo "<tr>";
 								echo "<td colspan='2'>";
 								echo "No comments were ever made about this item";
 								echo "</td>";
 								echo "</tr>";
+							}
+							else
+							{
+								foreach($comments as $row)
+								{
+									if($row['comments'] != "")
+									{
+										echo "<tr>";
+										echo "<td>";
+										echo $row['timestamp'];
+										echo "</td>";
+										echo "<td>";
+										echo $row['note'];
+										echo "</td>";
+										echo "</tr>";
+										
+										//If there is any comments, then this is true
+										$any_comments = true;
+									}
+								}
+
 							}
 ?>
 						</tbody>
@@ -232,10 +237,18 @@
 						{
 							echo "<tr>";
 							echo "<td>";
-							echo $customer[0]['time_stamp'];
+							echo $customer[0]['pick_up_date'] . " - " . $customer[0]['return_date'];
 							echo "</td>";
 							echo "<td>";
 							echo $customer[0]['f_name'] . " " . $customer[0]['l_name'];
+							echo "</td>";
+							echo "</tr>";
+						}
+						else
+						{
+							echo "<tr>";
+							echo "<td colspan='2'>";
+							echo "Item haven't been rented out yet";
 							echo "</td>";
 							echo "</tr>";
 						}
@@ -243,7 +256,7 @@
 						{
 							echo "<tr>";
 							echo "<td>";
-							echo $customer[1]['time_stamp'];
+							echo $customer[1]['pick_up_date'] . " - " . $customer[1]['return_date'];
 							echo "</td>";
 							echo "<td>";
 							echo $customer[1]['f_name'] . " " . $customer[1]['l_name'];
@@ -254,7 +267,7 @@
 						{
 							echo "<tr>";
 							echo "<td>";
-							echo $customer[2]['time_stamp'];
+							echo $customer[2]['pick_up_date'] . " - " . $customer[2]['return_date'];
 							echo "</td>";
 							echo "<td>";
 							echo $customer[2]['f_name'] . " " . $customer[2]['l_name'];
