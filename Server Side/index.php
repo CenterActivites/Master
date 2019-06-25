@@ -272,9 +272,6 @@
 				elseif(isset($_POST["moreIn"])) //Update button/Cancel button on Edit Vendor page/More Infor. Button
 												//Pushes users to the More Infor. for Vendors page
 				{
-					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
-					$_SESSION['refreshed'] = "none";
-					
 					InfoVendor();
 				}
 				elseif(isset($_POST["backToMainSection"]) or isset($_POST["cancelEdit"]) or isset($_POST["updateVen"])) //Remove Vendor button on Edit Vendor page/Back button on Vendor's Infor. page.
@@ -438,12 +435,14 @@
 						//Insert statement for Notes to record any comments or notes to do with the transaction or items
 						if($comments != "" && $comments != NULL)
 						{
+							$date = date("Y-m-d h:i:s");
 							$insert = $conn->prepare("insert into Notes
-													(note)
+													(note, timestamp)
 													values
-													(:comments)");
+													(:a, :b)");
 							//Binding the vars along with their respected datatype
-							$insert->bindValue(':comments', $comments, PDO::PARAM_STR);
+							$insert->bindValue(':a', $comments, PDO::PARAM_STR);
+							$insert->bindValue(':b', $date, PDO::PARAM_STR);
 							$insert->execute();
 							$note_id = $conn->lastInsertId();
 							
@@ -782,12 +781,14 @@
 						//Insert statement for Notes to record any comments or notes to do with the transaction or items
 						if($comments != "" && $comments != NULL)
 						{
+							$date = date("Y-m-d h:i:s");
 							$insert = $conn->prepare("insert into Notes
-													(note)
+													(note, timestamp)
 													values
-													(:comments)");
+													(:a, :b)");
 							//Binding the vars along with their respected datatype
-							$insert->bindValue(':comments', $comments, PDO::PARAM_INT);
+							$insert->bindValue(':a', $comments, PDO::PARAM_STR);
+							$insert->bindValue(':b', $date, PDO::PARAM_STR);
 							$insert->execute();
 							$note_id = $conn->lastInsertId();
 							
@@ -1026,12 +1027,14 @@
 					
 					if($item_notes != "")
 					{
+						$date = date("Y-m-d h:i:s");
 						$insert = $conn->prepare("insert into Notes
-													(note)
+													(note, timestamp)
 													values
-													(:a)");
+													(:a, :b)");
 						//Binding the vars along with their respected datatype
-						$insert->bindValue(':a', $item_notes, PDO::PARAM_INT);
+						$insert->bindValue(':a', $item_notes, PDO::PARAM_STR);
+						$insert->bindValue(':b', $date, PDO::PARAM_STR);
 						$insert->execute();
 						$note_id = $conn->lastInsertId();
 						
@@ -1162,12 +1165,14 @@
 						
 						if($notes != "")
 						{
+							$date = date("Y-m-d h:i:s");
 							$insert = $conn->prepare("insert into Notes
-														(note)
-														values
-														(:a)");
+													(note, timestamp)
+													values
+													(:a, :b)");
 							//Binding the vars along with their respected datatype
-							$insert->bindValue(':a', $notes, PDO::PARAM_INT);
+							$insert->bindValue(':a', $notes, PDO::PARAM_STR);
+							$insert->bindValue(':b', $date, PDO::PARAM_STR);
 							$insert->execute();
 							$note_id = $conn->lastInsertId();
 							
