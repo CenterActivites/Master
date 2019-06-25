@@ -78,8 +78,8 @@
 			<div id = "button_div">
           <form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id="button" style="border:none">
 	                <fieldset style="border:none" >
-							<input <?= $lvl_2 ?> name="AVendor" id="AVendor" value="Add Vendor" <?= $disabled_2 ?>/>
-							<input type="submit" name="moreIn" id="moreIn" value="More Info." onclick="return is_blank()" />
+						<input <?= $lvl_2 ?> name="AVendor" id="AVendor" value="Add Vendor" <?= $disabled_2 ?>/>
+						<input <?= $lvl_2 ?> name="editVen" id="editVen" value="Edit Vendor" <?= $disabled_2 ?> onclick="return is_blank()" />
 	                </fieldset>
 	        </form>
       </div>
@@ -99,16 +99,6 @@
         $(function(){
           $('<input>').attr({
             type: 'hidden',
-            id:'ven_name',
-            name: 'ven_name'
-          }).appendTo('#button');
-        });
-      </script>
-
-      <script type="text/javascript">
-        $(function(){
-          $('<input>').attr({
-            type: 'hidden',
             id:'ven_id',
             name: 'ven_id'
           }).appendTo('#button');
@@ -118,7 +108,7 @@
       <script>
         function is_blank()
         {
-          if (document.getElementById('ven_name').value.length == 0 && document.getElementById('ven_id').value.length == 0){
+          if (document.getElementById('ven_id').value.length == 0){
             alert("please select a vendor before continuing");
             return false;
           }
