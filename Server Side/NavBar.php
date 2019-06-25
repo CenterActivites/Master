@@ -94,7 +94,7 @@
 							<input type="submit" name="Cust" id="Cust" value="Customer" />
 							<input type="submit" name="ViewInv" id="ViewInv" value="View/Edit Inventory" />
 							<input type="submit" name="ViewVen" id="ViewVen" value="View/Edit Vendors" />
-							<input type="submit" name="ReturnI" id="ReturnI" value="Item Return" />
+							<input type="submit" name="ReturnI" id="ReturnI" value="Rental Return" />
 							<input <?= $lvl_3 ?>  name="Report" id="Report" value="Report" />
 							<input <?= $lvl_4 ?>  name="Empl" id="Empl" value="Employees" />
 							<input type="submit" name="LogOut" id="log_out" value="Log Out" />
