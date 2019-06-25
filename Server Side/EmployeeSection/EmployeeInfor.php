@@ -2,7 +2,7 @@
 
 	function EmployeeInfo()
 	{
-		$empl_id = (int)$_SESSION['empl_id'];
+		$empl_id = $_POST['empl_id'];
 ?>
 <html>
 	<head>
@@ -71,7 +71,8 @@
 		</br>
 		<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id="button">
 			<fieldset style="border:none">
-				<input type="submit" name="viewAct" id="viewAct" value="View Employee's Actions" /><br />
+				<!-- ******TODO***** Set up the Employee's Tranaction Page to view what actions or things the Employee have done
+				<input type="submit" name="viewAct" id="viewAct" value="View Employee's Actions" /><br /> -->
 				<input type="submit" name="editEmpl" id="editEmpl" value="Edit Employee" /><br />
 				<input type="submit" name="back" id="back" value="Back" /><br />
 			</fieldset>

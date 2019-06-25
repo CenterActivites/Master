@@ -9,7 +9,7 @@
 	<link rel="stylesheet" type="text/css" href="../EmployeeSection/empl_css/empl_edit.css"/>
 
 <?php
-	$empl_id = $_SESSION['empl_id'];
+	$empl_id = $_POST['empl_id'];
 	
 	//Connecting to the Database
 	$conn = hsu_conn_sess();
@@ -71,6 +71,7 @@
 				</br></br></br></br></br></br></br></br></br></br></br></br></br></br>
 
 			<fieldset id='buttons' style="border:none;">
+				<input type="hidden" name="selected_empl_id" id="selected_empl_id" value="<?= $empl_id ?>" />
 				<input type="submit" name="updateEmpl" id="updateEmpl" value="Update Employee" />
 				<input type="submit" name="removeEmpl" id="removeEmpl" value="Remove Employee" onclick="return remove()" /><br />
 				<input type="submit" name="cancelOnEditEmpl" id="cancelOnEditEmpl" value="Cancel" onclick="back()"/><br />

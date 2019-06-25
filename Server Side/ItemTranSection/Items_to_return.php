@@ -122,7 +122,8 @@
 								$("#item_to_be_return").val(get_val + "," + box_value);
 							}
 						});
-						$('#item_table').find('input[type="checkbox"]:unchecked').each(function () 
+						
+						$('#item_table').find('input[type="checkbox"]:not:checked').each(function () 
 						{
 							$("#item_leftover").val('1');
 						});
