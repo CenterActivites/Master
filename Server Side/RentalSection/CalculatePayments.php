@@ -40,11 +40,11 @@
 		$lvl_access = $_SESSION['lvl_access'];
 		if($lvl_access == "4" || $lvl_access == "3")
 		{
-			$displayput = "<input type='text' name='tax_input' id='tax_input' value='" . $loc_tax[0]['loc_tax'] . "'>%</input>";
+			$displayput = "";
 		}
 		else
 		{
-			$displayput = "<output>" . $loc_tax[0]['loc_tax'] . "%</output>";
+			$displayput = "readonly";
 		}
 		
 		//Calls the priceCal function to calcuate the prices for the rental
@@ -154,7 +154,7 @@
 					Tax:
 				</th>
 				<td>
-					<?= $displayput ?>
+					<input type='text' name='tax_input' id='tax_input' value="<?= $loc_tax[0]['loc_tax'] ?>" <?= $displayput ?> >%</input>
 				</td>
 			</tr>
 			
@@ -216,7 +216,8 @@
 
 	<!-- Little script to dynamically change the total price with tax output according to whatever the user enters in as the tax amount -->
 	<script type="text/javascript">
-		$(document).ready(function(){
+		$(document).ready(function()
+		{
 			//When the tax input changes, indicating that the user have inputed a new tax rate
 			$("#tax_input, #subtotalCost").on("input", function() {
 				//Grab the subtotal price of the rental
@@ -243,8 +244,6 @@
 			{
 				document.getElementById('subtotalCost').readOnly = false;
 			});
-			
-			
 			
 		});
 	</script>
