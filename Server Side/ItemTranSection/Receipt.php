@@ -164,7 +164,7 @@
 					if($on_site_check == NULL)
 					{
 						
-						$array_of_items = $_SESSION['array_of_items'];
+						//$array_of_items = $_SESSION['array_of_items'];
 						$receipt_prices = $_SESSION['receipt_prices'];
 						$receipt = "";
 					}
@@ -230,17 +230,30 @@
 <?php
 											if($on_site_check == NULL)
 											{
-												foreach($array_of_items as $item_id)
+												foreach($receipt_prices as $item)
 												{
+													if (strpos($item['name'], '(') !== false) 
+													{
 ?>
-													<tr>
-														<td class="col-md-6"><em> <?= $receipt_prices[$item_id]['name'] ?> </em></h4></td>
-														<td class="col-md-1 text-center"> <?= $receipt_prices[$item_id]['id'] ?> </td>
-														<td class="col-md-1 text-center"> $<?= $receipt_prices[$item_id]['price'] ?> </td>
-														<td></td>
-													</tr>
+														<tr>
+															<td class="col-md-6"><em> <?= $item['name'] ?> </em></h4></td>
+															<td class="col-md-1 text-center"> <?= $item['id'] ?> </td>
+															<td class="col-md-1 text-center"> $0 </td>
+															<td></td>
+														</tr>
 <?php
-													$count++;
+													}
+													else
+													{
+?>
+														<tr>
+															<td class="col-md-6"><em> <?= $item['name'] ?> </em></h4></td>
+															<td class="col-md-1 text-center"> <?= $item['id'] ?> </td>
+															<td class="col-md-1 text-center"> $<?= $item['price'] ?> </td>
+															<td></td>
+														</tr>
+<?php
+													}
 												}
 											}
 											else

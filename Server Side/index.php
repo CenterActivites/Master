@@ -1532,6 +1532,9 @@
 						//Start of the FOR loop to insert all the selected items into the Reserve1 and maybe CheckOut if the cust is picking up today
 						foreach($array_of_items as $item_id)
 						{
+							$item_id = explode('-', $item_id); //First we grab the item string, and explode it into a array of ints
+							$item_id = $item_id[1];
+							
 							//Insert statement for ItemReserve
 							$insert = $conn->prepare("insert into Reserve1
 														(cost_at_time, rent_id, item_Backid, empl_id)
@@ -1623,9 +1626,7 @@
 					$item_array = explode(',', $select_item); //First we grab the item string, and explode it into a array of ints
 					$empty_index = array_filter($item_array); //We then filter out any empty spots in the array just in case
 					$array_of_string_items = array_values($empty_index); //Once after the filter, we reset the array.
-					$array_of_int_items = array_map('intval', $array_of_string_items);
-
-					$_SESSION["array_of_items"] = $array_of_int_items;         //input the array of item ids into session for later purposes
+					$_SESSION["array_of_items"] = $array_of_string_items;         //input the array of item ids into session for later purposes
 					
 					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
 					$_SESSION['refreshed'] = "none";
