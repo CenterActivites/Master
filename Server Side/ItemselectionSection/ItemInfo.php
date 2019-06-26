@@ -237,7 +237,9 @@
 						{
 							echo "<tr>";
 							echo "<td>";
-							echo $customer[0]['pick_up_date'] . " - " . $customer[0]['return_date'];
+							$pick_up_date_reformated = date("F d, Y", strtotime($customer[0]['pick_up_date']));
+							$return_date_reformated = date("F d, Y", strtotime($customer[0]['return_date']));
+							echo $pick_up_date_reformated . " - " . $return_date_reformated;
 							echo "</td>";
 							echo "<td>";
 							echo $customer[0]['f_name'] . " " . $customer[0]['l_name'];
@@ -256,7 +258,9 @@
 						{
 							echo "<tr>";
 							echo "<td>";
-							echo $customer[1]['pick_up_date'] . " - " . $customer[1]['return_date'];
+							$pick_up_date_reformated = date("F d, Y", strtotime($customer[1]['pick_up_date']));
+							$return_date_reformated = date("F d, Y", strtotime($customer[1]['return_date']));
+							echo $pick_up_date_reformated . " - " . $return_date_reformated;
 							echo "</td>";
 							echo "<td>";
 							echo $customer[1]['f_name'] . " " . $customer[1]['l_name'];
@@ -267,7 +271,9 @@
 						{
 							echo "<tr>";
 							echo "<td>";
-							echo $customer[2]['pick_up_date'] . " - " . $customer[2]['return_date'];
+							$pick_up_date_reformated = date("F d, Y", strtotime($customer[2]['pick_up_date']));
+							$return_date_reformated = date("F d, Y", strtotime($customer[2]['return_date']));
+							echo $pick_up_date_reformated . " - " . $return_date_reformated;
 							echo "</td>";
 							echo "<td>";
 							echo $customer[2]['f_name'] . " " . $customer[2]['l_name'];

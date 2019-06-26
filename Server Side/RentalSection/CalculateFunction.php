@@ -14,14 +14,11 @@
 		$if_student->bindValue(':sel_cust', $sel_cust, PDO::PARAM_INT);
 		$if_student->execute();  //excute the query. Also is the query went wrong somewhere, the "or die($conn->error)" part can tell us what is wrong with the select statement
 		$if_student_row = $if_student->fetchAll();
-		
+	
 		$curr_date = Date("Y-m-d");
 		
 		if(!($request_date_format == $curr_date && $if_student_row[0]['is_employee'] == 'Yes'))
 		{
-			//Grab the package value. if customer didnt select a package then the value would be 0
-			$pack_select = $_POST['pack'];
-			
 			//Creating a date array of int for both the request and due dates
 			$request_date = array_map('intval', explode("-", $request_date_format));
 			$due_date = array_map('intval', explode("-", $due_date_format));
@@ -163,17 +160,21 @@
 			
 			$receipt_prices = array(); //Here is where we going to be saving all the prices for the receipt
 			$total_price = 0; //Here is where we are going to be storing the total price of all the item is been selected
-			//If the $pack_select is 0 then that mean the user didn't select a pack at all so the items would be price according to each item
-			if($pack_select == 0)
+			$pack_id_array = array();
+			$pack_array_of_selected_items = array();
+			
+			foreach($array_of_items as $pack_id_with_item_id) //FOR loop to go through the array of selected item ids
 			{
-				foreach($array_of_items as $item_id) //FOR loop to go through the array of selected item ids
+				$pack_item_array = explode('-', $pack_id_with_item_id); //First we grab the item string, and explode it into a array of ints
+				
+				if($pack_item_array[0] == "0")
 				{
 					$curr_item_total_pricing = 0; //Assign curr_item_total_pricing to 0 because now we're going item by item, grabbing each total price per item
 					
 					$_price = $conn->prepare("select stu_day_price, stu_weekend_price, stu_week_price, day_price, weekend_price, week_price, item_Frontid, inv_name
 												from Item a, Inventory c
 												where a.inv_id = c.inv_id and a.item_Backid = :item_id");
-					$_price->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+					$_price->bindValue(':item_id', $pack_item_array[1], PDO::PARAM_INT);
 					$_price->execute();
 					$price = $_price->fetchAll();
 					
@@ -210,121 +211,96 @@
 						}
 					}
 					$total_price = $total_price + $curr_item_total_pricing;
-					$receipt_prices[$item_id] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing);
+					$receipt_prices[$pack_item_array[1]] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing);
+
+				}
+				else
+				{
+					if(!(in_array($pack_item_array[0], $pack_id_array)))
+					{ 
+						$pack_id_array[] = $pack_item_array[0];
+					}
+					$pack_array_of_selected_items[$pack_item_array[0]][] = $pack_item_array[1];
 				}
 			}
-			//Else if the $pack_select is other than 0, that means the user did select a package which we will have to account to
-			else
+			foreach($pack_id_array as $pack_id)
 			{
-				$curr_item_total_pricing = 0; //Created a temp var to hold the total price for each item which will be added to the total price of the whole rental and be record by receipt_prices for recipts
+				$curr_item_total_pricing = 0; //Assign curr_item_total_pricing to 0 because now we're going item by item, grabbing each total price per item
 				
-				$_price = $conn->prepare("select stu_day_price, stu_weekend_price, stu_week_price, pack_name, day_price, weekend_price, week_price
-											from Packages
-											where pack_id = :pack_select"); //query to get the student day price of the item
-				$_price->bindValue(':pack_select', $pack_select, PDO::PARAM_INT); //Binds the var
-				$_price->execute(); //excute the query
-				$price = $_price->fetchAll(); //Grabs the price
-
+				$pack_price = $conn->prepare("select stu_day_price, stu_weekend_price, stu_week_price, day_price, weekend_price, week_price, pack_name
+												from Packages
+												where pack_id = :pack_id");
+				$pack_price->bindValue(':pack_id', $pack_id, PDO::PARAM_INT);
+				$pack_price->execute();
+				$pack_price = $pack_price->fetchAll();
+				
+				//Now here we actually check if the customer is a student or not and get the correct pricing for the 
+				//amount of days they are planning to rent the item for
 				if($if_student_row[0]['is_student'] == 'yes' || $if_student_row[0]['is_student'] == 'Yes') //Checks if the customer is a student or not
 				{
 					if($days > 0)
 					{
-						$curr_item_total_pricing = $curr_item_total_pricing + ($days * $price[0]['stu_day_price']);
+						$curr_item_total_pricing = $curr_item_total_pricing + ($days * $pack_price[0]['stu_day_price']);
 					}
 					if($weekends > 0)
 					{
-						$curr_item_total_pricing = $curr_item_total_pricing + ($weekends * $price[0]['stu_weekend_price']);
+						$curr_item_total_pricing = $curr_item_total_pricing + ($weekends * $pack_price[0]['stu_weekend_price']);
 					}
 					if($weeks > 0)
 					{
-						$curr_item_total_pricing = $curr_item_total_pricing + ($weeks * $price[0]['stu_week_price']);
+						$curr_item_total_pricing = $curr_item_total_pricing + ($weeks * $pack_price[0]['stu_week_price']);
 					}
 				}
 				else
 				{
 					if($days > 0)
 					{
-						$curr_item_total_pricing = $curr_item_total_pricing + ($days * $price[0]['day_price']);
+						$curr_item_total_pricing = $curr_item_total_pricing + ($days * $pack_price[0]['day_price']);
 					}
 					if($weekends > 0)
 					{
-						$curr_item_total_pricing = $curr_item_total_pricing + ($weekends * $price[0]['weekend_price']);
+						$curr_item_total_pricing = $curr_item_total_pricing + ($weekends * $pack_price[0]['weekend_price']);
 					}
 					if($weeks > 0)
 					{
-						$curr_item_total_pricing = $curr_item_total_pricing + ($weeks * $price[0]['week_price']);
+						$curr_item_total_pricing = $curr_item_total_pricing + ($weeks * $pack_price[0]['week_price']);
 					}
 				}
-				$total_price = $total_price + $curr_item_total_pricing; //Adding up the prices by multiplying the correct correlating days or weekends or weeks
-				$receipt_prices[$item_id] = array("id"=>" ", "name"=>$price[0]['pack_name'], "price"=>$curr_item_total_pricing); //Also save the amount for reciept purposes
+				$total_price = $total_price + $curr_item_total_pricing;
+				$receipt_prices[$pack_id] = array("id"=>" ", "name"=>$pack_price[0]['pack_name'], "price"=>$curr_item_total_pricing);
 				
-				//Grabs all item_id that is associated with that package
-				$items_in_pack = $conn->prepare("select a.item_Backid
-												from Item a, InvPack b
-												where a.inv_id = b.inv_id and b.pack_id = :pack_select");
-				$items_in_pack->bindValue(':pack_select', $pack_select, PDO::PARAM_INT);
-				$items_in_pack->execute();
-				$items_in_pack = $items_in_pack->fetchAll();
-				
-				foreach($array_of_items as $item_id) //FOR loop to go through the array of selected item ids
+				foreach($pack_array_of_selected_items[$pack_id] as $item_id)
 				{
-					//Create a check where if the current item is in the pack, then we just move on to the next. If not then we process the item like normal
-					//This is for in case user selected other items other than the ones in the package
-					foreach($items_in_pack as $item_in_pack)
-					{
-						if($item_in_pack[0] != $item_id)
-						{
-							$curr_item_total_pricing = 0; //Assign curr_item_total_pricing to 0 because now we're going item by item, grabbing each total price per item
+					$pack_item_info = $conn->prepare("select item_Frontid, inv_name
+													from Item a, Inventory c
+													where a.inv_id = c.inv_id and a.item_Backid = :item_id");
+					$pack_item_info->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+					$pack_item_info->execute();
+					$pack_item_info = $pack_item_info->fetchAll();
 					
-							$_price = $conn->prepare("select stu_day_price, stu_weekend_price, stu_week_price, day_price, weekend_price, week_price, item_Frontid, inv_name
-														from Item a, Inventory c
-														where a.inv_id = c.inv_id and a.item_Backid = :item_id");
-							$_price->bindValue(':item_id', $item_id, PDO::PARAM_INT);
-							$_price->execute();
-							$price = $_price->fetchAll();
-							
-							//Now here we actually check if the customer is a student or not and get the correct pricing for the 
-							//amount of days they are planning to rent the item for
-							if($if_student_row[0]['is_student'] == 'yes' || $if_student_row[0]['is_student'] == 'Yes') //Checks if the customer is a student or not
-							{
-								if($days > 0)
-								{
-									$curr_item_total_pricing = $curr_item_total_pricing + ($days * $price[0]['stu_day_price']);
-								}
-								if($weekends > 0)
-								{
-									$curr_item_total_pricing = $curr_item_total_pricing + ($weekends * $price[0]['stu_weekend_price']);
-								}
-								if($weeks > 0)
-								{
-									$curr_item_total_pricing = $curr_item_total_pricing + ($weeks * $price[0]['stu_week_price']);
-								}
-							}
-							else
-							{
-								if($days > 0)
-								{
-									$curr_item_total_pricing = $curr_item_total_pricing + ($days * $price[0]['day_price']);
-								}
-								if($weekends > 0)
-								{
-									$curr_item_total_pricing = $curr_item_total_pricing + ($weekends * $price[0]['weekend_price']);
-								}
-								if($weeks > 0)
-								{
-									$curr_item_total_pricing = $curr_item_total_pricing + ($weeks * $price[0]['week_price']);
-								}
-							}
-							$total_price = $total_price + $curr_item_total_pricing;
-							$receipt_prices[$item_id] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing);
-						}
+					$main_vessal = $conn->prepare("select main_inv_pack_id
+													from Item a, MainInvPack c
+													where a.inv_id = c.inv_id and 
+															a.item_Backid = :item_id");
+					$main_vessal->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+					$main_vessal->execute();
+					$main_vessal = $main_vessal->fetchAll();
+					
+					if(empty($main_vessal))
+					{
+						$receipt_prices[$item_id] = array("id"=>$pack_item_info[0]['item_Frontid'], "name"=>$pack_item_info[0]['inv_name'] . " (" . $pack_price[0]['pack_name'] . ")", "price"=>0);
 					}
+					else
+					{
+						$receipt_prices[$item_id] = array("id"=>$pack_item_info[0]['item_Frontid'], "name"=>$pack_item_info[0]['inv_name'] . " (" . $pack_price[0]['pack_name'] . ")", "price"=>$curr_item_total_pricing);
+					}
+					
 				}
 			}
 			
 			$return_array['total_price'] = $total_price;
 			$return_array['receipt_prices'] = $receipt_prices;
-			
+	
 			return $return_array;
 
 		}
