@@ -1491,7 +1491,7 @@
 						
 						//The following "if" statement sees if the request date is the current date. If so then the customer probably is picking up the item right there and then.
 						//So if then the code will have to insert the current date instead of NULL as it usually is for a future date
-						if($request_date == $curr_date)
+						if($request_date == $curr_date || $request_date < $curr_date)
 						{
 							//Formatting the current date into mysql format for insert
 							$curr_date = date('Y-m-d', strtotime($curr_date));
@@ -1587,7 +1587,6 @@
 								$update->execute(); //execute the query
 							}
 						}
-						
 
 						//remember to close the PDO connection
 						$conn = null;
