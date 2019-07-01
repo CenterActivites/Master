@@ -61,10 +61,10 @@
 			<fieldset id='access_lvl_field'>
 				<lable id='all_lable'>Level of Access:</lable></br>
 				<select name = "access_lvl" id="access_lvl" size="1" required>
-					<option value = "1"> 1 </option>
-					<option value = "2"> 2 </option>
-					<option value = "3"> 3 </option>
-					<option value = "4"> 4 </option>
+					<option value = "1"> Front Desk Access Level </option>
+					<option value = "2"> Inventory Room Access Level </option>
+					<option value = "3"> Supervisor Access Level </option>
+					<option value = "4"> Admin Level </option>
 				</select>
 			</fieldset></br>
 					
