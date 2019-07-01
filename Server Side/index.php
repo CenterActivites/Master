@@ -435,14 +435,16 @@
 						//Insert statement for Notes to record any comments or notes to do with the transaction or items
 						if($comments != "" && $comments != NULL)
 						{
+							$empl_id = $_SESSION['empl_id'];
 							$date = date("Y-m-d h:i:s");
 							$insert = $conn->prepare("insert into Notes
-													(note, timestamp)
+													(note, timestamp, empl_id)
 													values
-													(:a, :b)");
+													(:a, :b, :c)");
 							//Binding the vars along with their respected datatype
 							$insert->bindValue(':a', $comments, PDO::PARAM_STR);
 							$insert->bindValue(':b', $date, PDO::PARAM_STR);
+							$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
 							$insert->execute();
 							$note_id = $conn->lastInsertId();
 							
@@ -781,14 +783,16 @@
 						//Insert statement for Notes to record any comments or notes to do with the transaction or items
 						if($comments != "" && $comments != NULL)
 						{
+							$empl_id = $_SESSION['empl_id'];
 							$date = date("Y-m-d h:i:s");
 							$insert = $conn->prepare("insert into Notes
 													(note, timestamp)
 													values
-													(:a, :b)");
+													(:a, :b, :c)");
 							//Binding the vars along with their respected datatype
 							$insert->bindValue(':a', $comments, PDO::PARAM_STR);
 							$insert->bindValue(':b', $date, PDO::PARAM_STR);
+							$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
 							$insert->execute();
 							$note_id = $conn->lastInsertId();
 							
@@ -1027,14 +1031,16 @@
 					
 					if($item_notes != "")
 					{
+						$empl_id = $_SESSION['empl_id'];
 						$date = date("Y-m-d h:i:s");
 						$insert = $conn->prepare("insert into Notes
 													(note, timestamp)
 													values
-													(:a, :b)");
+													(:a, :b, :c)");
 						//Binding the vars along with their respected datatype
 						$insert->bindValue(':a', $item_notes, PDO::PARAM_STR);
 						$insert->bindValue(':b', $date, PDO::PARAM_STR);
+						$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
 						$insert->execute();
 						$note_id = $conn->lastInsertId();
 						
@@ -1165,14 +1171,16 @@
 						
 						if($notes != "")
 						{
+							$empl_id = $_SESSION['empl_id'];
 							$date = date("Y-m-d h:i:s");
 							$insert = $conn->prepare("insert into Notes
 													(note, timestamp)
 													values
-													(:a, :b)");
+													(:a, :b, :c)");
 							//Binding the vars along with their respected datatype
 							$insert->bindValue(':a', $notes, PDO::PARAM_STR);
 							$insert->bindValue(':b', $date, PDO::PARAM_STR);
+							$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
 							$insert->execute();
 							$note_id = $conn->lastInsertId();
 							
@@ -1465,6 +1473,9 @@
 						//Grabbing the cust_id and loc the rental is taking place
 						$cust_id = $_SESSION['sel_user'];
 						$loc_id = $_SESSION['loc'];
+						
+						//Grabbing the comments about the items the user entered when doing the item return
+						$comments = strip_tags($_POST['comments']);
 
 						//Grab the array of items selected
 						$array_of_items = $_SESSION['array_of_items'];
@@ -1589,6 +1600,33 @@
 								$update->bindValue(':item_id', (int)$item_id, PDO::PARAM_INT);
 								$update->execute(); //execute the query
 							}
+						}
+						
+						//Insert statement for Notes to record any comments or notes to do with the transaction or items
+						if($comments != "" && $comments != NULL)
+						{
+							$empl_id = $_SESSION['empl_id'];
+							$date = date("Y-m-d h:i:s");
+							$insert = $conn->prepare("insert into Notes
+													(note, timestamp)
+													values
+													(:a, :b, :c)");
+							//Binding the vars along with their respected datatype
+							$insert->bindValue(':a', $comments, PDO::PARAM_STR);
+							$insert->bindValue(':b', $date, PDO::PARAM_STR);
+							$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
+							$insert->execute();
+							$note_id = $conn->lastInsertId();
+							
+							$insert = $conn->prepare("insert into NotesRental
+													(note_id, rent_id)
+													values
+													(:a, :b)");
+							//Binding the vars along with their respected datatype
+							$insert->bindValue(':a', $note_id, PDO::PARAM_INT);
+							$insert->bindValue(':b', $rent_id, PDO::PARAM_INT);
+							$insert->execute();
+							$note_id = $conn->lastInsertId();
 						}
 
 						//remember to close the PDO connection
@@ -1738,6 +1776,7 @@
 					//Connecting to the Database
 					$conn = hsu_conn_sess();
 					$empl_id = $_POST['selected_empl_id'];
+					$_SESSION['selected_empl_id'] = $empl_id;
 					$empl_fname = strip_tags($_POST['empl_fname']);
 					$empl_lname = strip_tags($_POST['empl_lname']);
 					$phone_num = strip_tags($_POST['phone_num']);
