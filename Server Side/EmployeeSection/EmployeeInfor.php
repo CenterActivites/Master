@@ -2,7 +2,14 @@
 
 	function EmployeeInfo()
 	{
-		$empl_id = $_POST['empl_id'];
+		if(isset($_POST["empl_id"])) //Here for the update button on the edit customer view
+		{
+			$empl_id = $_POST['empl_id'];
+		}
+		else
+		{
+			$empl_id = $_SESSION['selected_empl_id'];
+		}
 ?>
 <html>
 	<head>
@@ -31,6 +38,25 @@
 				$curr_empl_email = $row["empl_email"];
 				$curr_empl_user = $row["user_n"];
 				$curr_empl_pass = $row["pass_w"];
+				
+				if($curr_empl_access_lvl == "1")
+				{
+					$curr_empl_access_lvl = "Front Desk Access Level";
+				}
+				elseif($curr_empl_access_lvl == "2")
+				{
+					$curr_empl_access_lvl = "Inventory Room Access Level";
+				}
+				elseif($curr_empl_access_lvl == "3")
+				{
+					$curr_empl_access_lvl = "Supervisor Access Level";
+				}
+				else
+				{
+					$curr_empl_access_lvl = "Admin Level";
+				}
+				
+				
 ?>
 				<tr>
 					<th>Employee First Name:</th>

@@ -26,7 +26,8 @@
 							Phone Number: <input type = "text" name = "Phone" id = "Phone" maxlength="12" value ="" required/>
 						</td>
 						<td>
-							Level of Access Given: <select name = "access_lvl" id="access_lvl" size="1" required>
+							<label for="access_lvl"> Level of Access Given: </label>
+							<select name = "access_lvl" id="access_lvl" size="1" required>
 								<option hidden></option>
 								<option value = "1"> Front Desk Access Level </option>
 								<option value = "2"> Inventory Room Access Level </option>
