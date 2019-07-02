@@ -185,9 +185,48 @@
 									//Adds the new row to the table
 									tbody.appendChild(tr);
 								}
+							},
+							//If there is ever a error with the AJAX call, it will logs the errors that it found with the AJAX call to the brower's console
+							error: function(XMLHttpRequest, textStatus, errorThrown) 
+							{ 
+								console.log("Status: " + textStatus); 
+								console.log("Error: " + errorThrown); 
+							}
+					
+						});
+					});
+				});
+			</script>
+			
+			<script type="text/javascript">
+				$(function()
+				{
+					//When user select a timestamp tranaction from the select table
+					$('.time_stamp_select').change(function() 
+					{
+						//Fires a AJAX call to grab all the items that was involved with the tranaction
+						$.ajax(
+						{ 
+							url: "../CustomerselectionSection/comments_helper.php",
+							type: "post",
+							data: 
+							{
+								//Sends the cust_id which is from the hidden input that holds the selected customer id and 
+								//the trans_id that is connected to every option in the "TimeStamps" select
+								'trans_id': $(this).val()
+							},
+							success: function(data)
+							{
+								//Onces the AJAX call is successful
+								
+								//Grabs the data that is in JSON format and parse it so it is usable
+								var json_object = JSON.parse(data);
+								
+								//Log the data
+								console.log("data: " + data);
 								
 								//Little script that will populate the empty comment div with comments made about the transaction
-								if(json_object[0]['comments'] == null || json_object[0]['comments'].length == 0)
+								if(json_object == null || json_object.length == 0)
 								{
 									//We empty the table of previous item information from last timestamp tranaction
 									$('#comment_table').empty();
@@ -215,15 +254,26 @@
 									
 									//Create a new row for the table that will contain all the new item information
 									var th = document.createElement('tr');
-									var td = document.createElement('tr');
 									
 									//Set the item information to the row in the correct order according to the set columns
-									th.innerHTML = "<th>" + "Comments about the Tranaction:" + "</th>";
-									td.innerHTML = "<td>" + json_object[0]['comments'] + "</td>";
-									
+									th.innerHTML = "<th>" + "Comments about the Tranaction:" + "</th>" +
+													"<th>" + "Employee who made the Commment:" + "</th>";
+								
 									//Adds the new row to the table
 									comment_table.appendChild(th);
-									comment_table.appendChild(td);
+									
+									//Process all the item data it got from the AJAX call by looping through it in a FOR loop
+									for(var i = 0; i < json_object.length; i++)
+									{
+										var obj = json_object[i]; //First grabs the current item in the data
+										
+										var td = document.createElement('tr');
+										
+										td.innerHTML = "<td>" + obj['note'] + "</td>" +
+										               "<td>" + obj['empl_fname'] + " " + obj['empl_lname'] + "</td>";
+										
+										comment_table.appendChild(td);
+									}
 								}
 							},
 							//If there is ever a error with the AJAX call, it will logs the errors that it found with the AJAX call to the brower's console
