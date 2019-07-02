@@ -198,6 +198,14 @@
 
 			</p>
 		</div>
+		
+		</br>
+		<!-- Comments section for any comments about the transaction or items condition -->
+		&nbsp;&nbsp;&nbsp;&nbsp;
+		<label for="comments"> Comments: </label>
+		<textarea name="comments" id="comments" rows="2" cols="50"></textarea> 
+		</br>
+		
 		<div>
 			<fieldset style="border:none;">
 				<!-- Three hidden inputs for keeping the total price of the rental including tax down, the tax amount for receipt page, and subtotal cost of the rental -->
