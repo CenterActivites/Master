@@ -230,9 +230,29 @@
 <?php
 											if($on_site_check == NULL)
 											{
+												$cleaning_up_receipt = array();
 												foreach($receipt_prices as $item)
 												{
-													if (strpos($item['name'], '(') !== false) 
+													if(strpos($item['name'], '(') !== false || $item['id'] == " ") 
+													{
+														$cleaning_up_receipt[] = $item;
+													}
+													else
+													{
+?>
+														<tr>
+															<td class="col-md-6"><em> <?= $item['name'] ?> </em></h4></td>
+															<td class="col-md-1 text-center"> <?= $item['id'] ?> </td>
+															<td class="col-md-1 text-center"> $<?= $item['price'] ?> </td>
+															<td></td>
+														</tr>
+<?php
+													}
+												}
+												
+												foreach($cleaning_up_receipt as $item)
+												{
+													if(strpos($item['name'], '(') !== false) 
 													{
 ?>
 														<tr>
@@ -255,6 +275,7 @@
 <?php
 													}
 												}
+												
 											}
 											else
 											{
