@@ -1817,7 +1817,6 @@
 					//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
 					if($_SESSION['refreshed'] != "Addempl")
 					{
-						echo "we got in the if tho";
 						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
 						$_SESSION['refreshed'] = "Addempl";
 					

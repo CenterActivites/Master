@@ -51,7 +51,7 @@
 							Password need to be at least 4 characters long. Must have
 							at least 1 upper case, 1 lower case, and 1 number in it.
 							</br>
-							Password: <input type = "text" name = "pass" id = "pass" maxlength="20" minlength=6 value ="" required/>
+							Password: <input type = "text" name = "pass" id = "pass" maxlength="20" minlength=4 value ="" required/>
 							</br>
 							Random Password Generator <input type = "button" name = "gen_pass" id = "gen_pass" />
 						</td>
