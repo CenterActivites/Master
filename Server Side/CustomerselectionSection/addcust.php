@@ -33,33 +33,33 @@
 					<tr>
 						<!-- Street address input field -->
 						<td colspan="4">
-							Street Address: <input type = "text" name = "street_address" id = "street_address" maxlength="100" value ="" required/>
+							Street Address: <input type = "text" name = "street_address" id = "street_address" maxlength="100" value ="" />
 						</td>
 					</tr>
 					
 					<tr>
 						<!-- City input field -->
 						<td colspan="2">
-							City: <input type = "text" name = "city" id = "city" maxlength="30" value ="Arcata" required/>
+							City: <input type = "text" name = "city" id = "city" maxlength="30" value ="Arcata" />
 						</td>
 						<!-- State input field -->
 						<td colspan="1">
-							State: <input type = "text" name = "state" id = "state" maxlength="13" value ="CA" required/>
+							State: <input type = "text" name = "state" id = "state" maxlength="13" value ="CA" />
 						</td>
 						<!-- Zip code input field -->
 						<td colspan="1">
-							ZIP Code: <input type = "text" name = "zip" id = "zip" maxlength="13" value ="95521" required/>
+							ZIP Code: <input type = "text" name = "zip" id = "zip" maxlength="13" value ="95521" />
 						</td>
 					</tr>
 					
 					<tr>
 						<!-- Phone number input field -->
 						<td colspan="2">
-							Phone Number: <input type = "text" name = "phone" id = "phone" maxlength="12" value ="" required/>
+							Phone Number: <input type = "text" name = "phone" id = "phone" maxlength="12" value ="" />
 						</td>
 						<!-- Email input field -->
 						<td colspan="2">
-							Email Address: <input type = "text" name = "email" id = "email" maxlength="50"  value ="" required/>
+							Email Address: <input type = "text" name = "email" id = "email" maxlength="50"  value ="" />
 						</td>
 					</tr>
 					
@@ -67,7 +67,7 @@
 						<!-- The toggle input field that would be either Student id or Driver license -->
 						<td colspan="3">
 							<label id="label_for_ids">Student ID:</label>
-							<input type = "text" name = "stu_id" id = "stu_id" maxlength="10" value ="" required/>
+							<input type = "text" name = "stu_id" id = "stu_id" maxlength="10" value ="" />
 						</td>
 						<!-- Employee status select -->
 						<td colspan="1">

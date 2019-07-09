@@ -586,7 +586,13 @@
 										{
 											item_size = "No Size";
 										}
-											
+										
+										//Sees if the item_modeltype from the item data is null, if is then it sets the item_modeltype field to " "
+										if(item_modeltype == null)
+										{
+											item_modeltype = " ";
+										}
+										
 										//Create a tr tag
 										var tr = document.createElement('tr');
 										
