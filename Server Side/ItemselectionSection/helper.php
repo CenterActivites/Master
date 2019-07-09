@@ -70,7 +70,7 @@
 		$select_item = $connctn->prepare("SELECT item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 					FROM Item A, Inventory B, Category C, Status D
 					WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id" . $dbw_val . $public_val . $loc_val . $cat_val . "
-					ORDER BY inv_name, item_modeltype, item_Backid");
+					ORDER BY inv_name, item_modeltype, item_Frontid");
 
 		$select_item->execute();
 		$display_array = $select_item->fetchAll();
@@ -107,7 +107,7 @@
 		$select_item = $connctn->prepare("select item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 				from Item A, Inventory B, Category C, Status D
 				where A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and D.stat_id = :a" . $dbw_val . $public_val . $loc_val . $cat_val . "
-				ORDER BY inv_name, item_modeltype, item_Backid");
+				ORDER BY inv_name, item_modeltype, item_Frontid");
 
 		$select_item->bindValue(':a', $int_value_stat, PDO::PARAM_INT);
 		$select_item->execute();

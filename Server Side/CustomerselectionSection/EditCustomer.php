@@ -35,7 +35,7 @@
 						<lable id='all_lable'>Last Name:</lable></br><input type = "text" name = "cust_lname" id = "cust_lname" value ="" maxlength="25"/><br/>
 					</fieldset></br>
 					<fieldset id='driver_id_field'>
-						<lable id='all_lable'>Driver License:</lable></br><input type = "text" name = "driver_id" id = "driver_id" value ="" maxlength="8"/><br/>
+						<lable id='all_lable'>Driver License:</lable></br><input type = "text" name = "driver_id" id = "driver_id" value ="" maxlength="12"/><br/>
 					</fieldset>
 					<fieldset id='stu_id_field'>
 						<lable id='all_lable'>Student ID:</lable></br><input type = "text" name = "cust_stu_id" id = "cust_stu_id" value ="" maxlength="10"/><br/>

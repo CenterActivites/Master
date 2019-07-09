@@ -90,7 +90,7 @@
 							foreach($conn->query("SELECT item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 													FROM Item A, Inventory B, Category C, Status D
 													WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id
-													ORDER BY inv_name, item_modeltype, item_Backid") as $row)
+													ORDER BY inv_name, item_modeltype, item_Frontid") as $row)
 							{
 								$curr_item_backid = $row["item_Backid"];
 								$curr_item_size = $row["item_size"];

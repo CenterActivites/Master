@@ -145,13 +145,13 @@
 										$curr_item_size = $row["item_size"];
 										$curr_item_frontid = $row["item_Frontid"];
 										$curr_item_modeltype = $row["item_modeltype"];
-										if($curr_item_size == null) 
+										if($curr_item_size == null || $curr_item_size == "") 
 										{
 											$curr_item_size = "No Size";
 										}
 ?>
 										<tr id='table_row_info'>
-											<td id = "hide_me"><input type="radio" id ="item_id" name="item_id[]" value = "<?= $curr_item_backid ?>"/></td>
+											<td id = "hide_me"><input type="radio" id ="item_id" name="item_id[]" value = "<?= "0-" . $curr_item_backid ?>"/></td>
 											<td id = 'td_front'><?= $curr_item_frontid?></td>
 											<td><?= $curr_item_size ?></td>
 											<td><?= $curr_item_modeltype ?></td>
@@ -176,7 +176,7 @@
 									}
 ?>
 									<tr id='table_row_info'>
-										<td id = "hide_me"><input type="radio" id ="item_id" name="item_id[]" value = "<?= $curr_item_backid ?>"/></td>
+										<td id = "hide_me"><input type="radio" id ="item_id" name="item_id[]" value = "<?= "0-" . $curr_item_backid ?>"/></td>
 										<td id = 'td_front'><?= $curr_item_frontid?></td>
 										<td><?= $curr_item_size ?></td>
 										<td><?= $curr_item_modeltype ?></td>
@@ -315,7 +315,7 @@
 				var hidden_val = (get_val != "") ? get_val+"," : get_val; //Adds the item to the string with "," separating the items
 				$("#item_array").val(hidden_val + box_value); //Have the input tag "item_array" hold/keep the string
 				
-				//Logs the current values or the cart array
+				//Logs the current values of the cart array
 				console.log("Current cart array: " + $("#item_array").val());
 				
 				//Grab the whatever is in the current cart
@@ -469,7 +469,7 @@
 					},
 					success: function(data) //When the AJAX call is successful, the script does the following
 					{
-						console.log("Selection of Package:" + data); //Tells the console log that the AJAX call was good
+						//console.log("Selection of Package:" + data); //Tells the console log that the AJAX call was good
 						
 						var json_object = JSON.parse(data); //Grabs the data that is in JSON format and parse it so it is usable
 						
@@ -480,8 +480,21 @@
 						var cart = $("#item_array").val(); //Also grab the "cart_array" input tag for processing the cart for display
 						var cart_array = cart.split(","); //Turns the cart string into a cart array by separating the string by the "," char
 						
-						//The next following lines creates a filtered cart for easy use for displaying purposes
+						//The next following lines creates a filtered cart, that filtered out any empty spots in the array
 						var filtered_cart_array = cart_array.filter(function () { return true });
+						
+						//Create the finally filtered cart array for the checks we're about to do for knowing if to display the item or not
+						var finished_filtered_cart_array = [];
+						
+						//Loop through the filtered cart array
+						for(var a = 0; a < filtered_cart_array.length; a++)
+						{
+							//Split the item id because it looks like "0-143" currently and we need it as just "143"
+							var each_item_id = filtered_cart_array[a].split("-");
+							
+							//Push the newly edited id onto the finished filtered cart array for checking use.
+							finished_filtered_cart_array.push(each_item_id[1]);
+						}
 						
 						//Here the script starts processing all the item data it got from the AJAX call by looping through it in a FOR loop
 						for(var i = 0; i < json_object.length; i++)
@@ -503,7 +516,10 @@
 								//Checks if the item is not a 'OutDoor Nation' then we continue repopulating the select. If it then we do nothing and move on to the next item
 								if(inv_name.includes("Outdoor Nation") != 1)
 								{
+									//Grab the item id
 									item_Backid = obj['item_Backid'];
+									
+									//Check if the item is in conflict with this rental date range
 									if(conflict_list.includes(item_Backid) === false)
 									{
 										//
@@ -511,7 +527,7 @@
 										//
 										
 										//Does the check here. The if statement reads if current item that is about to be displayed is also in the cart, then return true else false
-										if(filtered_cart_array.includes(item_Backid) === false)
+										if(finished_filtered_cart_array.includes(item_Backid) === false)
 										{
 											//Sets all the item data to its corresponding fields
 											item_size = obj['item_size'];
@@ -534,7 +550,7 @@
 											var tr = document.createElement('tr');
 											
 											//Populate the tr tag
-											tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+item_Backid+"'/>" +"</td>" + 
+											tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '" + $('#pack').val() + "-" + item_Backid + "'/>" +"</td>" + 
 															"<td>" + item_Frontid + "</td>"  + 
 															"<td>" + item_size + "</td>" +
 															"<td>" + item_modeltype + "</td>" + 
@@ -557,7 +573,7 @@
 									//
 									
 									//Does the check here. The if statement reads if current item that is about to be displayed is also in the cart, then return true else false
-									if(filtered_cart_array.includes(item_Backid) === false)
+									if(finished_filtered_cart_array.includes(item_Backid) === false)
 									{
 										//Sets all the item data to its corresponding fields
 										item_size = obj['item_size'];
@@ -575,7 +591,7 @@
 										var tr = document.createElement('tr');
 										
 										//Populate the tr tag
-										tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+item_Backid+"'/>" +"</td>" + 
+										tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '" + $('#pack').val() + "-" + item_Backid + "'/>" +"</td>" + 
 														"<td>" + item_Frontid + "</td>"  + 
 														"<td>" + item_size + "</td>" +
 														"<td>" + item_modeltype + "</td>" + 
