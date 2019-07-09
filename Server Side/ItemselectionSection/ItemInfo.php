@@ -130,7 +130,7 @@
 										<td class="editcol"><?= $curr_item_pur_date?></td>
 								</tr>
 								<tr>
-									<th>Purchase Price:</th>
+									<th>Purchase Price/Deposit:</th>
 										<td class="editcol"><?= $curr_item_pur_price?></td>
 								</tr>
 								<tr>

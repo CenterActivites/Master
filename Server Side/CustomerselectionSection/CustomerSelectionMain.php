@@ -3,6 +3,8 @@
 	//	will go to
 	function CustomerSelection()
 	{
+		//Connecting to the Database
+		$conn = hsu_conn_sess();
 ?>
 <html>
 <head>
@@ -16,6 +18,25 @@
 	if($_SESSION["itemReturn"] == "Yes")
 	{
 ?>
+		<label for="rent_location"> Location: </label>
+		<select name="location" id="location">
+<?php
+		foreach($conn->query("SELECT loc_name, loc_id
+								FROM Location") as $row)
+		{
+			$selected = "";
+			if($row['loc_id'] == '1')
+			{
+				$selected = "selected";
+			}
+?>
+			<option value="<?= $row['loc_id'] ?>" <?= $selected ?>>
+				<?= $row['loc_name'] ?>
+			</option>
+<?php
+		}
+?>
+		</select>
 		<div id="pageHeader" style="font-size: 35px; text-align: center;"> Rental Return </div>
 <?php
 	}
@@ -27,10 +48,6 @@
 	}
 ?>
 <div>
-<?php
-		//Connecting to the Database
-		$conn = hsu_conn_sess();
- ?>
 		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id='button' >
 			<fieldset style="border:none">
 				<fieldset id='fieldset_label' style="background-color: #D3D3D3;">
@@ -60,7 +77,7 @@
 								</tr>
 							</thead>
 							<!-- The body of the table. Basically where all the customer's information is going to be -->
-							<tbody>
+							<tbody id="empty">
 
 <?php
 								//Again since both Item Return and Customer section both uses this page, we have to make sure the correct data is going to the correct section
@@ -103,7 +120,10 @@
 									//The customer's id, first and last name, phone number, e-mail, and the due date for the rentals
 									foreach($conn->query("SELECT b.cust_id, f_name, l_name, c_phone, c_email, due_date
 															FROM Customer a, Rental b
-															WHERE a.cust_id = b.cust_id and b.pick_up_date IS NOT NULL and b.return_date is NULL
+															WHERE a.cust_id = b.cust_id and 
+																	b.pick_up_date IS NOT NULL and 
+																	b.return_date is NULL and 
+																	b.loc_id = 1
 															GROUP BY b.cust_id
 															ORDER BY due_date, l_name, f_name") as $row)
 									{
@@ -127,7 +147,7 @@
 										
 										//The following two lines is for formatting reasons. Basically to make the date we get from the database more readable for users
 										$curr_due_date = strtotime($curr_due_date);
-										$curr_due_date = date('M d, Y', $curr_due_date);
+										$curr_due_date = date('m/d/Y', $curr_due_date);
 ?>
 										<!-- Placing the data into their correct columns -->
 										<tr>
@@ -191,9 +211,9 @@
 					</br>
 					<div id='input_dates' name='input_dates' style='display: block;'>
 						<!-- The "Pick up" and "Return" date inputs. Have it where users can not select past dates for rentals   min="<?php //echo date('Y-m-d'); ?>"-->
-						Pick up Date: <input type = "date" name = "pickUpDate" id = "pickUpDate" min="<?php echo date('Y-m-d'); ?>"/>
+						Pick up Date: <input type = "date" name = "pickUpDate" id = "pickUpDate" />
 						&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-						Return Date: <input type = "date" name = "returnDate" id = "returnDate" min="<?php echo date('Y-m-d'); ?>"/>
+						Return Date: <input type = "date" name = "returnDate" id = "returnDate" />
 					</div>
 					</br>
 					<input type="submit" name="on_to_rental" id="on_to_rental" value="Continue" /><br />
@@ -249,7 +269,7 @@
 	<script type="text/javascript">
 		function is_blank(){
 			if(document.getElementById('cust_id').value.length == 0){
-				alert("please select a customer");
+				alert("Please select a customer");
 				return false;
 			}
 		}
@@ -258,36 +278,22 @@
 	<!-- Function for saving the selected customer's id to the hidden input "cust_id" -->
 	<script type="text/javascript">
 	$(document).ready(function(){
-		$("#table_div").click(function(){
+		$("#table_div").on('click', 'table tr', function(){
+			
+			$(this).find('td input:radio').prop('checked',true);
+			
 			$('input[type="radio"]:checked').each(function(){
 				var box_value = $(this).val();
 				$('#cust_id').val(box_value);
 				console.log($('#cust_id').val());
 			});
+			
+			$("#cust_table_info tr").removeClass("highlight");
+			$(this).addClass("highlight");
 		});
 	});
 	</script>
-
-	<script type="text/javascript">
-	//this script goes off when a table row is clicked it checks the radio button
-		$(document).ready(function(){
-			$("#cust_table_info tr").click(function(){
-					$(this).find('td input:radio').prop('checked',true);
-				});
-			});
-	</script>
-
-	<script type = "text/javascript">
-		// this script calls a CSS class called .highlight in the CSS file
-		// So that when a click happens It hightlights the row letting the user know that they've selected it.
-		$(document).ready(function(){
-			$("#cust_table_info tr").click(function(){
-				$("#cust_table_info tr").removeClass("highlight");
-				$(this).addClass("highlight");
-			});
-		});
-	</script>
-
+	
 	<!-- Search functionally for the Customer table -->
 	<script type="text/javascript">
 		$(function ()
@@ -422,6 +428,76 @@
 					document.getElementById("input_dates").style.display = "none"; 
 					
 				}
+			});
+		});
+	</script>
+	
+	<!--  -->
+	<script type="text/javascript">
+		$(function() 
+		{
+			$('#location').change(function() //Starts the script when the user select a package from the package selection field
+			{
+				$.ajax(
+				{
+					url: "../ItemTranSection/Location_Rental_Return_helper.php", //The file where the php select query is at
+					type: "post",
+					data: 
+					{
+						'loc_id': $(this).val() //assigning the value of the selected package to "pack_value"
+					},
+					success: function(data) //When the AJAX call is successful, the script does the following
+					{
+						var json_object = JSON.parse(data); //Grabs the data that is in JSON format and parse it so it is usable
+						
+						$('#empty').empty();
+						
+						var late_empty = document.getElementById('empty');
+						
+						if(json_object.length != 0)
+						{
+							for(var i = 0; i < json_object.length; i++)
+							{
+								var obj = json_object[i]; //First it grabs the current item in the data
+							
+								//Sets all the item data to its corresponding fields
+								cust_id = obj['cust_id'];
+								f_name = obj['f_name'];
+								l_name = obj['l_name'];
+								c_phone = obj['c_phone'];
+								c_email = obj['c_email'];
+								due_date = obj['due_date'];
+								
+								due_date = due_date.split("-");
+								
+								due_date = due_date[1] + "/" + due_date[2] + "/" +due_date[0];
+								
+								//Create a tr tag
+								var tr = document.createElement('tr');
+								
+								//Populate the tr tag
+								tr.innerHTML = "<td id='hide_me'><input id ='radio_in' type='radio'  name='item_id[]' value=" + cust_id + "></input></td>" + 
+												"<td>" + f_name + "</td>" + 
+												"<td>" + l_name + "</td>" + 
+												"<td>" + c_email + "</td>" + 
+												"<td>" + c_phone + "</td>"  + 
+												"<td>" + due_date + "</td>" ;
+								
+								//Add the tr tag to the tbody of the item selection list
+								late_empty.appendChild(tr);
+							}
+						}
+						else
+						{
+							//Create a tr tag
+							var tr = document.createElement('tr');
+							tr.innerHTML = "<td colspan='5'> No Rentals </td>";
+								
+							//Add the tr tag to the tbody of the item selection list
+							late_empty.appendChild(tr);
+						}
+					}
+				});
 			});
 		});
 	</script>

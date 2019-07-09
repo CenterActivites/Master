@@ -135,7 +135,7 @@
 						//Changes the input field's 'id', 'name', and 'maxlength'
 						id_input_field.setAttribute("id", "drive_id");
 						id_input_field.setAttribute("name", "drive_id");
-						id_input_field.setAttribute("maxlength", "8");
+						id_input_field.setAttribute("maxlength", "12");
 					}
 				});
 			});

@@ -142,7 +142,7 @@ foreach($conn->query("SELECT stat_id, loc_name, pur_price, ven_id, dbw_own, pur_
 					
 					<tr>
 						<td>
-							<label>Purchase Price</label></br>
+							<label>Purchase Price/Deposit</label></br>
 							<input type = "text" name = "curr_item_pur_price" id = "curr_item_pur_price" value ="<?=$curr_item_pur_price ?>" />
 						</td>
 						<td>

@@ -117,9 +117,9 @@
 			{
 				//We see if a certain amount of days can be substract from the $diff. 
 				//If yes that we add 1 to the correct correlating placeholder. We do this until $diff is 0
-				if($diff - 7 >= 0) //We set week to be 7-5 days long
+				if($diff - 8 >= 0) //We set week to be 7-5 days long
 				{
-					$diff = $diff - 7;
+					$diff = $diff - 8;
 					$weeks++;
 				}
 				elseif($diff - 6 >= 0)
