@@ -160,6 +160,7 @@
 					$on_site_check = $_SESSION['on_site'];
 					$tax_amount = $_POST['tax_amount'];
 					$total_price_with_tax = $_SESSION['total_price_with_tax'];
+					$total_deposit = $_SESSION['total_deposit'];
 					$loc_id = $_SESSION['loc'];
 					if($on_site_check == NULL)
 					{
@@ -224,6 +225,7 @@
 												<th>Item: </th>
 												<th class="text-center">Id#: </th>
 												<th class="text-center">Price</th>
+												<th class="text-center">Deposit</th>
 											</tr>
 										</thead>
 										<tbody>
@@ -244,7 +246,7 @@
 															<td class="col-md-6"><em> <?= $item['name'] ?> </em></h4></td>
 															<td class="col-md-1 text-center"> <?= $item['id'] ?> </td>
 															<td class="col-md-1 text-center"> $<?= $item['price'] ?> </td>
-															<td></td>
+															<td class="col-md-1 text-center"> $<?= $item['deposit'] ?> </td>
 														</tr>
 <?php
 													}
@@ -259,7 +261,7 @@
 															<td class="col-md-6"><em> <?= $item['name'] ?> </em></h4></td>
 															<td class="col-md-1 text-center"> <?= $item['id'] ?> </td>
 															<td class="col-md-1 text-center"> $0 </td>
-															<td></td>
+															<td class="col-md-1 text-center"> $<?= $item['deposit'] ?> </td>
 														</tr>
 <?php
 													}
@@ -270,7 +272,7 @@
 															<td class="col-md-6"><em> <?= $item['name'] ?> </em></h4></td>
 															<td class="col-md-1 text-center"> <?= $item['id'] ?> </td>
 															<td class="col-md-1 text-center"> $<?= $item['price'] ?> </td>
-															<td></td>
+															<td class="col-md-1 text-center"> $<?= $item['deposit'] ?> </td>
 														</tr>
 <?php
 													}
@@ -312,6 +314,14 @@
 												<td></td>
 												<td class="text-right"><h4><strong>Total:</strong></h4></td>
 												<td class="text-center text-danger"><h4><strong>$<?= $total_price_with_tax ?></strong></h4></td>
+											
+												<td class="text-right">
+													<p>
+														<h4>
+															<strong class="text-center text-danger">$<?= $total_deposit ?></strong>
+														</h4>
+													</p>
+												</td>
 											</tr>
 										</tbody>
 									</table>

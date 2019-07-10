@@ -61,8 +61,10 @@
 		
 		//Saving the total price of rental, the array of prices for each item, and the total price with tax for receipt page
 		$_SESSION['receipt_prices'] = $calcuated['receipt_prices'];
+		$_SESSION['total_deposit'] = $calcuated['total_deposit'];
 		
 		$sub_total = $calcuated['total_price'];
+		$total_deposit = $calcuated['total_deposit'];
 	}
 	else
 	{
@@ -134,8 +136,8 @@
 					Deposit Amount:
 				</th>
 				<td>
-					<!-- TODO:: Once we get the deposit information we need from Susan or Bridget, we will do the calculations to display the deposit -->
-					<output name="deposit" for="deposit"></output>
+					<!-- Prints out the total deposit for the rental -->
+					<input type="text" name="total_deposit"  id="total_deposit" value="<?= $total_deposit ?>" readonly />
 				</td>
 			</tr>
 			
@@ -203,7 +205,7 @@
 		<!-- Comments section for any comments about the transaction or items condition -->
 		&nbsp;&nbsp;&nbsp;&nbsp;
 		<label for="comments"> Comments: </label>
-		<textarea name="comments" id="comments" rows="2" cols="50"></textarea> 
+			<textarea name="comments" id="comments" rows="2" cols="50"></textarea> 
 		</br>
 		
 		<div>
