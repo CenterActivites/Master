@@ -16,7 +16,6 @@
 		$rent_id = $_REQUEST['trans_id'];
 		
 		//Checks if the pack_value is 0, if is then user just want all items. 
-		$int_cust_id = (int)$cust_id;
 		$int_rent_id = (int)$rent_id;
 		
 		$transaction = $connctn->prepare("SELECT note, empl_fname, empl_lname

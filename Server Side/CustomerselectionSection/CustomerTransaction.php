@@ -14,7 +14,7 @@
 			<div>
 				<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
 					<fieldset style="border: none;">
-						<legend style="font-size: 20px;"> All Rentals: </legend>
+						<legend style="font-size: 20px;"> Rentals TimeStamp: </legend>
 							<!-- TimeStamp Select Table -->
 							<select name="time_stamp_select" id="time_stamp_select" size="6" class="time_stamp_select">
 <?php
