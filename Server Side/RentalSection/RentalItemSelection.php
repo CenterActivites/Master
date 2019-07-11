@@ -128,7 +128,11 @@
 						//Query for item selection with Items status 'Ready'
 						foreach($conn->query("SELECT item_Backid, inv_name, item_size, item_Frontid, item_modeltype
 												FROM Item a, Inventory c, Status b
-												WHERE a.inv_id = c.inv_id and a.stat_id = b.stat_id and a.loc_id = " . $curr_loc . " and (a.stat_id = 1 or a.stat_id = 7)
+												WHERE a.inv_id = c.inv_id and 
+														a.stat_id = b.stat_id and 
+														a.loc_id = " . $curr_loc . " and 
+														a.public = 1 and
+														(a.stat_id = 1 or a.stat_id = 7)
 												ORDER BY inv_name, item_modeltype, item_Backid") as $row)
 						{
 							//Check if the selected customer is a student or not.
