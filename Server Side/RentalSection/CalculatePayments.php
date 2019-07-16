@@ -216,11 +216,13 @@
 				<input type="hidden" name="sub_total_price" id="sub_total_price" value="<?= $sub_total  ?>"/>
 				
 				<!-- Input button that will take users either to the receipt page or back to the customer selection  -->
-				<input type="submit" name="finalize" id="finalize" value="Finalize" />
+				<input type="submit" name="finalize_submit" id="finalize_submit" style="visibility: hidden;"/>
 				&nbsp;&nbsp;
 				<input type="submit" name="cancelFinal" id="cancelFinal" value="Cancel" />
-			</fieldset>
 	</form>
+			
+				<input type="button" name="finalize" id="finalize" value="Finalize"/>
+			</fieldset>
 		</div>
 </body>
 
@@ -254,6 +256,59 @@
 			{
 				document.getElementById('subtotalCost').readOnly = false;
 			});
+			
+			$("#finalize").click(function()
+			{
+				console.log('Finalize was clicked');
+				var empl_status = <?php echo json_encode($empl_status); ?>;
+				if($('#totalCost').val() == "0")
+				{
+					var user_name = window.prompt("Superviser's Username", "");
+					var password = window.prompt("Superviser's Password", "");
+					$.ajax(
+					{
+						url: "../RentalSection/superviser_approve.php", //The file where the php select query is at
+						type: "post",
+						data: 
+						{
+							'user_name': user_name, //assigning the value of the selected package to "pack_value"
+							'password' : password
+						},
+						success: function(data) //When the AJAX call is successful, the script does the following
+						{
+							console.log('Data: ' + data);
+							var approval = JSON.parse(data); //Grabs the data that is in JSON format and parse it so it is usable
+							if(approval == null)
+							{
+								console.log('Bad user and pass');
+								alert("Username and Password entered was incorrect");
+								return false;
+							}
+							else
+							{
+								if(approval >= 3)
+								{
+									
+									console.log('approve');
+									$('#finalize_submit').click();
+								}
+								else
+								{
+									
+									console.log('not approve');
+									alert("User does not have sufficient permission to complete this rental ");
+									return false;
+								}
+							}
+						}
+					});
+				}
+				else
+				{
+					$('#finalize_submit').click();
+				}
+			});
+			
 			
 		});
 	</script>
