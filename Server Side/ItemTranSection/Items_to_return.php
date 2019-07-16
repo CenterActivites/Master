@@ -23,20 +23,21 @@
 			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date, item_modeltype
 									FROM Inventory a, Item b, Rental c, CheckOut d
 									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rent_id = c.rent_id
-									and c.cust_id = :a and c.return_date is NULL");
+									and c.cust_id = :a and c.return_date is NULL and c.rental_status = 'On-Going'");
 			$items->bindValue(':a', $cust_id, PDO::PARAM_INT);
 			$items->execute();
 			$display_array = $items->fetchAll();
 		
-			/*$comments = $connctn->prepare("SELECT note, empl_fname, empl_lname
+			$comments = $connctn->prepare("SELECT note, empl_fname, empl_lname
 												FROM Notes a, Employee b, Rental c, NotesRental d
 												WHERE a.empl_id = b.empl_id and 
 														a.note_id = d.note_id and 
 														c.rent_id = d.rent_id and 
-														c.rent_id = :z"); 
-			$comments->bindValue(':z', $rent_id, PDO::PARAM_INT);
+														c.rental_status = 'On-Going' and
+														c.cust_id = :a"); 
+			$comments->bindValue(':a', $cust_id, PDO::PARAM_INT);
 			$comments->execute();
-			$comments = $comments->fetchAll();*/
+			$comments = $comments->fetchAll();
 			
 			if($comments[0]['note'] == null || $comments[0]['note'] == "")
 			{
@@ -152,6 +153,7 @@
 						
 						$('#item_table').find('input[type="checkbox"]:not:checked').each(function () 
 						{
+							console.log('There was an item not selected');
 							$("#item_leftover").val('1');
 						});
 						

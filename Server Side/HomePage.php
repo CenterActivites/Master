@@ -65,7 +65,7 @@
 									$current_date = date("Y-m-d");
 									
 									//"Due rental" query
-									$select_item = $conn->prepare("SELECT b.cust_id, f_name, l_name, c_phone,c_email, due_date
+									$select_item = $conn->prepare("SELECT b.cust_id, f_name, l_name, c_phone,c_email, due_date, rent_id
 																		FROM Customer a, Rental b
 																		WHERE a.cust_id = b.cust_id and 
 																				b.pick_up_date IS NOT NULL and 
@@ -73,7 +73,7 @@
 																				b.due_date < :a and 
 																				b.rental_status = 'On-Going' and 
 																				b.loc_id = 1
-																		GROUP BY b.cust_id
+																		GROUP BY due_date
 																		ORDER BY due_date");
 									$select_item->bindValue(':a', $current_date, PDO::PARAM_STR);
 									$select_item->execute();

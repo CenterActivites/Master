@@ -124,7 +124,7 @@
 																	b.pick_up_date IS NOT NULL and 
 																	b.return_date is NULL and 
 																	b.loc_id = 1
-															GROUP BY b.cust_id
+															GROUP BY due_date
 															ORDER BY due_date, l_name, f_name") as $row)
 									{
 										$curr_f_name = $row["f_name"]; //each row is a object that has a f_name, l_name, and a cust_id

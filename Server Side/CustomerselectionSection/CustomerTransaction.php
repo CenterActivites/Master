@@ -28,7 +28,7 @@
 								$trans = $connctn->prepare("SELECT rent_id, request_date, due_date
 															FROM Rental
 															WHERE cust_id = :a
-															ORDER BY request_date desc");
+															ORDER BY request_date DESC, rent_id DESC");
 															
 								$trans->bindValue(':a', $cust_id, PDO::PARAM_INT);
 								$trans->execute();
