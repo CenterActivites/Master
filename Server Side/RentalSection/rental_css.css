@@ -153,8 +153,8 @@ table ,tr td{
   font-size: 30px;
 }
 
-input[type=text]{
-    width:40%;
+#searchItem{
+    width:60%;
     padding: 12px 20px;
     margin: 8px 0;
     display: inline-block;
@@ -166,6 +166,18 @@ input[type=text]{
     text-align: center;
     vertical-align:top;
     display: table-cell;
+}
+
+#subtotalCost, #tax_input, #total_deposit{
+    width:50%;
+    font-family: "Times New Roman", Times, serif;
+    font-size: 16px;
+    text-align: center;
+    vertical-align:top;
+    display: table-cell;
+	background-color:transparent;
+	border-width:0px;
+	border:none;
 }
 
 #div_for_package_select{
@@ -185,6 +197,12 @@ input[type=text]{
 	padding:10px; 
 	margin:-5px -20px -5px -5px;
 	max-height:200px;
+}
+
+#totalCost
+{
+	font-size:20px;
+	font-weight: bold;
 }
 
 

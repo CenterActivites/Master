@@ -20,13 +20,38 @@
 			$connctn = hsu_conn_sess();
 			
 			//Does a mysql select to the database to grab item front id, name, back id, and the due date of the item
-			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date
+			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date, item_modeltype
 									FROM Inventory a, Item b, Rental c, CheckOut d
 									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rent_id = c.rent_id
-									and c.cust_id = :a and c.return_date is NULL");
+									and c.cust_id = :a and c.return_date is NULL and c.rental_status = 'On-Going'");
 			$items->bindValue(':a', $cust_id, PDO::PARAM_INT);
 			$items->execute();
 			$display_array = $items->fetchAll();
+		
+			$comments = $connctn->prepare("SELECT note, empl_fname, empl_lname
+												FROM Notes a, Employee b, Rental c, NotesRental d
+												WHERE a.empl_id = b.empl_id and 
+														a.note_id = d.note_id and 
+														c.rent_id = d.rent_id and 
+														c.rental_status = 'On-Going' and
+														c.cust_id = :a"); 
+			$comments->bindValue(':a', $cust_id, PDO::PARAM_INT);
+			$comments->execute();
+			$comments = $comments->fetchAll();
+			
+			if($comments[0]['note'] == null || $comments[0]['note'] == "")
+			{
+				$comment_display = "Type Any Comments Here";
+			}
+			else
+			{
+				$comment_display = "";
+				foreach($comments as $comment)
+				{
+					$comment_display = $comment_display . $comment['note'] . " -- Made by " . $comment['empl_fname'] . " " . $comment['empl_lname'] . "                                       ";
+				}
+				$comment_display = $comment_display . "Type Any New Comments Here";
+			}
 			
 			//Grab the size of the data received from the database
 			$array_size = count($display_array);
@@ -39,6 +64,7 @@
 						<tr>
 							<th id='hide_me'></th>
 							<th> Item Name: </th>
+							<th> Item Model/Brand: </th>
 							<th> Item Id: </th>
 							<th> Due Date: </th>
 						</tr>
@@ -52,6 +78,7 @@
 							<!-- Create a checkbox for each item and sets the item_Backid to the checkbox's value -->
 							<td id="hide_me"> <input type="checkbox" id="item_id" name="item_id[]" value="<?= $display_array[$i]['item_Backid'] ?>"></td>
 							<td> <?= $display_array[$i]['inv_name'] ?> </td>
+							<td> <?= $display_array[$i]['item_modeltype'] ?> </td>
 							<td> <?= $display_array[$i]['item_Frontid'] ?> </td>
 <?php
 							//Format the due date into a more readable format for the users
@@ -81,7 +108,8 @@
 					
 					<!-- Comments section for any comments about item conditions or anything at all -->
 					<label> Comments: </label>
-					<textarea name="comments" id="comments" rows="4" cols="50"></textarea> </br>
+					<textarea name="comments" id="comments" rows="4" cols="50" placeholder="<?= $comment_display ?>" ></textarea> 
+					</br>
 					
 					<!-- Following are 1 hidden input and 2 input buttons -->
 					<input type="hidden" name="item_to_be_return" id="item_to_be_return"  />  <!-- Hidden input tag keep track of which items are selected to be returned -->
@@ -125,6 +153,7 @@
 						
 						$('#item_table').find('input[type="checkbox"]:not:checked').each(function () 
 						{
+							console.log('There was an item not selected');
 							$("#item_leftover").val('1');
 						});
 						

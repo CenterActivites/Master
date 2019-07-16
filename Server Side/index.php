@@ -388,79 +388,96 @@
 						$items_leftover = $_POST["item_leftover"];
 						$rent_id = $_SESSION["rent_id"];
 						
-						$items_to_pick_up = explode(',', $item_to_pick_up); //Filtering throught the array/list. Dropping all empty spots
-						$_SESSION["item_array"] = $items_to_pick_up; //Enter the newly filtered array/list into SESSION
+						if($item_to_pick_up != null || $item_to_pick_up != "")
+						{
+							$items_to_pick_up = explode(',', $item_to_pick_up); //Filtering throught the array/list. Dropping all empty spots
+							$_SESSION["item_array"] = $items_to_pick_up; //Enter the newly filtered array/list into SESSION
 
-						//Grabbing customer id and the employee's id
-						$cust_id = $_SESSION["cust_id"];
-						$empl_id = $_SESSION["empl_id"];
-						$current_date = date('Y-m-d H:i:s');
-						
-						foreach($items_to_pick_up as $item_id)
-						{
-							//Insert statement for CheckOut
-							$insert = $conn->prepare("insert into CheckOut
-														(time_stamp, rent_id, item_Backid, empl_id)
-														values
-														(:a, :b, :c, :d)");
-							//Binding the vars along with their respected datatype
-							$insert->bindValue(':a', $current_date, PDO::PARAM_STR);
-							$insert->bindValue(':b', $rent_id, PDO::PARAM_INT);
-							$insert->bindValue(':c', $item_id, PDO::PARAM_INT);
-							$insert->bindValue(':d', $empl_id, PDO::PARAM_INT);
-							$insert->execute();
-							//print $insert -> errorCode();
-							//echo "\nPDO::errorInfo():\n";
-							//print_r($insert->errorInfo());
-
-							//Updating the status of the item to 'Check-out'.
-							//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, 'In Wash' = 9, and 'In Storage' = 10 (This is mostly for HBAC)
-							$update = $conn->prepare("update Item
-														set stat_id = 3
-														where item_Backid = :item_id");
-							$update->bindValue(':item_id', $item_id, PDO::PARAM_INT);
-							$update->execute(); //execute the query
-						}
-						
-						if($items_leftover == '0') 
-						{
-							$update = $conn->prepare("update Rental
-														set pick_up_date = :a
-														where rent_id = :b");
-							$update->bindValue(':a', $current_date, PDO::PARAM_INT);
-							$update->bindValue(':b', $rent_id, PDO::PARAM_INT);
-							$update->execute(); //execute the query
-						}
-						
-						//Insert statement for Notes to record any comments or notes to do with the transaction or items
-						if($comments != "" && $comments != NULL)
-						{
-							$empl_id = $_SESSION['empl_id'];
-							$date = date("Y-m-d h:i:s");
-							$insert = $conn->prepare("insert into Notes
-													(note, timestamp, empl_id)
-													values
-													(:a, :b, :c)");
-							//Binding the vars along with their respected datatype
-							$insert->bindValue(':a', $comments, PDO::PARAM_STR);
-							$insert->bindValue(':b', $date, PDO::PARAM_STR);
-							$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
-							$insert->execute();
-							$note_id = $conn->lastInsertId();
+							//Grabbing customer id and the employee's id
+							$cust_id = $_SESSION["cust_id"];
+							$empl_id = $_SESSION["empl_id"];
+							$current_date = date('Y-m-d H:i:s');
 							
-							$insert = $conn->prepare("insert into NotesRental
-													(note_id, rent_id)
-													values
-													(:a, :b)");
-							//Binding the vars along with their respected datatype
-							$insert->bindValue(':a', $note_id, PDO::PARAM_STR);
-							$insert->bindValue(':b', $rent_id, PDO::PARAM_STR);
-							$insert->execute();
-							$note_id = $conn->lastInsertId();
+							foreach($items_to_pick_up as $item_id)
+							{
+								//Insert statement for CheckOut
+								$insert = $conn->prepare("insert into CheckOut
+															(time_stamp, rent_id, item_Backid, empl_id)
+															values
+															(:a, :b, :c, :d)");
+								//Binding the vars along with their respected datatype
+								$insert->bindValue(':a', $current_date, PDO::PARAM_STR);
+								$insert->bindValue(':b', $rent_id, PDO::PARAM_INT);
+								$insert->bindValue(':c', $item_id, PDO::PARAM_INT);
+								$insert->bindValue(':d', $empl_id, PDO::PARAM_INT);
+								$insert->execute();
+								//print $insert -> errorCode();
+								//echo "\nPDO::errorInfo():\n";
+								//print_r($insert->errorInfo());
+
+								//Updating the status of the item to 'Check-out'.
+								//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, 'In Wash' = 9, and 'In Storage' = 10 (This is mostly for HBAC)
+								$update = $conn->prepare("update Item
+															set stat_id = 3
+															where item_Backid = :item_id");
+								$update->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+								$update->execute(); //execute the query
+							}
+							
+							if($items_leftover == '0') 
+							{
+								$update = $conn->prepare("update Rental
+															set pick_up_date = :a
+															where rent_id = :b");
+								$update->bindValue(':a', $current_date, PDO::PARAM_INT);
+								$update->bindValue(':b', $rent_id, PDO::PARAM_INT);
+								$update->execute(); //execute the query
+							}
+							
+							//Insert statement for Notes to record any comments or notes to do with the transaction or items
+							if($comments != "" && $comments != NULL)
+							{
+								$empl_id = $_SESSION['empl_id'];
+								$date = date("Y-m-d h:i:s");
+								$insert = $conn->prepare("insert into Notes
+														(note, timestamp, empl_id)
+														values
+														(:a, :b, :c)");
+								//Binding the vars along with their respected datatype
+								$insert->bindValue(':a', $comments, PDO::PARAM_STR);
+								$insert->bindValue(':b', $date, PDO::PARAM_STR);
+								$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
+								$insert->execute();
+								//echo "Error In Insert to Notes: ";
+								//print $insert -> errorCode();
+								//echo "\nPDO::errorInfo():\n";
+								//print_r($insert->errorInfo());
+								//echo "</br> </br>";
+								$note_id = $conn->lastInsertId();
+								
+								$insert = $conn->prepare("insert into NotesRental
+														(note_id, rent_id)
+														values
+														(:a, :b)");
+								//Binding the vars along with their respected datatype
+								$insert->bindValue(':a', $note_id, PDO::PARAM_STR);
+								$insert->bindValue(':b', $rent_id, PDO::PARAM_STR);
+								$insert->execute();
+								echo "Error In Insert to Notes: ";
+								print $insert -> errorCode();
+								echo "\nPDO::errorInfo():\n";
+								print_r($insert->errorInfo());
+								echo "</br> </br>";
+								$note_id = $conn->lastInsertId();
+							}
+							
+							//Remember to always to disconnect the database connection
+							$conn = null;
 						}
-						
-						//Remember to always to disconnect the database connection
-						$conn = null;
+						else
+						{
+							echo"Error:: Item array was not detected";
+						}
 					}
 					
 					HomePage();
@@ -698,7 +715,7 @@
 				}
 				elseif(isset($_POST["select"]) or isset($_POST["cancelOnReceipt"])) //After finding the customer, the "select" button push the user onto the next page
 																					//which is the item check-in page where the user will select which item they are returning today
-																					//Also when the cancel button on the Receipt page is press, the screen will move back to the item check-in																	   //part of the return section
+																					//Also when the cancel button on the Receipt page is press, the screen will move back to the item check-in
 				{
 					//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
 					$_SESSION['refreshed'] = "none";
@@ -714,6 +731,10 @@
 						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
 						$_SESSION['refreshed'] = "Checkin";
 						$items_leftover = $_POST["item_leftover"];
+						
+						echo"item_leftover: ";
+						var_dump($items_leftover);
+						echo"</br>" . "</br>";
 						
 						//Connecting to the Database
 						$conn = hsu_conn_sess();
@@ -783,10 +804,11 @@
 						//Insert statement for Notes to record any comments or notes to do with the transaction or items
 						if($comments != "" && $comments != NULL)
 						{
+							echo "There are comments" . "</br>";
 							$empl_id = $_SESSION['empl_id'];
 							$date = date("Y-m-d h:i:s");
 							$insert = $conn->prepare("insert into Notes
-													(note, timestamp)
+													(note, timestamp, empl_id)
 													values
 													(:a, :b, :c)");
 							//Binding the vars along with their respected datatype
@@ -794,6 +816,11 @@
 							$insert->bindValue(':b', $date, PDO::PARAM_STR);
 							$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
 							$insert->execute();
+							//echo "Error In Insert to Notes: ";
+							//print $insert -> errorCode();
+							//echo "\nPDO::errorInfo():\n";
+							//print_r($insert->errorInfo());
+							//echo "</br> </br>";
 							$note_id = $conn->lastInsertId();
 							
 							$insert = $conn->prepare("insert into NotesRental
@@ -804,6 +831,11 @@
 							$insert->bindValue(':a', $note_id, PDO::PARAM_INT);
 							$insert->bindValue(':b', $rent_id, PDO::PARAM_INT);
 							$insert->execute();
+							//echo "Error In Insert to NotesRental: ";
+							//print $insert -> errorCode();
+							//echo "\nPDO::errorInfo():\n";
+							//print_r($insert->errorInfo());
+							//echo "</br> </br>";
 							$note_id = $conn->lastInsertId();
 						}
 						
@@ -1459,7 +1491,7 @@
 				{
 					CustomerSelection(); //Pulls up the rental section customer select page
 				}
-				elseif(isset($_POST["finalize"])) //Finalize button. Pushes users to the receipt for printing purposes.
+				elseif(isset($_POST["finalize_submit"])) //Finalize button. Pushes users to the receipt for printing purposes.
 				{
 					//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
 					if($_SESSION['refreshed'] != "finalize")
@@ -1490,6 +1522,7 @@
 						$due_date = $_SESSION['due_date'];
 						$sel_cust = $_SESSION['sel_user'];
 						$total_price = $_POST['total_price_with_tax'];
+						$total_deposit = $_POST['total_deposit'];
 						
 						//Formatting the both request and due dates into the mysql format which is YYYY-MM-DD
 						$sql_request_date = date('Y-m-d', strtotime($request_date));
@@ -1499,6 +1532,7 @@
 						
 						$_SESSION['sub_total_price'] = $sub_total_price;
 						$_SESSION['total_price_with_tax'] = $total_price;
+						$_SESSION['total_deposit'] = $total_deposit;
 						
 						//The following "if" statement sees if the request date is the current date. If so then the customer probably is picking up the item right there and then.
 						//So if then the code will have to insert the current date instead of NULL as it usually is for a future date
@@ -1517,9 +1551,9 @@
 						
 						//Insert statement for Item Reservation
 						$insert = $conn->prepare("insert into Rental
-													(request_date, due_date, pick_up_date, return_date, sub_total_cost, total_cost, rental_status, cust_id, loc_id)
+													(request_date, due_date, pick_up_date, return_date, sub_total_cost, total_cost, deposit, rental_status, cust_id, loc_id)
 													values
-													(:sql_request_date, :sql_due_date" . $sql . ", NULL, :sub_total_cost, :total_cost, 'On-Going',:cust_id, :loc_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
+													(:sql_request_date, :sql_due_date" . $sql . ", NULL, :sub_total_cost, :total_cost, :deposit, 'On-Going',:cust_id, :loc_id)"); //Remember to added in the quotes for the dates or result of the insert will look like "0000-00-00" on dates
 						//Binding the vars along with their respected datatype
 						$insert->bindValue(':sql_request_date', $sql_request_date, PDO::PARAM_STR);
 						$insert->bindValue(':sql_due_date', $sql_due_date, PDO::PARAM_STR);
@@ -1527,8 +1561,9 @@
 						{
 							$insert->bindValue(':curr_date', $current_date, PDO::PARAM_STR);
 						}
-						$insert->bindValue(':sub_total_cost', $sub_total_price, PDO::PARAM_STR);
-						$insert->bindValue(':total_cost', $total_price, PDO::PARAM_STR);
+						$insert->bindValue(':sub_total_cost', $sub_total_price, PDO::PARAM_INT);
+						$insert->bindValue(':total_cost', $total_price, PDO::PARAM_INT);
+						$insert->bindValue(':deposit', $total_deposit, PDO::PARAM_INT);
 						$insert->bindValue(':cust_id', $sel_cust, PDO::PARAM_INT);
 						$insert->bindValue(':loc_id', $loc_id, PDO::PARAM_INT);
 						$insert->execute();
@@ -1540,66 +1575,71 @@
 						//echo "</br>";
 						$rent_id = $conn->lastInsertId();
 						
-						//Start of the FOR loop to insert all the selected items into the Reserve1 and maybe CheckOut if the cust is picking up today
-						foreach($array_of_items as $item_id)
+						if($rent_id != null || $rent_id != "")
 						{
-							$item_id = explode('-', $item_id); //First we grab the item string, and explode it into a array of ints
-							$item_id = $item_id[1];
-							
-							//Insert statement for ItemReserve
-							$insert = $conn->prepare("insert into Reserve1
-														(cost_at_time, rent_id, item_Backid, empl_id)
-														values
-														(:a, :b, :c, :d)");
-							$insert->bindValue(':a', $receipt_prices[$item_id]['price'], PDO::PARAM_INT);
-							$insert->bindValue(':b', $rent_id, PDO::PARAM_INT);
-							$insert->bindValue(':c', $item_id, PDO::PARAM_INT);
-							$insert->bindValue(':d', $_SESSION['empl_id'], PDO::PARAM_INT);
-							$insert->execute();
-							//print "Insert to Reserve: ";
-							//echo "\nPDO::errorInfo():\n";
-							//print_r($insert->errorInfo());
-							//echo "</br>";
-						
-							//If request_date is the same as the current date, then that means that the customer is picking up the item that day
-							//We then will change the chosen item's status to 3 which is "Check-out"
-							if($_SESSION['request_date'] <= $curr_date)
+							//Start of the FOR loop to insert all the selected items into the Reserve1 and maybe CheckOut if the cust is picking up today
+							foreach($array_of_items as $item_id)
 							{
-								//Setting up the update query
-								//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, 'In Wash' = 9, and 'In Storage' = 10 (This is mostly for HBAC)
-								//Insert statement for Checkout
-								$insert = $conn->prepare("insert into CheckOut
-															(time_stamp, rent_id, item_Backid, empl_id)
+								$item_id = explode('-', $item_id); //First we grab the item string, and explode it into a array of ints
+								$item_id = $item_id[1];
+								
+								//Insert statement for ItemReserve
+								$insert = $conn->prepare("insert into Reserve1
+															(cost_at_time, deposit_at_time, rent_id, item_Backid, empl_id)
 															values
-															(:a, :b, :c, :d)");
-								$insert->bindValue(':a', $curr_date, PDO::PARAM_INT);
-								$insert->bindValue(':b', $rent_id, PDO::PARAM_INT);
-								$insert->bindValue(':c', $item_id, PDO::PARAM_INT);
-								$insert->bindValue(':d', $_SESSION['empl_id'], PDO::PARAM_INT);
+															(:a, :b, :c, :d, :e)");
+								$insert->bindValue(':a', $receipt_prices[$item_id]['price'], PDO::PARAM_INT);
+								$insert->bindValue(':b', $receipt_prices[$item_id]['deposit'], PDO::PARAM_INT);
+								$insert->bindValue(':c', $rent_id, PDO::PARAM_INT);
+								$insert->bindValue(':d', $item_id, PDO::PARAM_INT);
+								$insert->bindValue(':e', $_SESSION['empl_id'], PDO::PARAM_INT);
 								$insert->execute();
-							}
+								//print "Insert to Reserve: ";
+								//echo "\nPDO::errorInfo():\n";
+								//print_r($insert->errorInfo());
+								//echo "</br>";
 							
-							//Here we make sure the right status change on the item that been selected to be checkout or reserved for the future.
-							if($_SESSION['request_date'] > $curr_date)
-							{
-								//Setting up the update query
-								//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, 'In Wash' = 9, and 'In Storage' = 10 (This is mostly for HBAC)
-								$update = $conn->prepare("update Item
-											set stat_id = 7
-											where item_Backid = :item_id");
-								$update->bindValue(':item_id', (int)$item_id, PDO::PARAM_INT);
-								$update->execute(); //execute the query
+								//If request_date is the same as the current date, then that means that the customer is picking up the item that day
+								//We then will change the chosen item's status to 3 which is "Check-out"
+								if($_SESSION['request_date'] <= $curr_date)
+								{
+									//Setting up the update query
+									//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, 'In Wash' = 9, and 'In Storage' = 10 (This is mostly for HBAC)
+									//Insert statement for Checkout
+									$insert = $conn->prepare("insert into CheckOut
+																(time_stamp, rent_id, item_Backid, empl_id)
+																values
+																(:a, :b, :c, :d)");
+									$insert->bindValue(':a', $curr_date, PDO::PARAM_INT);
+									$insert->bindValue(':b', $rent_id, PDO::PARAM_INT);
+									$insert->bindValue(':c', $item_id, PDO::PARAM_INT);
+									$insert->bindValue(':d', $_SESSION['empl_id'], PDO::PARAM_INT);
+									$insert->execute();
+								}
+								
+								//Here we make sure the right status change on the item that been selected to be checkout or reserved for the future.
+								if($_SESSION['request_date'] > $curr_date)
+								{
+									//Setting up the update query
+									//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, 'In Wash' = 9, and 'In Storage' = 10 (This is mostly for HBAC)
+									$update = $conn->prepare("update Item
+												set stat_id = 7
+												where item_Backid = :item_id");
+									$update->bindValue(':item_id', (int)$item_id, PDO::PARAM_INT);
+									$update->execute(); //execute the query
+								}
+								else
+								{
+									//Setting up the update query
+									//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, 'In Wash' = 9, and 'In Storage' = 10 (This is mostly for HBAC)
+									$update = $conn->prepare("update Item
+												set stat_id = 3
+												where item_Backid = :item_id");
+									$update->bindValue(':item_id', (int)$item_id, PDO::PARAM_INT);
+									$update->execute(); //execute the query
+								}
 							}
-							else
-							{
-								//Setting up the update query
-								//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, 'In Wash' = 9, and 'In Storage' = 10 (This is mostly for HBAC)
-								$update = $conn->prepare("update Item
-											set stat_id = 3
-											where item_Backid = :item_id");
-								$update->bindValue(':item_id', (int)$item_id, PDO::PARAM_INT);
-								$update->execute(); //execute the query
-							}
+
 						}
 						
 						//Insert statement for Notes to record any comments or notes to do with the transaction or items
@@ -1608,7 +1648,7 @@
 							$empl_id = $_SESSION['empl_id'];
 							$date = date("Y-m-d h:i:s");
 							$insert = $conn->prepare("insert into Notes
-													(note, timestamp)
+													(note, timestamp, empl_id)
 													values
 													(:a, :b, :c)");
 							//Binding the vars along with their respected datatype

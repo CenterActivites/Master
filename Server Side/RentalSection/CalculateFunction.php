@@ -117,9 +117,14 @@
 			{
 				//We see if a certain amount of days can be substract from the $diff. 
 				//If yes that we add 1 to the correct correlating placeholder. We do this until $diff is 0
-				if($diff - 8 >= 0) //We set week to be 7-5 days long
+				if($diff - 8 >= 0) //We set week to be 8-5 days long
 				{
 					$diff = $diff - 8;
+					$weeks++;
+				}
+				elseif($diff - 7 >= 0)
+				{
+					$diff = $diff - 7;
 					$weeks++;
 				}
 				elseif($diff - 6 >= 0)
@@ -160,6 +165,7 @@
 			
 			$receipt_prices = array(); //Here is where we going to be saving all the prices for the receipt
 			$total_price = 0; //Here is where we are going to be storing the total price of all the item is been selected
+			$total_deposit = 0; //Here we're going to be storing the total deposit for the whole rental
 			$pack_id_array = array();
 			$pack_array_of_selected_items = array();
 			
@@ -171,7 +177,7 @@
 				{
 					$curr_item_total_pricing = 0; //Assign curr_item_total_pricing to 0 because now we're going item by item, grabbing each total price per item
 					
-					$_price = $conn->prepare("select stu_day_price, stu_weekend_price, stu_week_price, day_price, weekend_price, week_price, item_Frontid, inv_name
+					$_price = $conn->prepare("select stu_day_price, stu_weekend_price, stu_week_price, day_price, weekend_price, week_price, item_Frontid, inv_name, pur_price
 												from Item a, Inventory c
 												where a.inv_id = c.inv_id and a.item_Backid = :item_id");
 					$_price->bindValue(':item_id', $pack_item_array[1], PDO::PARAM_INT);
@@ -211,7 +217,8 @@
 						}
 					}
 					$total_price = $total_price + $curr_item_total_pricing;
-					$receipt_prices[$pack_item_array[1]] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing);
+					$total_deposit = $total_deposit + $price[0]['pur_price'];
+					$receipt_prices[$pack_item_array[1]] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing, "deposit"=>$price[0]['pur_price']);
 
 				}
 				else
@@ -330,7 +337,7 @@
 							$count_of_items_in_packages_selected = array_map(function($val) { return $val-1; }, $count_of_items_in_packages_selected);
 							
 							$total_price = $total_price + $curr_item_total_pricing;
-							$receipt_prices[$pack_id . $n] = array("id"=>" ", "name"=>$pack_price[0]['pack_name'], "price"=>$curr_item_total_pricing);
+							$receipt_prices[$pack_id . $n] = array("id"=>" ", "name"=>$pack_price[0]['pack_name'], "price"=>$curr_item_total_pricing, "deposit"=>" ");
 						}
 					}
 					elseif($pack_id == '4' || $pack_id == '6')
@@ -382,7 +389,7 @@
 							$count_of_items_in_packages_selected = array_map(function($val) { return $val-2; }, $count_of_items_in_packages_selected);
 							
 							$total_price = $total_price + $curr_item_total_pricing;
-							$receipt_prices[$pack_id . $n] = array("id"=>" ", "name"=>$pack_price[0]['pack_name'], "price"=>$curr_item_total_pricing);
+							$receipt_prices[$pack_id . $n] = array("id"=>" ", "name"=>$pack_price[0]['pack_name'], "price"=>$curr_item_total_pricing, "deposit"=>" ");
 						}
 					}
 					else
@@ -434,13 +441,13 @@
 							$count_of_items_in_packages_selected = array_map(function($val) { return $val-1; }, $count_of_items_in_packages_selected);
 							
 							$total_price = $total_price + $curr_item_total_pricing;
-							$receipt_prices[$pack_id . $n] = array("id"=>" ", "name"=>$pack_price[0]['pack_name'], "price"=>$curr_item_total_pricing);
+							$receipt_prices[$pack_id . $n] = array("id"=>" ", "name"=>$pack_price[0]['pack_name'], "price"=>$curr_item_total_pricing, "deposit"=>" ");
 						}
 					}
 					
 					foreach($pack_array_of_selected_items[$pack_id] as $item_id)
 					{
-						$pack_item_info = $conn->prepare("select stu_day_price, stu_weekend_price, stu_week_price, day_price, weekend_price, week_price, item_Frontid, inv_name
+						$pack_item_info = $conn->prepare("select stu_day_price, stu_weekend_price, stu_week_price, day_price, weekend_price, week_price, item_Frontid, inv_name, pur_price
 														from Item a, Inventory c
 														where a.inv_id = c.inv_id and a.item_Backid = :item_id");
 						$pack_item_info->bindValue(':item_id', $item_id, PDO::PARAM_INT);
@@ -493,12 +500,13 @@
 									}
 								}
 								$total_price = $total_price + $curr_item_total_pricing;
-								$receipt_prices[$item_id] = array("id"=>$pack_item_info[0]['item_Frontid'], "name"=>$pack_item_info[0]['inv_name'], "price"=>$curr_item_total_pricing);
+								$total_deposit = $total_deposit + $pack_item_info[0]['pur_price'];
+								$receipt_prices[$item_id] = array("id"=>$pack_item_info[0]['item_Frontid'], "name"=>$pack_item_info[0]['inv_name'], "price"=>$curr_item_total_pricing, "deposit"=>$pack_item_info[0]['pur_price']);
 								$count_of_items_in_packages_selected[$pack_item_info[0]['inv_name']] = $count_of_items_in_packages_selected[$pack_item_info[0]['inv_name']] - 1;
 							}
 							else
 							{
-								$receipt_prices[$item_id] = array("id"=>$pack_item_info[0]['item_Frontid'], "name"=>$pack_item_info[0]['inv_name'] . " (" . $pack_price[0]['pack_name'] . ")", "price"=>0);
+								$receipt_prices[$item_id] = array("id"=>$pack_item_info[0]['item_Frontid'], "name"=>$pack_item_info[0]['inv_name'] . " (" . $pack_price[0]['pack_name'] . ")", "price"=>0, "deposit"=>$pack_item_info[0]['pur_price']);
 							}
 						}
 						else
@@ -507,53 +515,46 @@
 							{
 								$curr_item_total_pricing = 0; //Assign curr_item_total_pricing to 0 because now we're going item by item, grabbing each total price per item
 						
-								$_price = $conn->prepare("select stu_day_price, stu_weekend_price, stu_week_price, day_price, weekend_price, week_price, item_Frontid, inv_name
-															from Item a, Inventory c
-															where a.inv_id = c.inv_id and a.item_Backid = :item_id");
-								$_price->bindValue(':item_id', $item_id, PDO::PARAM_INT);
-								$_price->execute();
-								$price = $_price->fetchAll();
-								
-								//Now here we actually check if the customer is a student or not and get the correct pricing for the 
-								//amount of days they are planning to rent the item for
 								if($if_student_row[0]['is_student'] == 'yes' || $if_student_row[0]['is_student'] == 'Yes') //Checks if the customer is a student or not
 								{
 									if($days > 0)
 									{
-										$curr_item_total_pricing = $curr_item_total_pricing + ($days * $price[0]['stu_day_price']);
+										$curr_item_total_pricing = $curr_item_total_pricing + ($days * $pack_item_info[0]['stu_day_price']);
 									}
 									if($weekends > 0)
 									{
-										$curr_item_total_pricing = $curr_item_total_pricing + ($weekends * $price[0]['stu_weekend_price']);
+										$curr_item_total_pricing = $curr_item_total_pricing + ($weekends * $pack_item_info[0]['stu_weekend_price']);
 									}
 									if($weeks > 0)
 									{
-										$curr_item_total_pricing = $curr_item_total_pricing + ($weeks * $price[0]['stu_week_price']);
+										$curr_item_total_pricing = $curr_item_total_pricing + ($weeks * $pack_item_info[0]['stu_week_price']);
 									}
 								}
 								else
 								{
 									if($days > 0)
 									{
-										$curr_item_total_pricing = $curr_item_total_pricing + ($days * $price[0]['day_price']);
+										$curr_item_total_pricing = $curr_item_total_pricing + ($days * $pack_item_info[0]['day_price']);
 									}
 									if($weekends > 0)
 									{
-										$curr_item_total_pricing = $curr_item_total_pricing + ($weekends * $price[0]['weekend_price']);
+										$curr_item_total_pricing = $curr_item_total_pricing + ($weekends * $pack_item_info[0]['weekend_price']);
 									}
 									if($weeks > 0)
 									{
-										$curr_item_total_pricing = $curr_item_total_pricing + ($weeks * $price[0]['week_price']);
+										$curr_item_total_pricing = $curr_item_total_pricing + ($weeks * $pack_item_info[0]['week_price']);
 									}
 								}
 								$total_price = $total_price + $curr_item_total_pricing;
-								$receipt_prices[$item_id] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing);
+								$total_deposit = $total_deposit + $pack_item_info[0]['pur_price'];
+								$receipt_prices[$item_id] = array("id"=>$pack_item_info[0]['item_Frontid'], "name"=>$pack_item_info[0]['inv_name'], "price"=>$curr_item_total_pricing, "deposit"=>$pack_item_info[0]['pur_price']);
 								
 								$num_of_surfboard_rental--;
 							}
 							else
 							{
-								$receipt_prices[$item_id] = array("id"=>$pack_item_info[0]['item_Frontid'], "name"=>$pack_item_info[0]['inv_name'] . " (" . $pack_price[0]['pack_name'] . ")", "price"=>$curr_item_total_pricing);
+								$total_deposit = $total_deposit + $pack_item_info[0]['pur_price'];
+								$receipt_prices[$item_id] = array("id"=>$pack_item_info[0]['item_Frontid'], "name"=>$pack_item_info[0]['inv_name'] . " (" . $pack_price[0]['pack_name'] . ")", "price"=>$curr_item_total_pricing, "deposit"=>$pack_item_info[0]['pur_price']);
 							}
 						}
 					}
@@ -564,7 +565,7 @@
 					{
 						$curr_item_total_pricing = 0; //Assign curr_item_total_pricing to 0 because now we're going item by item, grabbing each total price per item
 						
-						$_price = $conn->prepare("select stu_day_price, stu_weekend_price, stu_week_price, day_price, weekend_price, week_price, item_Frontid, inv_name
+						$_price = $conn->prepare("select stu_day_price, stu_weekend_price, stu_week_price, day_price, weekend_price, week_price, item_Frontid, inv_name, pur_price
 													from Item a, Inventory c
 													where a.inv_id = c.inv_id and a.item_Backid = :item_id");
 						$_price->bindValue(':item_id', $item_id, PDO::PARAM_INT);
@@ -604,11 +605,13 @@
 							}
 						}
 						$total_price = $total_price + $curr_item_total_pricing;
-						$receipt_prices[$item_id] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing);
+						$total_deposit = $total_deposit + $price[0]['pur_price'];
+						$receipt_prices[$item_id] = array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>$curr_item_total_pricing, "deposit"=>$price[0]['pur_price']);
 					}
 				}
 			}
 			$return_array['total_price'] = $total_price;
+			$return_array['total_deposit'] = $total_deposit;
 			$return_array['receipt_prices'] = $receipt_prices;
 	
 			return $return_array;
@@ -616,19 +619,22 @@
 		}
 		else
 		{
+			$total_deposit = 0;
 			foreach($array_of_items as $item_id) //FOR loop to go through the array of selected item ids
 			{
 				$pack_item_array = explode('-', $item_id); //First we grab the item string, and explode it into a array of ints
-				$_price = $conn->prepare("select item_Frontid, inv_name
+				$_price = $conn->prepare("select item_Frontid, inv_name, pur_price
 											from Item a, Inventory c
 											where a.inv_id = c.inv_id and a.item_Backid = :item_id");
 				$_price->bindValue(':item_id', $pack_item_array[1], PDO::PARAM_INT);
 				$_price->execute();
 				$price = $_price->fetchAll();
 				
-				$receipt_prices[$pack_item_array[1]] =  array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>0);
+				$receipt_prices[$pack_item_array[1]] =  array("id"=>$price[0]['item_Frontid'], "name"=>$price[0]['inv_name'], "price"=>0, "deposit"=>$price[0]['pur_price']);
+				$total_deposit = $total_deposit + $price[0]['pur_price'];
 			}
 			$return_array['total_price'] = 0;
+			$return_array['total_deposit'] = $total_deposit;
 			$return_array['receipt_prices'] = $receipt_prices;
 			
 			return $return_array;

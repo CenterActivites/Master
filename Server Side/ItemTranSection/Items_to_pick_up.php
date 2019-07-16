@@ -21,17 +21,41 @@
 			$connctn = hsu_conn_sess();
 			
 			//We do a mysql select here to get all the items that are being "reserved" for the customer to be picked up
-			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, request_date, cust_id
-									FROM Inventory a, Item b, Rental c, Reserve1 d
-									WHERE a.inv_id = b.inv_id and 
-											b.item_Backid = d.item_Backid and 
-											d.rent_id = c.rent_id and 
-											rental_status = 'On-Going' and 
-											c.rent_id = :a and 
-											c.pick_up_date is NULL");
+			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, request_date, cust_id, item_modeltype
+										FROM Inventory a, Item b, Rental c, Reserve1 d
+										WHERE a.inv_id = b.inv_id and 
+												b.item_Backid = d.item_Backid and 
+												d.rent_id = c.rent_id and 
+												rental_status = 'On-Going' and 
+												c.rent_id = :a and 
+												c.pick_up_date is NULL");
 			$items->bindValue(':a', $rent_id, PDO::PARAM_INT);
 			$items->execute();
 			$display_array = $items->fetchAll();
+		
+			$comments = $connctn->prepare("SELECT note, empl_fname, empl_lname
+												FROM Notes a, Employee b, Rental c, NotesRental d
+												WHERE a.empl_id = b.empl_id and 
+														a.note_id = d.note_id and 
+														c.rent_id = d.rent_id and 
+														c.rent_id = :z"); 
+			$comments->bindValue(':z', $rent_id, PDO::PARAM_INT);
+			$comments->execute();
+			$comments = $comments->fetchAll();
+			
+			if($comments[0]['note'] == null || $comments[0]['note'] == "")
+			{
+				$comment_display = "Type Any Comments Here";
+			}
+			else
+			{
+				$comment_display = "";
+				foreach($comments as $comment)
+				{
+					$comment_display = $comment_display . $comment['note'] . " -- Made by " . $comment['empl_fname'] . " " . $comment['empl_lname'] . "                                       ";
+				}
+				$comment_display = $comment_display . "Type Any New Comments Here";
+			}
 			
 			$_SESSION["cust_id"] = $display_array[0]['cust_id'];
 			
@@ -46,6 +70,7 @@
 						<tr>
 							<th id='hide_me'></th>
 							<th> Item Name: </th>
+							<th> Item Model/Brand: </th>
 							<th> Item Id: </th>
 							<th> Date to be Pick Up </th>
 						</tr>
@@ -64,6 +89,7 @@
 							
 							<!-- Displaying the item name and front id to the screen -->
 							<td> <?= $display_array[$i]['inv_name'] ?> </td>
+							<td> <?= $display_array[$i]['item_modeltype'] ?> </td>
 							<td> <?= $display_array[$i]['item_Frontid'] ?> </td>
 							<td> <?= $curr_request_date ?> </td>
 						</tr>
@@ -74,7 +100,8 @@
 					
 					<!-- Comments section for any comments about the transaction or items condition -->
 					<label> Comments </label>
-					<textarea name="comments" id="comments" rows="4" cols="50"></textarea> </br>
+					<textarea name="comments" id="comments" rows="4" cols="50" placeholder="<?= $comment_display ?>" ></textarea> 
+					</br>
 					
 					<!-- Following are inputs that are either hidden or buttons -->
 					<input type="hidden" name="item_to_be_pick_up" id="item_to_be_pick_up"  />  <!-- Hidden input tag keep track of which items are selected to be picked up -->

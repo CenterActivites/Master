@@ -56,7 +56,7 @@
 				//-------
 				//Rental tranaction receipt
 				
-				$reserve_his_infor = $conn->prepare("SELECT request_date, due_date, total_cost, sub_total_cost, loc_id
+				$reserve_his_infor = $conn->prepare("SELECT request_date, due_date, total_cost, sub_total_cost, loc_id, deposit
 											FROM Rental
 											WHERE rent_id = :a");
 				$reserve_his_infor->bindValue(':a', $rent_id, PDO::PARAM_INT);
@@ -116,11 +116,12 @@
 											<th>Item: </th>
 											<th class="text-center">Id#: </th>
 											<th class="text-center">Price</th>
+											<th class="text-center">Deposit</th>
 										</tr>
 									</thead>
 									<tbody>
 <?php
-										$item_query = $conn->prepare("SELECT item_Frontid, inv_name, cost_at_time
+										$item_query = $conn->prepare("SELECT item_Frontid, inv_name, cost_at_time, deposit_at_time
 																			FROM Inventory a, Item b, Reserve1 c
 																			WHERE a.inv_id = b.inv_id and b.item_Backid = c.item_Backid
 																					and c.rent_id = :a");
@@ -134,7 +135,7 @@
 												<td class="col-md-6"><em> <?= $item_display[$i]['inv_name'] ?> </em></h4></td>
 												<td class="col-md-1 text-center"> <?= $item_display[$i]['item_Frontid'] ?> </td>
 												<td class="col-md-1 text-center"> <?= $item_display[$i]['cost_at_time'] ?> </td>
-												<td></td>
+												<td class="col-md-1 text-center"> <?= $item_display[$i]['deposit_at_time'] ?> </td>
 											</tr>
 <?php
 										}
@@ -154,7 +155,7 @@
 													<strong>$<?= $reserve_his_infor[0][3] ?></strong>
 												</p>
 												<p>
-													<strong>$0</strong>
+													<strong>$<?= $reserve_his_infor[0][2] - $reserve_his_infor[0][3] ?></strong>
 												</p>
 											</td>
 										</tr>
@@ -162,6 +163,14 @@
 											<td></td>
 											<td class="text-right"><h4><strong>Total:</strong></h4></td>
 											<td class="text-center text-danger"><h4><strong>$<?= $reserve_his_infor[0][2] ?></strong></h4></td>
+											
+											<td class="text-center">
+												<p>
+													<h4>
+														<strong class="text-center text-danger">$<?= $reserve_his_infor[0][5] ?></strong>
+													</h4>
+												</p>
+											</td>
 										</tr>
 									</tbody>
 								</table>
