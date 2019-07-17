@@ -109,11 +109,13 @@
 											//Grabbing the rest of the items information from just using the item's back id
 											foreach($items_to_return as $item)
 											{
+												$item_and_rent_id_array = explode('-', $item); //Filtering throught the array/list. Dropping all empty spots
+												
 												$item_query = $conn->prepare("SELECT item_Frontid, inv_name, item_modeltype, cat_name
 																				FROM Inventory a, Item b, Category c
 																				WHERE a.inv_id = b.inv_id and c.cat_id = a.cat_id 
 																				and b.item_Backid = :a");
-												$item_query->bindValue(':a', $item, PDO::PARAM_INT);
+												$item_query->bindValue(':a', $item_and_rent_id_array[1], PDO::PARAM_INT);
 												$item_query->execute();
 												$item_display = $item_query->fetchAll();
 												//Checks if the item model is NULL or blank. If so then have "No Model" display

@@ -14,13 +14,14 @@
 <?php
 			//Grabs the selected customer id and set it in SESSION
 			$cust_id = strip_tags($_POST['cust_id']);
+			
 			$_SESSION["cust_id"] = $cust_id;
 			
 			//Connecting to the Database
 			$connctn = hsu_conn_sess();
 			
 			//Does a mysql select to the database to grab item front id, name, back id, and the due date of the item
-			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date, item_modeltype
+			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date, item_modeltype, d.rent_id
 									FROM Inventory a, Item b, Rental c, CheckOut d
 									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rent_id = c.rent_id
 									and c.cust_id = :a and c.return_date is NULL and c.rental_status = 'On-Going'");
@@ -76,7 +77,7 @@
 						<!-- Display the item name and front id to the screen -->
 						<tr>
 							<!-- Create a checkbox for each item and sets the item_Backid to the checkbox's value -->
-							<td id="hide_me"> <input type="checkbox" id="item_id" name="item_id[]" value="<?= $display_array[$i]['item_Backid'] ?>"></td>
+							<td id="hide_me"> <input type="checkbox" id="item_id" name="item_id[]" value="<?= $display_array[$i]['rent_id'] . '-' . $display_array[$i]['item_Backid'] ?>"></td>
 							<td> <?= $display_array[$i]['inv_name'] ?> </td>
 							<td> <?= $display_array[$i]['item_modeltype'] ?> </td>
 							<td> <?= $display_array[$i]['item_Frontid'] ?> </td>
@@ -113,7 +114,6 @@
 					
 					<!-- Following are 1 hidden input and 2 input buttons -->
 					<input type="hidden" name="item_to_be_return" id="item_to_be_return"  />  <!-- Hidden input tag keep track of which items are selected to be returned -->
-					<input type="hidden" name="item_leftover" id="item_leftover"  value='0'/>  <!-- Hidden input tag keep track if there are items that isn't being selected for returned -->
 					<input type="submit" name="Checkin" id="Checkin" value="Checkin" /> &nbsp;
 					<input type="submit" name="cancel" id="cancel" value="Cancel" /><br />
 				</div>
@@ -149,12 +149,6 @@
 								var get_val = $("#item_to_be_return").val();
 								$("#item_to_be_return").val(get_val + "," + box_value);
 							}
-						});
-						
-						$('#item_table').find('input[type="checkbox"]:not:checked').each(function () 
-						{
-							console.log('There was an item not selected');
-							$("#item_leftover").val('1');
 						});
 						
 						//Checks if the user had selected any items for pick-up

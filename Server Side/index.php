@@ -463,11 +463,11 @@
 								$insert->bindValue(':a', $note_id, PDO::PARAM_STR);
 								$insert->bindValue(':b', $rent_id, PDO::PARAM_STR);
 								$insert->execute();
-								echo "Error In Insert to Notes: ";
-								print $insert -> errorCode();
-								echo "\nPDO::errorInfo():\n";
-								print_r($insert->errorInfo());
-								echo "</br> </br>";
+								//echo "Error In Insert to Notes: ";
+								//print $insert -> errorCode();
+								//echo "\nPDO::errorInfo():\n";
+								//print_r($insert->errorInfo());
+								//echo "</br> </br>";
 								$note_id = $conn->lastInsertId();
 							}
 							
@@ -497,9 +497,9 @@
 												where rent_id = :b");
 					$update->bindValue(':b', $rent_id, PDO::PARAM_INT);
 					$update->execute(); //execute the query
-					print $update -> errorCode();
-					echo "\nPDO::errorInfo():\n";
-					print_r($update->errorInfo());
+					//print $update -> errorCode();
+					//echo "\nPDO::errorInfo():\n";
+					//print_r($update->errorInfo());
 					
 					//Find all items that were under the rental
 					$items = $conn->prepare("SELECT item_Backid
@@ -730,11 +730,6 @@
 					{
 						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
 						$_SESSION['refreshed'] = "Checkin";
-						$items_leftover = $_POST["item_leftover"];
-						
-						echo"item_leftover: ";
-						var_dump($items_leftover);
-						echo"</br>" . "</br>";
 						
 						//Connecting to the Database
 						$conn = hsu_conn_sess();
@@ -762,8 +757,11 @@
 						$rent_id_select = $rent_id_select->fetchAll();
 						$rent_id = $rent_id_select[0][0];
 						
-						foreach($items_to_return as $item_id)
+						$rentals_dealing_with = array();
+						foreach($items_to_return as $item_and_rent_id)
 						{
+							$item_and_rent_id_array = explode('-', $item_and_rent_id); //Filtering throught the array/list. Dropping all empty spots
+							
 							//Insert statement for CheckIn
 							$insert = $conn->prepare("insert into CheckIn
 														(time_stamp, rent_id, item_Backid, empl_id)
@@ -771,8 +769,8 @@
 														(:a, :b, :c, :d)");
 							//Binding the vars along with their respected datatype
 							$insert->bindValue(':a', $current_date, PDO::PARAM_STR);
-							$insert->bindValue(':b', $rent_id, PDO::PARAM_INT);
-							$insert->bindValue(':c', $item_id, PDO::PARAM_INT);
+							$insert->bindValue(':b', $item_and_rent_id_array[0], PDO::PARAM_INT);
+							$insert->bindValue(':c', $item_and_rent_id_array[1], PDO::PARAM_INT);
 							$insert->bindValue(':d', $_SESSION["empl_id"], PDO::PARAM_INT);
 							$insert->execute();
 							//print $insert -> errorCode();
@@ -784,36 +782,56 @@
 							$update = $conn->prepare("update Item
 														set stat_id = 4
 														where item_Backid = :item_id");
-							$update->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+							$update->bindValue(':item_id', $item_and_rent_id_array[1], PDO::PARAM_INT);
 							$update->execute(); //execute the query
+							
+							if(!(in_array($item_and_rent_id_array[0], $rentals_dealing_with)))
+							{ 
+								$rentals_dealing_with[] = $item_and_rent_id_array[0];
+							}
 						}
 						
-						if($items_leftover == '0') 
+						foreach($rentals_dealing_with as $rent_id)
 						{
-							$update = $conn->prepare("update Rental
-														set return_date = :a, rental_status = 'Completed'
-														where rent_id = :b");
-							$update->bindValue(':a', $current_date, PDO::PARAM_STR);
-							$update->bindValue(':b', $rent_id, PDO::PARAM_INT);
-							//print $update -> errorCode();
-							//echo "\nPDO::errorInfo():\n";
-							//print_r($update->errorInfo());
-							$update->execute(); //execute the query
+							$item_list_in_checkout = $conn->prepare("select item_Backid
+																		from CheckOut
+																		where return_date IS NULL and rental_status = 'On-Going' and rent_id = :a");
+							$item_list_in_checkout->bindValue(':a', $rent_id, PDO::PARAM_INT);
+							$item_list_in_checkout->execute();
+							$item_list_in_checkout = $item_list_in_checkout->fetchAll();
+							
+							$item_list_in_checkin = $conn->prepare("select item_Backid
+																	from CheckIn
+																	where return_date IS NULL and rental_status = 'On-Going' and rent_id = :a");
+							$item_list_in_checkin->bindValue(':a', $rent_id, PDO::PARAM_INT);
+							$item_list_in_checkin->execute();
+							$item_list_in_checkin = $item_list_in_checkin->fetchAll();
+							
+							if($item_list_in_checkin == $item_list_in_checkout) 
+							{
+								$update = $conn->prepare("update Rental
+															set return_date = :a, rental_status = 'Completed'
+															where rent_id = :b");
+								$update->bindValue(':a', $current_date, PDO::PARAM_STR);
+								$update->bindValue(':b', $rent_id, PDO::PARAM_INT);
+								//print $update -> errorCode();
+								//echo "\nPDO::errorInfo():\n";
+								//print_r($update->errorInfo());
+								$update->execute(); //execute the query
+							}
 						}
 						
 						//Insert statement for Notes to record any comments or notes to do with the transaction or items
 						if($comments != "" && $comments != NULL)
 						{
-							echo "There are comments" . "</br>";
 							$empl_id = $_SESSION['empl_id'];
-							$date = date("Y-m-d h:i:s");
 							$insert = $conn->prepare("insert into Notes
 													(note, timestamp, empl_id)
 													values
 													(:a, :b, :c)");
 							//Binding the vars along with their respected datatype
 							$insert->bindValue(':a', $comments, PDO::PARAM_STR);
-							$insert->bindValue(':b', $date, PDO::PARAM_STR);
+							$insert->bindValue(':b', $current_date, PDO::PARAM_STR);
 							$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
 							$insert->execute();
 							//echo "Error In Insert to Notes: ";
