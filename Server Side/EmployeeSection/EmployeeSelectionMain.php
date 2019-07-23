@@ -15,7 +15,7 @@
 <div>
 <?php
 		//Connecting to the Database
-		$conn = hsu_conn_sess();
+		$conn = db();
  ?>
 		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id='button' >
 			<fieldset style="border:none">

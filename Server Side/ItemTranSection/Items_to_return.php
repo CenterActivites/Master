@@ -18,7 +18,7 @@
 			$_SESSION["cust_id"] = $cust_id;
 			
 			//Connecting to the Database
-			$connctn = hsu_conn_sess();
+			$connctn = db();
 			
 			//Does a mysql select to the database to grab item front id, name, back id, and the due date of the item
 			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date, item_modeltype, d.rent_id

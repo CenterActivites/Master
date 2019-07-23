@@ -12,7 +12,7 @@
 	$empl_id = $_POST['empl_id'];
 	
 	//Connecting to the Database
-	$conn = hsu_conn_sess();
+	$conn = db();
 	
 	//Does a select sql statement to grab all transactions that is involved with the selected customer
 	$empl_infor = $conn->prepare("SELECT empl_fname, empl_lname, phone_num, empl_email, access_lvl, title

@@ -3,7 +3,7 @@
 	function EditItem()
 	{
 		//Connecting to the Database
-		$conn = hsu_conn_sess();
+		$conn = db();
 	
 		$item_backid = strip_tags($_POST["item_id"]);
 		$item_name = strip_tags($_POST["item_name"]);

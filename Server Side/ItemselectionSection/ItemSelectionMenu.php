@@ -2,7 +2,7 @@
 	function Itemselection()
 	{
 		//Connecting to the Database
-		$conn = hsu_conn_sess();
+		$conn = db();
 ?>
 <html>
 <head>

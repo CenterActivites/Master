@@ -4,7 +4,7 @@
 	function HomePage()
 	{
 		//Connecting to the Database
-        $conn = hsu_conn_sess();
+        $conn = db();
 		
 ?>
 <html>
@@ -73,7 +73,7 @@
 																				b.due_date < :a and 
 																				b.rental_status = 'On-Going' and 
 																				b.loc_id = 1
-																		GROUP BY due_date
+																		GROUP BY cust_id
 																		ORDER BY due_date");
 									$select_item->bindValue(':a', $current_date, PDO::PARAM_STR);
 									$select_item->execute();

@@ -3,7 +3,7 @@
 	function AddItems()
 	{
 		//Connecting to the Database
-		$conn = hsu_conn_sess();
+		$conn = db();
 
 ?>
 <html>

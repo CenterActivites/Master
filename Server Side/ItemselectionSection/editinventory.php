@@ -2,7 +2,7 @@
   function editinventory()
   {
 	//Connecting to the Database
-	$conn = hsu_conn_sess();
+	$conn = db();
 
     $inv_id = strip_tags($_POST["inv_id"]);
 ?>

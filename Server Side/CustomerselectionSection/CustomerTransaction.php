@@ -19,7 +19,7 @@
 							<select name="time_stamp_select" id="time_stamp_select" size="6" class="time_stamp_select">
 <?php
 								//Connecting to the Database
-								$connctn = hsu_conn_sess();
+								$connctn = db();
 								
 								//Grab the selected customer id
 								$cust_id = (int)$_SESSION['cust_id'];

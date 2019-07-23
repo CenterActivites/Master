@@ -46,7 +46,7 @@
 			<body>
 <?php
 				//Connecting to the Database
-				$conn = hsu_conn_sess();
+				$conn = db();
 			
 				//Formating current, request, and due dates into more readable format for user. More readable format: EX. January 18, 2019 11:21am. 
 				//Current date is the only one with time in it.

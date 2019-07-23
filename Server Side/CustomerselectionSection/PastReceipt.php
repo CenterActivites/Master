@@ -47,7 +47,7 @@
 			<body>
 <?php
 				//Connecting to the Database
-				$conn = hsu_conn_sess();
+				$conn = db();
 				
 				//Grab the customer and transaction id
 				$cust_id = (int)$_POST['cust_id'];

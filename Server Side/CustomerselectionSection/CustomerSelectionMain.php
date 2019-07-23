@@ -4,7 +4,7 @@
 	function CustomerSelection()
 	{
 		//Connecting to the Database
-		$conn = hsu_conn_sess();
+		$conn = db();
 ?>
 <html>
 <head>
@@ -124,7 +124,7 @@
 																	b.pick_up_date IS NOT NULL and 
 																	b.return_date is NULL and 
 																	b.loc_id = 1
-															GROUP BY due_date
+															GROUP BY cust_id
 															ORDER BY due_date, l_name, f_name") as $row)
 									{
 										$curr_f_name = $row["f_name"]; //each row is a object that has a f_name, l_name, and a cust_id
@@ -181,7 +181,7 @@
 			</fieldset>
 		
 			<!-- Modal content. The box that appears when the "Rental" button is clicked -->
-			<div id="myModal" class="dates">
+			<div id="myModal" class="modal">
 				<div class="modal-content">
 					<span class="close">&times;</span>
 					

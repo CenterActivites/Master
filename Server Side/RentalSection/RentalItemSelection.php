@@ -18,7 +18,7 @@
     <div style="text-align:center;"> 
 <?php
 		//PDO Connection to the Databse
-        $conn = hsu_conn_sess();
+        $conn = db();
 		
 		//Grabs the selected customer and their request dates for the rental
 		$sel_cust = $_SESSION['sel_user'];
