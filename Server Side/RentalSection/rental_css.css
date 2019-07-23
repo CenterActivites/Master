@@ -38,7 +38,7 @@ table ,tr td{
 	margin-right:auto;
 }
 
-#finalize,#cancelFinal,#calPay,#cancel,#continue,#finished
+#finalize, #cancelFinal, #calPay, #cancel, #continue, #finished, #approve_button
 {
     background-color: #008000;
     color: white;
@@ -58,7 +58,7 @@ table ,tr td{
     white-space: normal;
 }
 
-#finalize:hover, #cancelFinal:hover, #calPay:hover, #cancel:hover
+#finalize:hover, #cancelFinal:hover, #calPay:hover, #cancel:hover, #approve_button:hover, #continue:hover, #finished:hover
 {
 	background-color: #006400;
 }

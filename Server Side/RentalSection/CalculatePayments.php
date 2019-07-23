@@ -6,6 +6,7 @@
 <head>
 
 	<link rel="stylesheet" type="text/css" href="../RentalSection/rental_css.css"/>
+	<link rel="stylesheet" type="text/css" href="../RentalSection/modal_css.css"/>
 	
 </head>
 <body>
@@ -13,7 +14,7 @@
 	require('/home/centerac/public_html/RentalSection/CalculateFunction.php');
 	
 	//PDO Connection to the Databse
-    $conn = hsu_conn_sess();
+    $conn = db();
 	
 	//grabbing the customer's id and the item/items id they picked to rent
 	$sel_cust = $_SESSION['sel_user'];
@@ -222,9 +223,28 @@
 	</form>
 			
 				<input type="button" name="finalize" id="finalize" value="Finalize"/>
+				
+				<!-- Modal content. The box that appears when the "Rental" button is clicked -->
+				<div id="myModal" class="modal">
+					<div class="modal-content">
+						<span class="close">&times;</span>
+						
+						<div id='supervisor_user_pass_inputs' name='supervisor_user_pass_inputs' style='display: block;'>
+							Supervisor Username: <input type = "text" name = "supervisor_username" id = "supervisor_username" />
+							&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+							Supervisor Password: <input type = "password" name = "supervisor_password" id = "supervisor_password" />
+						</div>
+						</br>
+						<input type="button" name="approve_button" id="approve_button" value="Approve" /><br />
+					</div>
+				</div>
+				
 			</fieldset>
 		</div>
 </body>
+
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 	<!-- Little script to dynamically change the total price with tax output according to whatever the user enters in as the tax amount -->
 	<script type="text/javascript">
@@ -259,48 +279,60 @@
 			
 			$("#finalize").click(function()
 			{
-				console.log('Finalize was clicked');
-				var empl_status = <?php echo json_encode($empl_status); ?>;
 				if($('#totalCost').val() == "0")
 				{
-					var user_name = window.prompt("Superviser's Username", "");
-					var password = window.prompt("Superviser's Password", "");
-					$.ajax(
+					//Modal script got from online with little adjustments for this page purpose
+					//Grabs the hidden div called 'myModal" and the span tag
+					var modal = document.getElementById('myModal');
+					var span = document.getElementsByClassName("close")[0];
+					
+					modal.style.display = "block";
+					
+					//Once the close/span, on the right top corner, is clicked; we re-hid the div
+					span.onclick = function()
 					{
-						url: "../RentalSection/superviser_approve.php", //The file where the php select query is at
-						type: "post",
-						data: 
+						modal.style.display = "none";
+					};
+					
+					$("#approve_button").click(function()
+					{
+						$.ajax(
 						{
-							'user_name': user_name, //assigning the value of the selected package to "pack_value"
-							'password' : password
-						},
-						success: function(data) //When the AJAX call is successful, the script does the following
-						{
-							console.log('Data: ' + data);
-							var approval = JSON.parse(data); //Grabs the data that is in JSON format and parse it so it is usable
-							if(approval == null)
+							url: "../RentalSection/superviser_approve.php", //The file where the php select query is at
+							type: "post",
+							data: 
 							{
-								console.log('Bad user and pass');
-								alert("Username and Password entered was incorrect");
-								return false;
-							}
-							else
+								'user_name': $("#supervisor_username").val(), //assigning the value of the selected package to "pack_value"
+								'password' : $("#supervisor_password").val()
+							},
+							success: function(data) //When the AJAX call is successful, the script does the following
 							{
-								if(approval >= 3)
+								console.log('Data: ' + data);
+								var approval = JSON.parse(data); //Grabs the data that is in JSON format and parse it so it is usable
+								if(approval == null)
 								{
-									
-									console.log('approve');
-									$('#finalize_submit').click();
+									console.log('Bad user and pass');
+									alert("Username and Password entered was incorrect");
+									return false;
 								}
 								else
 								{
-									
-									console.log('not approve');
-									alert("User does not have sufficient permission to complete this rental ");
-									return false;
+									if(approval >= 3)
+									{
+										
+										console.log('approve');
+										$('#finalize_submit').click();
+									}
+									else
+									{
+										
+										console.log('not approve');
+										alert("User does not have sufficient permission to complete this rental ");
+										return false;
+									}
 								}
 							}
-						}
+						});
 					});
 				}
 				else
