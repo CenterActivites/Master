@@ -102,14 +102,12 @@
 	//else lets change that information according to the value of the status. 1-5
 	else
 	{
-		$int_value_stat = (int)$stat_val[0];
-
 		$select_item = $connctn->prepare("select item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
 				from Item A, Inventory B, Category C, Status D
 				where A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and D.stat_id = :a" . $dbw_val . $public_val . $loc_val . $cat_val . "
 				ORDER BY inv_name, item_modeltype, item_Frontid");
 
-		$select_item->bindValue(':a', $int_value_stat, PDO::PARAM_INT);
+		$select_item->bindValue(':a', $stat_val, PDO::PARAM_INT);
 		$select_item->execute();
 		$display_array = $select_item->fetchAll();
 		foreach($display_array as $row)
