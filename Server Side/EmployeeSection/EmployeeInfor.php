@@ -24,7 +24,7 @@
 		<table id='empl_info_table'>
 <?php
 			//Connecting to the Database
-			$conn = hsu_conn_sess();
+			$conn = db();
 
 			foreach($conn->query("SELECT empl_fname, empl_lname, phone_num, empl_email, access_lvl, title, user_n, pass_w
 									FROM Employee

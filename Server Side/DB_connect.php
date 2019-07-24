@@ -1,5 +1,5 @@
 <?php
-    function hsu_conn_sess()
+    function db()
     {
 		require('connect_info.php');
 		require('DB.php');

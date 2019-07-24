@@ -3,12 +3,12 @@
 	function AddInventory()
 	{
 		//Connecting to the Database
-		$conn = hsu_conn_sess();
+		$conn = db();
 ?>
 <html>
 <head>
 
-	<link rel="stylesheet" type="text/css" href="../ItemselectionSection/item_css/add_item.css"/>
+	<link rel="stylesheet" type="text/css" href="../ItemselectionSection/item_css/add_inv.css"/>
 	
 </head>
 

@@ -6,7 +6,7 @@
 		$_SESSION['ven_id'] = $ven_id;
 		
 		//Connecting to the Database
-        $conn = hsu_conn_sess();
+        $conn = db();
 		
 		$ven_info = $conn->prepare("SELECT ven_name, ven_phone, ven_street_address, ven_city, ven_state, ven_zip_code
 										FROM Vendor

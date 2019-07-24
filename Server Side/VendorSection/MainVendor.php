@@ -30,7 +30,7 @@
 			</fieldset> </br>
 <?php
 			//Connecting to the Database
-            $conn = hsu_conn_sess();
+            $conn = db();
 ?>
           <div id="table_div">
             <table id="vendor_table" class="pixel">
@@ -55,15 +55,18 @@
 					$cur_ven_city = $row["ven_city"];
 					$cur_ven_state = $row["ven_state"];
 					$cur_ven_zip = $row["ven_zip_code"];
+					if($cur_ven_name != "N/A")
+					{
 ?>
-					<tr>
-					  <td><?=$cur_ven_name?></td>
-					  <td><?=$cur_ven_phone?></td>
-					  <td> <?=$cur_ven_street_address?>&nbsp;<?=$cur_ven_city?>,&nbsp;<?=$cur_ven_state?>
-									&nbsp;<?=$cur_ven_zip?> </td>
-					  <td id = "hide_me"><input id ="radio_in" type="radio"  name="item_id[]" value = "<?= $cur_ven_id ?>"/></td>
-					</tr>
+						<tr>
+						  <td><?=$cur_ven_name?></td>
+						  <td><?=$cur_ven_phone?></td>
+						  <td> <?=$cur_ven_street_address?>&nbsp;<?=$cur_ven_city?>,&nbsp;<?=$cur_ven_state?>
+										&nbsp;<?=$cur_ven_zip?> </td>
+						  <td id = "hide_me"><input id ="radio_in" type="radio"  name="item_id[]" value = "<?= $cur_ven_id ?>"/></td>
+						</tr>
 <?php
+					}
 				}
 ?>
 

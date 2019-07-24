@@ -17,7 +17,7 @@
 		<table id='cust_info_table'>
 <?php
 		//Connecting to the Database
-		$conn = hsu_conn_sess();
+		$conn = db();
 
 			foreach($conn->query("SELECT f_name, l_name, c_phone, c_email, c_street_addr, c_stu_id, is_employee, c_city, c_state, c_zip_code, c_driver_id
 									FROM Customer
@@ -77,7 +77,7 @@
 		</br>
 		<form action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" method= "post" id="button">
 			<fieldset style="border:none">
-				<input type="submit" name="viewTran" id="viewTran" value="View Transactions" /><br />
+				<input type="submit" name="viewTran" id="viewTran" value="View Rental History" /><br />
 				<input type="submit" name="editCust" id="editCust" value="Edit Customer" /><br />
 				<input type="submit" name="back" id="back" value="Back" /><br />
 			</fieldset>

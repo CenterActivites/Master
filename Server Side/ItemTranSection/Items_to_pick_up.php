@@ -18,7 +18,7 @@
 			$_SESSION["rent_id"] = $rent_id;
 			
 			//Connecting to the Database
-			$connctn = hsu_conn_sess();
+			$connctn = db();
 			
 			//We do a mysql select here to get all the items that are being "reserved" for the customer to be picked up
 			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, request_date, cust_id, item_modeltype

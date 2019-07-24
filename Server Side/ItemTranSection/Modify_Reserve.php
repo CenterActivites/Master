@@ -19,7 +19,7 @@
     <div style="text-align:center;"> 
 <?php
 		//PDO Connection to the Databse
-        $conn = hsu_conn_sess();
+        $conn = db();
 		
 		//Grabs the selected customer and their request dates for the rental
 		$sel_cust = $_SESSION['cust_id'];
@@ -29,7 +29,7 @@
 		$cart_array = ""; 
 		
 		//Here we're going to be grabbing the 'rent_id' from the Rental table to allow us to pull up all needed information for the pick-up
-		$rental_info = $conn->prepare("select request_date, due_date, loc_id, sub_total_cost
+		$rental_info = $conn->prepare("select request_date, due_date, loc_id, sub_total_cost, total_cost
 										from Rental
 										where rent_id = :a");
 		$rental_info->bindValue(':a', $curr_rental, PDO::PARAM_INT);
@@ -290,14 +290,26 @@
 			<div class="modal-content">
 				<span class="close">&times;</span>
 				
-				<label for="subtotal_price" id="label_for_subtotal"> Subtotal Price: </label>
-				<input name="subtotal_price" id="subtotal_price" value="" readonly />
+				<div id="cust_no_pay_div">Customer doesn't have to pay extra</div>
 				
-				</br>
-				</br>
+				<div id="new_prices_div">
 				
-				<label for="total_price" id="label_for_total"> Total Price: </label>
-				<input name="total_price" id="total_price" value="" readonly />
+					<label for="subtotal_price" id="label_for_subtotal"> Subtotal Price: </label>
+					<input name="subtotal_price" id="subtotal_price" value="" readonly />
+					
+					</br>
+					</br>
+					
+					<label for="total_price" id="label_for_total"> Total Price: </label>
+					<input name="total_price" id="total_price" value="" readonly />
+					
+					</br>
+					</br>
+					
+					<label for="extra_pay" id="label_for_extra_pay"> Extra Customer have to pay: </label>
+					<input name="extra_pay" id="extra_pay" value="" readonly />
+					
+				</div>
 				
 				</br>
 				<input type="submit" name="finished" id="finished" value="Finished" /><br />
@@ -312,6 +324,7 @@
 			<input type="hidden" id="cust_id" name="cust_id" value="<?= $sel_cust ?>"/>
 			<input type="hidden" id="rent_id" name="rent_id" value="<?= $curr_rental ?>"/>
 			<input type="hidden" id="sub_org_cost" name="sub_org_cost" value="<?= $rental_info[0]['sub_total_cost'] ?>"/>
+			<input type="hidden" id="org_total_cost" name="org_total_cost" value="<?= $rental_info[0]['total_cost'] ?>"/>
 			
 			<input type="hidden" name="tax_amount" id="tax_amount" value="<?= $tax_amount  ?>"/>
 			<input type="hidden" name="total_price_with_tax" id="total_price_with_tax" value="<?= $total_price_with_tax  ?>"/>
@@ -704,28 +717,46 @@
 						var new_price = JSON.parse(data); //Grabs the data that is in JSON format and parse it so it is usable
 						console.log('Data: ' + new_price['total_price']);
 						
-						//Then set the first string to the div tab "item_info_label" which will be displayed for the user to see
-						$("#subtotal_price").val(new_price['total_price']);
-						subtotal_price = new_price['total_price'];
+						if($("#sub_org_cost").val() < new_price['total_price'])
+						{
+							document.getElementById("cust_no_pay_div").style.display = "none"; 
+							document.getElementById("new_prices_div").style.display = "block"; 
+							
+							//Then set the first string to the div tab "item_info_label" which will be displayed for the user to see
+							$("#subtotal_price").val(new_price['total_price']);
+							subtotal_price = new_price['total_price'];
+							
+							tax_amount = $('#tax_amount').val();
+							console.log("tax amount: " + tax_amount);
+							
+							//Calculate the tax amount with the new tax rate
+							tax_amount = subtotal_price * (tax_amount / 100);
+							
+							//Make sure the new tax amount is 2 decimals long
+							tax_amount = tax_amount.toFixed(2);
+							
+							//Add subtotal price with new tax amount
+							total_price_with_tax = parseFloat(subtotal_price) + parseFloat(tax_amount);
+							
+							console.log(total_price_with_tax);
+							
+							//And set the values to the output "total_price" for viewing purposes and to the hidden inputs for receipt purposes
+							$('#total_price').val(total_price_with_tax);
+							$('#total_price_with_tax').val(total_price_with_tax);
+							$('#sub_total_price').val(subtotal_price);
+							
+							extra_pay = total_price_with_tax - $('#org_total_cost').val();
+							
+							extra_pay = extra_pay.toFixed(2);
+							
+							$('#extra_pay').val(extra_pay);
+						}
+						else
+						{
+							document.getElementById("new_prices_div").style.display = "none"; 
+							document.getElementById("cust_no_pay_div").style.display = "block"; 
+						}
 						
-						tax_amount = $('#tax_amount').val();
-						console.log("tax amount: " + tax_amount);
-						
-						//Calculate the tax amount with the new tax rate
-						tax_amount = subtotal_price * (tax_amount / 100);
-						
-						//Make sure the new tax amount is 2 decimals long
-						tax_amount = tax_amount.toFixed(2);
-						
-						//Add subtotal price with new tax amount
-						total_price_with_tax = parseFloat(subtotal_price) + parseFloat(tax_amount);
-						
-						console.log(total_price_with_tax);
-						
-						//And set the values to the output "total_price" for viewing purposes and to the hidden inputs for receipt purposes
-						$('#total_price').val(total_price_with_tax);
-						$('#total_price_with_tax').val(total_price_with_tax);
-						$('#sub_total_price').val(subtotal_price);
 					}
 				});
 				
@@ -758,6 +789,13 @@
 				$('#total_price').val(total_price_with_tax);
 				$('#total_price_with_tax').val(total_price_with_tax);
 				$('#sub_total_price').val(subtotal_price);
+				
+				extra_pay = total_price_with_tax - $('#org_total_cost').val();
+				
+				extra_pay = extra_pay.toFixed(2);
+				
+				$('#extra_pay').val(extra_pay);
+				
 			});
 			
 			$( "#subtotal_price" ).dblclick(function()
