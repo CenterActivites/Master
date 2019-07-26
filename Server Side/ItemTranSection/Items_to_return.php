@@ -22,10 +22,21 @@
 			
 			//Does a mysql select to the database to grab item front id, name, back id, and the due date of the item
 			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date, item_modeltype, d.rent_id
-									FROM Inventory a, Item b, Rental c, CheckOut d
-									WHERE a.inv_id = b.inv_id and b.item_Backid = d.item_Backid and d.rent_id = c.rent_id
-									and c.cust_id = :a and c.return_date is NULL and c.rental_status = 'On-Going'");
+										FROM Inventory a, Item b, Rental c, CheckOut d
+										WHERE a.inv_id = b.inv_id and 
+												b.item_Backid = d.item_Backid and 
+												d.rent_id = c.rent_id and 
+												c.cust_id = :a and 
+												c.return_date is NULL and 
+												c.rental_status = 'On-Going' and 
+												b.item_Backid NOT IN (SELECT item_Backid
+																		FROM Rental e, CheckIn f
+																		WHERE e.rent_id = f.rent_id and
+																				e.cust_id = :b and
+																				e.return_date is NULL and 
+																				e.rental_status = 'On-Going')");
 			$items->bindValue(':a', $cust_id, PDO::PARAM_INT);
+			$items->bindValue(':b', $cust_id, PDO::PARAM_INT);
 			$items->execute();
 			$display_array = $items->fetchAll();
 		

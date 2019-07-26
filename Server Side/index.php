@@ -292,6 +292,12 @@
 						$remove->bindValue(':a', $ven_id, PDO::PARAM_INT);
 						//Execute the removal
 						$remove -> execute();
+						echo "</br>";
+						print $remove -> errorCode();
+						echo "\nPDO::errorInfo():\n";
+						print_r($remove->errorInfo());
+						echo "</br>";
+						echo "</br>";
 
 						//Close the connection
 						$conn = null;
@@ -824,20 +830,26 @@
 							foreach($rentals_dealing_with as $rent_id)
 							{
 								$item_list_in_checkout = $conn->prepare("select item_Backid
-																			from CheckOut
-																			where return_date IS NULL and rental_status = 'On-Going' and rent_id = :a");
+																			from CheckOut a, Rental b
+																			where a.rent_id = b.rent_id and 
+																					return_date IS NULL and 
+																					rental_status = 'On-Going' and 
+																					a.rent_id = :a");
 								$item_list_in_checkout->bindValue(':a', $rent_id, PDO::PARAM_INT);
 								$item_list_in_checkout->execute();
 								$item_list_in_checkout = $item_list_in_checkout->fetchAll();
 								
 								$item_list_in_checkin = $conn->prepare("select item_Backid
-																		from CheckIn
-																		where return_date IS NULL and rental_status = 'On-Going' and rent_id = :a");
+																		from CheckIn a, Rental b
+																		where a.rent_id = b.rent_id and 
+																				return_date IS NULL and 
+																				rental_status = 'On-Going' and 
+																				a.rent_id = :a");
 								$item_list_in_checkin->bindValue(':a', $rent_id, PDO::PARAM_INT);
 								$item_list_in_checkin->execute();
 								$item_list_in_checkin = $item_list_in_checkin->fetchAll();
 								
-								if($item_list_in_checkin == $item_list_in_checkout) 
+								if($item_list_in_checkout === $item_list_in_checkin)
 								{
 									$update = $conn->prepare("update Rental
 																set return_date = :a, rental_status = 'Completed'
