@@ -68,23 +68,15 @@
 				$display_array = $login_lvl->fetchAll();
 				
 				$_SESSION['lvl_access'] = $display_array[0][0];
-				
 				if($display_array[0][0] == "4")
 				{
 					$lvl_4 = "type = 'submit'";
+					$disabled_4 = "";
 				}
 				else
 				{
 					$lvl_4 = "type = 'hidden'";
-				}
-				
-				if($display_array[0][0] == "4" || $display_array[0][0] == "3")
-				{
-					$lvl_3 = "type = 'submit'";
-				}
-				else
-				{
-					$lvl_3 = "type = 'hidden'";
+					$disabled_4 = "disabled";
 				}
 ?>
 				<div class="no_print">
@@ -95,8 +87,8 @@
 							<input type="submit" name="ViewInv" id="ViewInv" value="View/Edit Inventory" />
 							<input type="submit" name="ViewVen" id="ViewVen" value="View/Edit Vendors" />
 							<input type="submit" name="ReturnI" id="ReturnI" value="Rental Return" />
-							<input type="submit"  name="Report" id="Report" value="Report" />
-							<input <?= $lvl_4 ?>  name="Empl" id="Empl" value="Employees" />
+							<input type="submit" name="Report" id="Report" value="Report" />
+							<input <?= $lvl_4 ?>  name="Empl" id="Empl" value="Employees" <?= $disabled_4 ?> />
 							<input type="submit" name="LogOut" id="log_out" value="Log Out" />
 						</div>
 					</form>
