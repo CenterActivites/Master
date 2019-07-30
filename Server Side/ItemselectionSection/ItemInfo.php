@@ -50,7 +50,11 @@
 					//Item query
 					foreach($conn->query("SELECT item_Backid, A.inv_id, item_modeltype, inv_name, cat_name, item_Frontid, item_size, stat_name, loc_name, pur_price,pur_date,public,vin_num,dbw_own
 											FROM Item A, Inventory B, Category C, Status D, Location E
-											WHERE A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and A.loc_id = E.loc_id and item_Backid = '$item_backid'") as $row)
+											WHERE A.inv_id = B.inv_id and 
+													B.cat_id = C.cat_id and 
+													A.stat_id = D.stat_id and 
+													A.loc_id = E.loc_id and 
+													item_Backid = '$item_backid'") as $row)
 					{
 						$curr_item_backid = $row["item_Backid"];
 						$curr_inv_id = $row["inv_id"];
@@ -69,19 +73,30 @@
 
 						$number_of_use = $conn->prepare("select count(itemtran_id)
 															from Item A, Transaction B, ItemTran C
-															where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
+															where A.item_Backid = C.item_Backid and 
+																	B.trans_id = C.tran_id and 
+																	B.trans_type = 'return' and
+																	C.item_Backid = :a");
 						$number_of_use->bindValue(':a', $item_backid, PDO::PARAM_INT);
 						$number_of_use->execute();
 						$number_of_use = $number_of_use->fetchAll();
 						$curr_number_of_use = $number_of_use[0][0];
 						
-						$notes = $conn->prepare("select note
-													from Notes a, NotesItem b
-													where a.note_id = b.note_id and b.item_Backid = :a");
+						/*$notes = $conn->prepare("SELECT timestamp, c.stat_name f , d.stat_name t, empl_fname, empl_lname    
+												FROM StatusChange a 
+												JOIN Status c
+												ON c.stat_id = a.change_from 
+												JOIN Status d 
+												ON d.stat_id = a.change_to
+												JOIN Employee b
+												ON a.empl_id = b.empl_id
+												WHERE timestamp = (select max(timestamp)
+																	from StatusChange
+																	where item_Backid = :a) and 
+														item_Backid = :a");
 						$notes->bindValue(':a', $item_backid, PDO::PARAM_INT);
 						$notes->execute();
-						$notes = $notes->fetchAll();
-
+						$notes = $notes->fetchAll();*/
 
 						if($curr_item_public == 1){
 							$curr_item_public = "Yes";
@@ -118,7 +133,7 @@
 										<td class="editcol"><?= $curr_item_size?></td>
 								</tr>
 								<tr>
-									<th>Status Of Item:</th>
+									<th>Current Status Of Item:</th>
 										<td class="editcol"><?= $curr_item_status?></td>
 								</tr>
 								<tr>
@@ -148,21 +163,6 @@
 								<tr>
 									<th>Number of Usage:</th>
 										<td class="editcol"><?= $curr_number_of_use?></td>
-								</tr>
-								<tr>
-									<th>Notes:</th>
-										<td class="editcol">
-<?php
-											if($notes != null || $notes != "")
-											{
-												foreach($notes as $note)
-												{
-													echo $note["note"];
-													echo "</br>";
-												}
-											}
-?>
-										</td>
 								</tr>
 							</table>
 						</div>
