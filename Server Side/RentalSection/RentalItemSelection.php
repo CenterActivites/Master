@@ -48,7 +48,7 @@
 		//Grabbing the list of items that have been reserved already to see if the current request dates will not come into conflict with each other
 		$list_of_reserve = $conn->prepare("select item_Backid, request_date, due_date
 										from Rental a, Reserve1 b
-										where a.rent_id = b.rent_id and a.pick_up_date is null;");
+										where a.rent_id = b.rent_id and a.return_date is null;");
 		$list_of_reserve->execute();
 		$list_of_reserve = $list_of_reserve->fetchAll();
 		
@@ -131,8 +131,8 @@
 												WHERE a.inv_id = c.inv_id and 
 														a.stat_id = b.stat_id and 
 														a.loc_id = " . $curr_loc . " and 
-														a.public = 1 and
-														(a.stat_id = 1 or a.stat_id = 7)
+														a.public = 1 and 
+														a.stat_id not in (10, 6, 2, 5) 
 												ORDER BY inv_name, item_modeltype, item_Backid") as $row)
 						{
 							//Check if the selected customer is a student or not.
