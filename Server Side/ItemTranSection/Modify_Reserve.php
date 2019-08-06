@@ -157,7 +157,7 @@
 									}
 ?>
 									<tr id='table_row_info'>
-										<td id = "hide_me"><input type="radio" id ="item_id" name="item_id[]" value = "<?= $curr_item_backid ?>"/></td>
+										<td id = "hide_me"><input type="radio" id ="item_id" name="item_id[]" value = "<?= '0-' . $curr_item_backid ?>"/></td>
 										<td id = 'td_front'><?= $curr_item_frontid?></td>
 										<td><?= $curr_item_size ?></td>
 										<td><?= $curr_item_modeltype ?></td>
@@ -208,12 +208,12 @@
 							//Check if the cart is empty, which only be in the beginning, we just make the cart equal to the first item_Backid
 							if($cart_array == "")
 							{
-								$cart_array = $row["item_Backid"];
+								$cart_array = '0-' . $row["item_Backid"];
 							}
 							//Once the first item is entered into the cart, we then add on to the cart with a ',' separating each item_Backid
 							else
 							{
-								$cart_array = $cart_array . "," . $row["item_Backid"];
+								$cart_array = $cart_array . "," . '0-' . $row["item_Backid"];
 							}
 							
 							$curr_item_backid = $row["item_Backid"];
@@ -227,7 +227,8 @@
 							}
 ?>
 							<tr id='table_row_info'>
-								<td id = "hide_me"><input type="radio" id ="item_id" name="item_id[]" value = "<?= $row["item_Backid"] ?>"/></td>
+								<td id = "hide_me"><input type="radio" id ="item_id" name="item_id[]" value = "<?= '0-' . $row["item_Backid"] ?>"/></td>
+								<td id = "hide_me"><input type="radio" id ="item_id" name="item_id[]" value = "<?= '0-' . $curr_item_backid ?>"/></td>
 								<td id = 'td_front'><?= $curr_item_frontid?></td>
 								<td><?= $curr_item_size ?></td>
 								<td><?= $curr_item_modeltype ?></td>
@@ -584,7 +585,7 @@
 											var tr = document.createElement('tr');
 											
 											//Populate the tr tag
-											tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+item_Backid+"'/>" +"</td>" + 
+											tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '" + $('#pack').val() + "-" + item_Backid + "'/>" +"</td>" + 
 															"<td>" + item_Frontid + "</td>"  + 
 															"<td>" + item_size + "</td>" +
 															"<td>" + item_modeltype + "</td>" + 
@@ -625,7 +626,7 @@
 										var tr = document.createElement('tr');
 										
 										//Populate the tr tag
-										tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+item_Backid+"'/>" +"</td>" + 
+										tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '" + $('#pack').val() + "-" + item_Backid + "'/>" +"</td>" + 
 														"<td>" + item_Frontid + "</td>"  + 
 														"<td>" + item_size + "</td>" +
 														"<td>" + item_modeltype + "</td>" + 
