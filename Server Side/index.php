@@ -447,6 +447,7 @@
 									$insert->bindValue(':c', $item_id, PDO::PARAM_INT);
 									$insert->bindValue(':d', $empl_id, PDO::PARAM_INT);
 									$insert->execute();
+									//DEBUGGING PURPOSE
 									//print $insert -> errorCode();
 									//echo "\nPDO::errorInfo():\n";
 									//print_r($insert->errorInfo());
@@ -577,8 +578,8 @@
 					elseif(isset($_POST["finished"])) //Once the user if finished modifying the rental
 					{
 						//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
-						if($_SESSION['refreshed'] != "finished")
-						{
+						//if($_SESSION['refreshed'] != "finished")
+						//{
 							//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
 							$_SESSION['refreshed'] = "finished";
 			
@@ -596,9 +597,8 @@
 							$mod_reserve = $_SESSION['mod_reserved'];
 							
 							$curr_reserved_items = $conn->prepare("SELECT a.item_Backid
-														FROM Item a, Inventory c, Reserve1 d
-														WHERE a.inv_id = c.inv_id and a.item_Backid = d.item_Backid and d.rent_id = :a
-														ORDER BY inv_name, item_modeltype, item_Backid");
+																	FROM Item a, Inventory c, Reserve1 d
+																	WHERE a.inv_id = c.inv_id and a.item_Backid = d.item_Backid and d.rent_id = :a");
 							$curr_reserved_items->bindValue(':a', $curr_rental, PDO::PARAM_INT);
 							$curr_reserved_items->execute();
 							$curr_reserved_items = $curr_reserved_items->fetchAll();
@@ -610,6 +610,8 @@
 							
 							foreach($array_of_items as $item)
 							{
+								$item = explode('-', $item); //First we grab the item string, and explode it into a array of ints
+								$item = $item[1];
 								if (!(in_array($item, $curr_filiered_reserved_items)))
 								{
 									$insert = $conn->prepare("insert into Reserve1
@@ -676,7 +678,7 @@
 							//echo "</br>" . "\nPDO::errorInfo():\n";
 							//print_r($update->errorInfo());
 							//echo "</br>";
-						}
+						//}
 						ItemToPickUp();
 					}
 					else //A "catch all" thing where if there was ever a time a button has not been press and the page somehow moves on,
@@ -783,15 +785,6 @@
 
 							//Grabbing current date
 							$current_date = date('Y-m-d H:i:s');
-							
-							//Here we're going to be grabbing the 'rent_id' from the Rental table to allow us to pull up all needed information for the pick-up
-							$rent_id_select = $conn->prepare("select rent_id
-																from Rental
-																where return_date IS NULL and rental_status = 'On-Going' and cust_id = :cust_id");
-							$rent_id_select->bindValue(':cust_id', $cust_id, PDO::PARAM_INT);
-							$rent_id_select->execute();
-							$rent_id_select = $rent_id_select->fetchAll();
-							$rent_id = $rent_id_select[0][0];
 							
 							$rentals_dealing_with = array();
 							foreach($items_to_return as $item_and_rent_id)
@@ -946,7 +939,7 @@
 ?>
 				<div class="background">
 <?php
-				if(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
+					if(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 					{
 						$_SESSION['next_page'] = "HomePage";
 						HomePage();
@@ -1005,35 +998,27 @@
 					{
 						ItemInfo();
 					}
+					
+					
+					// =================================================================
+					// =================================================================
+					
+					//TODO:: Think of a way to properly to remove items and inventory
+					
+					// =================================================================
+					// =================================================================
 					elseif(isset($_POST["removeItem"])) //The remove item button on the edit item view
 					{
 						//Connecting to the Database
 						$conn = db();
-
 						$item_id = htmlspecialchars(strip_tags($_POST["item_Backid"]));
-
-						/*$note_id = $conn->prepare("SELECT note_id
-													FROM NotesItem
-													WHERE item_Backid = '$item_id'");
-						$note_id ->execute();
-						$note_id = $note_id->fetchAll();*/
 						
 						$remove =$conn -> prepare("DELETE FROM NotesItem
 													WHERE item_Backid = '$item_id'");
-
 						$remove ->execute();
-						
-						/*foreach($note_id as $id)
-						{
-							$remove =$conn -> prepare("DELETE FROM Notes
-														WHERE note_id = :a");
-							$remove->bindValue(':a', $id['note_id'], PDO::PARAM_INT);
-							$remove ->execute();
-						}*/
-						
+					
 						$remove =$conn -> prepare("DELETE FROM Item
 													WHERE item_Backid = '$item_id'");
-
 						$remove ->execute();
 						/*print $remove -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
 						echo "\nPDO::errorInfo():\n";
@@ -1062,11 +1047,17 @@
 
 						Itemselection();
 					}
+					// =================================================================
+					// =================================================================
+					// =================================================================
+					// =================================================================
+					
 					else if(isset($_POST["updateInv"]))
 					{
 						//Connecting to the Database
 						$conn = db();
 
+						//Grabbing the new information the user have entered
 						$inv_id = htmlspecialchars(strip_tags($_POST["inv_id"]));
 						$inv_name = htmlspecialchars(strip_tags($_POST["curr_inv_name"]));
 						$cat_id = htmlspecialchars(strip_tags($_POST["cat_select"]));
@@ -1077,20 +1068,33 @@
 						$stu_week_price = htmlspecialchars(strip_tags($_POST["curr_stu_week_price"]));
 						$week_price = htmlspecialchars(strip_tags($_POST["curr_week_price"]));
 
-
+						//Set up the update statemnet
 						$update = $conn ->prepare("UPDATE Inventory
-													SET inv_name = '$inv_name',
-														cat_id = '$cat_id',
-														stu_day_price = '$stu_day_price',
-														day_price = '$day_price',
-														stu_weekend_price = '$stu_weekend_price',
-														weekend_price = '$weekend_price',
-														stu_week_price = '$stu_week_price',
-														week_price = '$week_price'
-													WHERE inv_id = '$inv_id'");
-
+													SET inv_name = :a,
+														cat_id = :b,
+														stu_day_price = :c,
+														day_price = :h,
+														stu_weekend_price = :d,
+														weekend_price = :e,
+														stu_week_price = :f,
+														week_price = :g
+													WHERE inv_id = :i");
+						//Bind the values
+						$update ->bindValue(':a', $inv_name, PDO::PARAM_STR);
+						$update ->bindValue(':b', $cat_id, PDO::PARAM_INT);
+						$update ->bindValue(':c', $stu_day_price, PDO::PARAM_INT);
+						$update ->bindValue(':d', $stu_weekend_price, PDO::PARAM_INT);
+						$update ->bindValue(':e', $weekend_price, PDO::PARAM_INT);
+						$update ->bindValue(':f', $stu_week_price, PDO::PARAM_INT);
+						$update ->bindValue(':g', $week_price, PDO::PARAM_INT);
+						$update ->bindValue(':h', $day_price, PDO::PARAM_INT);
+						$update ->bindValue(':i', $inv_id, PDO::PARAM_INT);
+						//And excute
 						$update ->execute();
-						//print $update -> errorCode();
+						/*print $update -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+						echo "\nPDO::errorInfo():\n";
+						print_r($update->errorInfo());
+						echo "</br>";*/
 						$conn = null;
 
 						Itemselection();
@@ -1100,6 +1104,7 @@
 						//Connecting to the Database
 						$conn = db();
 
+						//Grabbing the updated infomation the user have entered
 						$item_backid = htmlspecialchars(strip_tags($_POST["item_Backid"]));
 						$item_frontid = htmlspecialchars(strip_tags($_POST["curr_item_Frontid"]));
 						$item_name = htmlspecialchars(strip_tags($_POST["curr_item_name"]));
@@ -1115,10 +1120,18 @@
 						$item_notes = htmlspecialchars(strip_tags($_POST["curr_item_notes"]));
 						$item_class = htmlspecialchars(strip_tags($_POST["Classification"]));
 						
+						//Check the user have entered any notes about the item at all
 						if($item_notes != "")
 						{
+							//If so then
+							
+							//Grab the user id
 							$empl_id = $_SESSION['empl_id'];
+							
+							//Current date
 							$date = date("Y-m-d h:i:s");
+							
+							//Set up the insert statement for the notes
 							$insert = $conn->prepare("insert into Notes
 														(note, timestamp)
 														values
@@ -1127,9 +1140,12 @@
 							$insert->bindValue(':a', $item_notes, PDO::PARAM_STR);
 							$insert->bindValue(':b', $date, PDO::PARAM_STR);
 							$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
+							//Execute the insert
 							$insert->execute();
+							//Grab the id of the newly inserted note
 							$note_id = $conn->lastInsertId();
 							
+							//Set up the note connection to the item itself
 							$insert = $conn->prepare("insert into NotesItem
 														(note_id, item_Backid)
 														values
@@ -1137,9 +1153,11 @@
 							//Binding the vars along with their respected datatype
 							$insert->bindValue(':a', $note_id, PDO::PARAM_INT);
 							$insert->bindValue(':b', $item_backid, PDO::PARAM_INT);
+							//Execute
 							$insert->execute();
 						}
 						
+						//Sets up the update statement
 						$update = $conn ->prepare("UPDATE Item
 													SET item_modeltype = '$item_name',
 														item_Frontid = '$item_frontid',
@@ -1154,11 +1172,14 @@
 														public = '$item_pub_use',
 														inv_id = '$item_class'
 													WHERE item_Backid = '$item_backid'");
+						//Execute the update
 						$update ->execute();
 						/*print $update -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
 						echo "\nPDO::errorInfo():\n";
 						print_r($update->errorInfo());
 						echo "</br>";*/
+						
+						//Makes sure the database connection is closed
 						$conn = null;
 
 						Itemselection();
@@ -1175,6 +1196,8 @@
 					}
 					elseif(isset($_POST["add"]))
 					{
+						//User select to add a new inventory
+						
 						//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
 						if($_SESSION['refreshed'] != "add")
 						{
@@ -1184,6 +1207,7 @@
 							//Connecting to the Database
 							$conn = db();
 
+							//Grab the new inventory information
 							$new_inv_name = htmlspecialchars(strip_tags($_POST["new_inv_name"]));
 							$new_cat = (int)htmlspecialchars(strip_tags($_POST["cat_id"]));
 							$new_stu_day_price = htmlspecialchars(strip_tags($_POST["new_stu_day_price"]));
@@ -1194,19 +1218,24 @@
 							$new_public_weekend_price =htmlspecialchars(strip_tags($_POST["new_public_weekend_price"]));
 
 
+							//Sets up the insert
 							$insert = $conn ->prepare("insert into Inventory
 							(inv_id, inv_name, cat_id, stu_day_price, day_price, stu_weekend_price, weekend_price, stu_week_price, week_price)
 							values
 							(Default, ?, ?, ?, ?, ?, ?, ?, ?)");
 
+							//Execute the insert
 							$insert ->execute([$new_inv_name, $new_cat, $new_stu_day_price, $new_public_day_price, $new_student_week_price, $new_public_week_price, $new_student_weekend_price, $new_public_weekend_price]);
-
+							
+							//Close the database connection
 							$conn = null;
 						}
 						Itemselection();
 					}
 					elseif (isset($_POST["add2"]))
 					{
+						//User select to add a new item
+						
 						//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
 						if($_SESSION['refreshed'] != "add2")
 						{
@@ -1216,6 +1245,7 @@
 							//Connecting to the Database
 							$conn = db();
 
+							//Grab the new item's information
 							$inv_id = (int)htmlspecialchars(strip_tags($_POST["inv_id"]));
 							$front_id = htmlspecialchars(strip_tags($_POST["new_front_id"]));
 							$item_name = htmlspecialchars(strip_tags($_POST["new_item_name"]));
@@ -1230,12 +1260,13 @@
 							$pub = (int)htmlspecialchars(strip_tags($_POST["pub"]));
 							$notes = (int)htmlspecialchars(strip_tags($_POST["new_notes"]));
 
+							//Sets up the insert statement 
 							$insert = $conn ->prepare("insert into Item
 														(item_Frontid, item_modeltype, item_size, inv_id, stat_id, loc_id, pur_price, ven_id, dbw_own, pur_date, vin_num, public)
 														values
 														(:item_Frontid, :item_modeltype, :item_size, :inv_id, :stat_id, :location, :pur_price, :ven_id, :dbw_own, :pur_date,
 														:vin_num, :public)");
-
+							//Bind the newly information
 							$insert -> bindValue(':item_Frontid', $front_id, PDO::PARAM_STR);
 							$insert -> bindValue(':item_modeltype', $item_name, PDO::PARAM_STR);
 							$insert -> bindValue(':item_size', $item_size, PDO::PARAM_STR);
@@ -1248,17 +1279,28 @@
 							$insert -> bindValue(':pur_date', $date_pur, PDO::PARAM_STR);
 							$insert -> bindValue(':vin_num', $vin_num, PDO::PARAM_INT);
 							$insert -> bindValue(':public', $pub, PDO::PARAM_INT);
+							//Execute the insert
 							$insert -> execute();
 							/*print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
 							echo "\nPDO::errorInfo():\n";
 							print_r($insert->errorInfo());
 							echo "</br>";*/
-							$item_backid = $conn->lastInsertId();
 							
+							//See if the user added any notes to the newly item
 							if($notes != "")
 							{
+								//If user did added notes then
+								
+								//Grab the new item id
+								$item_backid = $conn->lastInsertId();
+
+								//Grab the user id
 								$empl_id = $_SESSION['empl_id'];
+								
+								//Current date
 								$date = date("Y-m-d h:i:s");
+								
+								//Set up the insert to the notes
 								$insert = $conn->prepare("insert into Notes
 														(note, timestamp)
 														values
@@ -1267,9 +1309,13 @@
 								$insert->bindValue(':a', $notes, PDO::PARAM_STR);
 								$insert->bindValue(':b', $date, PDO::PARAM_STR);
 								$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
+								//Execute the insert
 								$insert->execute();
+								
+								//Grab the newly made note id
 								$note_id = $conn->lastInsertId();
 								
+								//Sets up the insert for the note connection to the item itself
 								$insert = $conn->prepare("insert into NotesItem
 															(note_id, item_backid)
 															values
@@ -1277,10 +1323,14 @@
 								//Binding the vars along with their respected datatype
 								$insert->bindValue(':a', $note_id, PDO::PARAM_INT);
 								$insert->bindValue(':b', $item_backid, PDO::PARAM_INT);
+								//Execute the insert
 								$insert->execute();
-								//print $insert->errorCode(); // <<----- The code to print the error code
+								/*print $insert -> errorCode(); //<======= Prints Error Code For INSERT Statement =======>
+								echo "\nPDO::errorInfo():\n";
+								print_r($insert->errorInfo());
+								echo "</br>";*/
 							}
-
+							//Close off the connection to the database
 							$conn = null;
 						}
 						Itemselection();
@@ -1294,8 +1344,8 @@
 					}
 					elseif(isset($_POST['refine']))
 					{
-						refine_search();
 						// trying some new stuff since we have time
+						refine_search();
 					}
 					else//A "catch all" thing where if there was ever a time a button has not been press and the page somehow moves on,
 						//We just move on back the main section page
@@ -1744,9 +1794,6 @@
 					}
 					elseif(isset($_POST["calPay"])) //Continue to Payments button. Pushes users to the CalculatePayments page.
 					{
-						//Connecting to the Database
-						$conn = db();
-
 						//grabbing the array of item ids
 						$select_item = htmlspecialchars(strip_tags($_POST["item_array"]));
 						$item_array = explode(',', $select_item); //First we grab the item string, and explode it into a array of ints
@@ -1758,9 +1805,6 @@
 						$_SESSION['refreshed'] = "none";
 						
 						CalPay();      //moves the user to the calculate payment page
-
-						//remember to close the PDO connection
-						$conn = null;
 					}
 
 					else //A "catch all" thing where if there was ever a time a button has not been press and the page somehow moves on,
