@@ -11,9 +11,8 @@
 	$item_array = explode(',', $new_cart); //First we grab the item string, and explode it into a array of ints
 	$empty_index = array_filter($item_array); //We then filter out any empty spots in the array just in case
 	$array_of_string_items = array_values($empty_index); //Once after the filter, we reset the array.
-	$array_of_int_items = array_map('intval', $array_of_string_items);
 	
-	$calcuated = priceCal($request_date, $due_date, $array_of_int_items, $cust_id);
+	$calcuated = priceCal($request_date, $due_date, $array_of_string_items, $cust_id);
 	
 	$_SESSION['mod_reserved'] = $calcuated;
 	$_SESSION['mod_item_array'] = $array_of_string_items;

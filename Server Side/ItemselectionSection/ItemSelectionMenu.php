@@ -309,6 +309,8 @@
 			</fieldset>
 		</form>
 		
+		<input type="hidden" id="empl_id" id="empl_id" value="<?= $_SESSION['empl_id'] ?>" />
+		
     </div>
 	</div>
 
@@ -605,13 +607,14 @@
 					 type: "post",
 					 data:{
 						'status_id': $(this).val(),
-						'item_id':$('#item_id').val()
+						'item_id':$('#item_id').val(),
+						'empl_id':$('#empl_id').val()
 					 },
 					 success:function(data){
-						 console.log("Status Update");
+						console.log("Status Update");
 					 },
 					 error: function(XMLHttpRequest, textStatus, errorThrown) { 
-						 console.log("Status Update went wrong");
+						console.log("Status Update went wrong");
 					 }       
 				 });
 			 });

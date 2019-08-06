@@ -237,7 +237,7 @@
 												$cleaning_up_receipt = array();
 												foreach($receipt_prices as $item)
 												{
-													if(strpos($item['name'], '(') !== false || $item['id'] == " ") 
+													if(strpos($item['name'], 'Package') !== false || $item['id'] == " ") 
 													{
 														$cleaning_up_receipt[] = $item;
 													}
@@ -256,7 +256,7 @@
 												
 												foreach($cleaning_up_receipt as $item)
 												{
-													if(strpos($item['name'], '(') !== false) 
+													if($item['id'] != " ") 
 													{
 ?>
 														<tr>
@@ -274,7 +274,7 @@
 															<td class="col-md-6"><em> <?= $item['name'] ?> </em></h4></td>
 															<td class="col-md-1 text-center"> <?= $item['id'] ?> </td>
 															<td class="col-md-1 text-center"> $<?= $item['price'] ?> </td>
-															<td class="col-md-1 text-center"> $<?= $item['deposit'] ?> </td>
+															<td class="col-md-1 text-center"> <?= $item['deposit'] ?> </td>
 														</tr>
 <?php
 													}

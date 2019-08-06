@@ -52,7 +52,7 @@
 				$comment_display = "";
 				foreach($comments as $comment)
 				{
-					$comment_display = $comment_display . $comment['note'] . " -- Made by " . $comment['empl_fname'] . " " . $comment['empl_lname'] . "                                       ";
+					$comment_display = $comment_display . $comment['note'] . " -- Made by " . $comment['empl_fname'] . " " . $comment['empl_lname'] . "&#13;&#10;";
 				}
 				$comment_display = $comment_display . "Type Any New Comments Here";
 			}
@@ -148,10 +148,6 @@
 								$("#item_to_be_pick_up").val(get_val + "," + box_value);
 							}
 						});
-						$('#item_table').find('input[type="checkbox"]:not:checked').each(function () 
-						{
-							$("#item_to_be_pick_up").val('1');
-						});
 						
 						//Checks if the user had selected any items for pick-up
 						if($("#item_to_be_pick_up").val().length == 0)
@@ -160,6 +156,11 @@
 							alert("No Item was Selected for Pick Up");
 							return false;
 						}
+						
+						$('#item_table').find('input[type="checkbox"]:not:checked').each(function () 
+						{
+							$("#item_to_be_pick_up").val('1');
+						});
 					});
 				});
 			</script>
