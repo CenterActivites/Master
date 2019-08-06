@@ -71,18 +71,16 @@
 						$curr_item_vin_num=$row["vin_num"];
 						$curr_item_dbw_own=$row["dbw_own"];
 
-						$number_of_use = $conn->prepare("select count(itemtran_id)
-															from Item A, Transaction B, ItemTran C
-															where A.item_Backid = C.item_Backid and 
-																	B.trans_id = C.tran_id and 
-																	B.trans_type = 'return' and
-																	C.item_Backid = :a");
+						$number_of_use = $conn->prepare("select count(A.rent_id)
+															from Rental A, CheckOut B
+															where A.rent_id = B.rent_id and 
+																	B.item_Backid = :a");
 						$number_of_use->bindValue(':a', $item_backid, PDO::PARAM_INT);
 						$number_of_use->execute();
 						$number_of_use = $number_of_use->fetchAll();
 						$curr_number_of_use = $number_of_use[0][0];
 						
-						/*$notes = $conn->prepare("SELECT timestamp, c.stat_name f , d.stat_name t, empl_fname, empl_lname    
+						/*$notes = $conn->prepare("SELECT timestamp, c.stat_name f, d.stat_name t, empl_fname, empl_lname    
 												FROM StatusChange a 
 												JOIN Status c
 												ON c.stat_id = a.change_from 
