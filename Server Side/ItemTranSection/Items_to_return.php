@@ -12,13 +12,13 @@
 		</head>
 		<body style="text-align: center;">
 <?php
+			//Connecting to the Database
+			$connctn = db();
+			
 			//Grabs the selected customer id and set it in SESSION
 			$cust_id = strip_tags($_POST['cust_id']);
 			
 			$_SESSION["cust_id"] = $cust_id;
-			
-			//Connecting to the Database
-			$connctn = db();
 			
 			//Does a mysql select to the database to grab item front id, name, back id, and the due date of the item
 			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date, item_modeltype, d.rent_id
@@ -60,7 +60,7 @@
 				$comment_display = "";
 				foreach($comments as $comment)
 				{
-					$comment_display = $comment_display . $comment['note'] . " -- Made by " . $comment['empl_fname'] . " " . $comment['empl_lname'] . "                                       ";
+					$comment_display = $comment_display . $comment['note'] . " -- Made by " . $comment['empl_fname'] . " " . $comment['empl_lname'] . "&#13;&#10;";
 				}
 				$comment_display = $comment_display . "Type Any New Comments Here";
 			}
