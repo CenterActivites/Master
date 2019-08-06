@@ -5,7 +5,6 @@
 	{
 		//Connecting to the Database
         $conn = db();
-		
 ?>
 <html>
 <head>
