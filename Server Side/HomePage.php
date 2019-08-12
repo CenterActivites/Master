@@ -90,8 +90,7 @@
 											$curr_due_date = $row["due_date"];
 											
 											//The following two lines is for formatting reasons. Basically to make the date we get from the database more readable for users
-											$curr_due_date = strtotime($curr_due_date);
-											$curr_due_date = date('m/d/Y', $curr_due_date);
+											$curr_due_date = date("D, j M Y", strtotime($curr_due_date));
 ?>
 											<tr>
 												<td id = "hide_me"><input type="radio" name="radio[]" value = "<?= $curr_cust_id ?>"/></td>
@@ -160,8 +159,7 @@
 											$curr_request_date = $row["request_date"];
 											
 											//Again same for the Due rental table, the next two lines is for allowing users to read the dates parts more easy
-											$curr_request_date = strtotime($curr_request_date);
-											$curr_request_date = date('m/d/Y', $curr_request_date);
+											$curr_request_date = date("D, j M Y", strtotime($curr_request_date));
 ?>
 											<tr>
 												<td id = "hide_me"><input type="radio" name="radio[]" value = "<?= $curr_rent_id ?>"/></td>
@@ -306,9 +304,18 @@
 								c_email = obj['c_email'];
 								due_date = obj['due_date'];
 								
-								due_date = due_date.split("-");
+								var d_names = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+
+								var m_names = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 								
-								due_date = due_date[1] + "/" + due_date[2] + "/" +due_date[0];
+								var d = new Date(due_date.replace(/-/g, '\/'));
+								var curr_day = d.getDay();
+								var curr_month = d.getMonth();
+								var curr_date = d.getDate();
+								var curr_month = d.getMonth();
+								var curr_year = d.getFullYear();
+								
+								due_date = d_names[curr_day] + ", " + curr_date + " " +  m_names[curr_month] + " " + curr_year;
 								
 								//Create a tr tag
 								var tr = document.createElement('tr');
@@ -349,9 +356,18 @@
 								c_email = obj['c_email'];
 								request_date = obj['request_date'];
 								
-								request_date = request_date.split("-");
+								var d_names = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+
+								var m_names = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 								
-								request_date = request_date[1] + "/" + request_date[2] + "/" +request_date[0];
+								var d = new Date(request_date.replace(/-/g, '\/'));
+								var curr_day = d.getDay();
+								var curr_month = d.getMonth();
+								var curr_date = d.getDate();
+								var curr_month = d.getMonth();
+								var curr_year = d.getFullYear();
+								
+								request_date = d_names[curr_day] + ", " + curr_date + " " +  m_names[curr_month] + " " + curr_year;
 								
 								//Create a tr tag
 								var tr = document.createElement('tr');

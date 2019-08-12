@@ -21,7 +21,7 @@
 			$connctn = db();
 			
 			//We do a mysql select here to get all the items that are being "reserved" for the customer to be picked up
-			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, request_date, cust_id, item_modeltype
+			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, request_date, cust_id, item_modeltype, due_date
 										FROM Inventory a, Item b, Rental c, Reserve1 d
 										WHERE a.inv_id = b.inv_id and 
 												b.item_Backid = d.item_Backid and 
@@ -73,14 +73,15 @@
 							<th> Item Model/Brand: </th>
 							<th> Item Id: </th>
 							<th> Date to be Pick Up </th>
+							<th> Date to be Return By </th>
 						</tr>
 <?php
 					//Start of the FOR loop
 					for($i=0; $i<$array_size; $i++)
 					{
 						//The following two lines is for formatting reasons. Basically to make the date we get from the database more readable for users
-						$curr_request_date = strtotime($display_array[$i]['request_date']);
-						$curr_request_date = date('M d, Y', $curr_request_date);
+						$curr_request_date = date("D, j M Y", strtotime($display_array[$i]['request_date']));
+						$curr_due_date = date("D, j M Y", strtotime($display_array[$i]['due_date']));
 ?>
 						<tr>
 							
@@ -92,6 +93,7 @@
 							<td> <?= $display_array[$i]['item_modeltype'] ?> </td>
 							<td> <?= $display_array[$i]['item_Frontid'] ?> </td>
 							<td> <?= $curr_request_date ?> </td>
+							<td> <?= $curr_due_date ?> </td>
 						</tr>
 <?php
 					}

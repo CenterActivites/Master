@@ -21,7 +21,7 @@
 			$_SESSION["cust_id"] = $cust_id;
 			
 			//Does a mysql select to the database to grab item front id, name, back id, and the due date of the item
-			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date, item_modeltype, d.rent_id
+			$items = $connctn->prepare("SELECT item_Frontid, inv_name, b.item_Backid, due_date, item_modeltype, d.rent_id, request_date
 										FROM Inventory a, Item b, Rental c, CheckOut d
 										WHERE a.inv_id = b.inv_id and 
 												b.item_Backid = d.item_Backid and 
@@ -78,6 +78,7 @@
 							<th> Item Name: </th>
 							<th> Item Model/Brand: </th>
 							<th> Item Id: </th>
+							<th> Request Date: </th>
 							<th> Due Date: </th>
 						</tr>
 <?php
@@ -94,20 +95,22 @@
 							<td> <?= $display_array[$i]['item_Frontid'] ?> </td>
 <?php
 							//Format the due date into a more readable format for the users
-							$curr_due_date = strtotime($display_array[$i]['due_date']);
-							$curr_due_date = date('M d, Y', $curr_due_date);
+							$curr_due_date = date("D, j M Y", strtotime($display_array[$i]['due_date']));
+							$curr_request_date = date("D, j M Y", strtotime($display_array[$i]['request_date']));
 							
 							//Does a check to see if the due_date received from the database is past the current date
 							//If so then that mean the item is due to be returned and will be label "Late" 
 							if(strtotime($display_array[$i]['due_date']) < strtotime(date('Y-m-d')))
 							{
 ?>
+								<td> <?= $curr_request_date ?> </td>
 								<td> <?= $curr_due_date ?> &nbsp;&nbsp; LATE </td>
 <?php
 							}
 							else
 							{
 ?>
+								<td> <?= $curr_request_date ?> </td>
 								<td> <?= $curr_due_date ?> </td>
 <?php								
 							}
