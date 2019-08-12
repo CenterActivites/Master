@@ -158,10 +158,9 @@
 					$days++;
 				}
 			}
-			// ***************  Dont delete this, used for debugging the pricing function. ***************  
-			/*echo "days: " . $days . "</br>";
-			echo "weekends: " . $weekends . "</br>";
-			echo "weeks: " . $weeks . "</br>";*/
+			$return_array['days'] = $days;
+			$return_array['weekends'] = $weekends;
+			$return_array['weeks'] = $weeks;
 			
 			$receipt_prices = array(); //Here is where we going to be saving all the prices for the receipt
 			$total_price = 0; //Here is where we are going to be storing the total price of all the item is been selected
@@ -636,6 +635,9 @@
 			$return_array['total_price'] = 0;
 			$return_array['total_deposit'] = $total_deposit;
 			$return_array['receipt_prices'] = $receipt_prices;
+			$return_array['days'] = 0;
+			$return_array['weekends'] = 0;
+			$return_array['weeks'] = 0;
 			
 			return $return_array;
 		}

@@ -3,12 +3,22 @@ table ,tr td{
 	word-wrap: break-word;
 }
 
-#calculated_amounts {
+#calculated_amounts{
     width:35%;
 	font-size: 20px;
 	text-align: center;
 	margin-left:auto;
+	margin-right:10%;
+	float:right;
+}
+
+#cart_information {
+    width:35%;
+	font-size: 20px;
+	text-align: center;
+	margin-left:10%;
 	margin-right:auto;
+	float:left;
 }
 
 #tax_input {
@@ -18,7 +28,7 @@ table ,tr td{
 	padding-right:2px;
 }
 
-#calculated_amounts th {
+#calculated_amounts th ,#cart_information th{
     width: 50%;
     background-color: #008000;
     color: #EEE8AA;
@@ -27,12 +37,12 @@ table ,tr td{
     font-size: 17px;
     font-family: "Times New Roman", Times, serif;
 	padding-bottom:4px;
-	padding-left:6px;
-	padding-right:6px;
+	padding-left:4px;
+	padding-right:4px;
 	padding-top:4px;
 }
 
-#calculated_amounts td {
+#calculated_amounts td ,#cart_information td {
 	width: 15%;
 	margin-left:auto;
 	margin-right:auto;
