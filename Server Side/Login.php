@@ -118,6 +118,27 @@ function Login()
 		</fieldset>
 	</form>
 </div>
+
+<script>
+	var password = document.getElementById("password");
+	var username = document.getElementById("username");
+	username.addEventListener("keyup", function(event) 
+	{
+		if (event.keyCode === 13) 
+		{
+			event.preventDefault();
+			document.getElementById("login").click();
+		}
+	});
+	password.addEventListener("keyup", function(event) 
+	{
+		if (event.keyCode === 13) 
+		{
+		   event.preventDefault();
+		   document.getElementById("login").click();
+		}
+	});
+</script>
 <?php
 
 }
