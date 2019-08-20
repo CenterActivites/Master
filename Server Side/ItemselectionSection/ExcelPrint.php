@@ -12,6 +12,23 @@
 	$public_val = $_POST['public_hidden'];
 	$loc_val = $_POST['location_hidden'];
 	$cat_val = $_POST['cat_hidden'];
+	$search_bar = $_POST['search_bar'];
+	
+	$search_bar = explode(' ', $search_bar);
+	$search_bar = array_filter($search_bar);
+	$search_bar = array_values($search_bar);
+	
+	function contain($string, array $array) 
+	{
+		foreach($array as $value)
+		{
+			if(strpos($string,$value) == true)
+			{
+				return true;
+			};
+		}
+		return false;
+	}
 	
 	if($dbw_val == 'yes')
 	{
@@ -84,46 +101,67 @@
 		$display_array = $select_item->fetchAll();
 		for($i = 0; $i < count($display_array); $i++)
 		{
-			$number_of_use = $connctn->prepare("select count(itemtran_id)
-												from Item A, Transaction B, ItemTran C
-												where A.item_Backid = C.item_Backid and B.trans_id = C.tran_id and B.trans_type = 'return' and C.item_Backid = :a");
-			$number_of_use->bindValue(':a', $display_array[$i]['item_Backid'], PDO::PARAM_INT);
-			$number_of_use->execute();
-			$number_of_use = $number_of_use->fetchAll();
-			$curr_number_of_use = $number_of_use[0][0];
-			
-			$curr_item_backid = $display_array[$i]["item_Backid"];
-			$curr_item_size = $display_array[$i]["item_size"];
-			$curr_inv_name = $display_array[$i]["inv_name"];
-			$curr_item_model = $display_array[$i]["item_modeltype"];
-			$curr_item_frontid = $display_array[$i]["item_Frontid"];
-			$curr_pub_use = $display_array[$i]["public"];
-			$curr_stat_info = $display_array[$i]["stat_name"];
-
-			$item_backid = (int)$curr_item_backid;
-			
-			if($curr_pub_use == "1"){
-				$curr_pub_use = "Yes";
-			}
-			else{
-				$curr_pub_use = "No";
-			}
-
-			if($curr_item_size == NULL)
+			$count = 0;
+			foreach($display_array[$i] as $item)
 			{
-				$curr_item_size = "";
+				if(contain($item, $search_bar))
+				{
+					$count++;
+				}
 			}
 			
+			//echo "amount counted: " . $count;
+			//echo "</br>" . "</br>";
+			//echo "Array length: " . count($search_bar);
+			//echo "</br>" . "</br>";
 			
-			$objPHPExcel->getActiveSheet()->setCellValue('A' . $row_count, $curr_item_frontid);
-			$objPHPExcel->getActiveSheet()->setCellValue('B' . $row_count, $curr_item_size);
-			$objPHPExcel->getActiveSheet()->setCellValue('C' . $row_count, $curr_item_model);
-			$objPHPExcel->getActiveSheet()->setCellValue('D' . $row_count, $curr_inv_name);
-			$objPHPExcel->getActiveSheet()->setCellValue('E' . $row_count, $curr_pub_use);
-			$objPHPExcel->getActiveSheet()->setCellValue('F' . $row_count, $curr_stat_info);
-			$objPHPExcel->getActiveSheet()->setCellValue('G' . $row_count, $curr_number_of_use);
 			
-			$row_count++;
+			
+			if($count >= (2 * count($search_bar)))
+			{
+				$number_of_use = $connctn->prepare("select count(A.rent_id)
+													from Rental A, CheckOut B
+													where A.rent_id = B.rent_id and 
+													B.item_Backid = :a");
+				$number_of_use->bindValue(':a', $display_array[$i]["item_Backid"], PDO::PARAM_INT);
+				$number_of_use->execute();
+				$number_of_use = $number_of_use->fetchAll();
+				$curr_number_of_use = $number_of_use[0][0];
+				
+				$curr_item_backid = $display_array[$i]["item_Backid"];
+				$curr_item_size = $display_array[$i]["item_size"];
+				$curr_inv_name = $display_array[$i]["inv_name"];
+				$curr_item_model = $display_array[$i]["item_modeltype"];
+				$curr_item_frontid = $display_array[$i]["item_Frontid"];
+				$curr_pub_use = $display_array[$i]["public"];
+				$curr_stat_info = $display_array[$i]["stat_name"];
+
+				$item_backid = (int)$curr_item_backid;
+			
+				if($curr_pub_use == "1")
+				{
+					$curr_pub_use = "Yes";
+				}
+				else
+				{
+					$curr_pub_use = "No";
+				}
+				
+				if($curr_item_size == NULL)
+				{
+					$curr_item_size = "";
+				}
+				
+				$objPHPExcel->getActiveSheet()->setCellValue('A' . $row_count, $curr_item_frontid);
+				$objPHPExcel->getActiveSheet()->setCellValue('B' . $row_count, $curr_item_size);
+				$objPHPExcel->getActiveSheet()->setCellValue('C' . $row_count, $curr_item_model);
+				$objPHPExcel->getActiveSheet()->setCellValue('D' . $row_count, $curr_inv_name);
+				$objPHPExcel->getActiveSheet()->setCellValue('E' . $row_count, $curr_pub_use);
+				$objPHPExcel->getActiveSheet()->setCellValue('F' . $row_count, $curr_stat_info);
+				$objPHPExcel->getActiveSheet()->setCellValue('G' . $row_count, $curr_number_of_use);
+				
+				$row_count++;
+			}
 		}
 		$connctn = null; //Also remember to close the Database Connection
 	}
@@ -143,44 +181,59 @@
 		
 		for($i = 0; $i < count($display_array); $i++)
 		{
-			$number_of_use = $connctn->prepare("select count(A.rent_id)
-												from Rental A, CheckOut B
-												where A.rent_id = B.rent_id and B.item_Backid = :a");
-			$number_of_use->bindValue(':a', $display_array[$i]['item_Backid'], PDO::PARAM_INT);
-			$number_of_use->execute();
-			$number_of_use = $number_of_use->fetchAll();
-			$curr_number_of_use = $number_of_use[0][0];
-			
-			$curr_item_backid = $display_array[$i]["item_Backid"];
-			$curr_item_size = $display_array[$i]["item_size"];
-			$curr_inv_name = $display_array[$i]["inv_name"];
-			$curr_item_model = $display_array[$i]["item_modeltype"];
-			$curr_item_frontid = $display_array[$i]["item_Frontid"];
-			$curr_pub_use = $display_array[$i]["public"];
-			$curr_stat_info = $display_array[$i]["stat_name"];
-
-			if($curr_pub_use == "1"){
-				$curr_pub_use = "Yes";
-			}
-			else{
-				$curr_pub_use = "No";
-			}
-
-			if($curr_item_size == NULL)
+			$count = 0;
+			foreach($display_array[$i] as $item)
 			{
-				$curr_item_size = "";
+				if(contain($item, $search_bar))
+				{
+					$count++;
+				}
 			}
+			if($count == (2 * count($search_bar)))
+			{
+				$number_of_use = $connctn->prepare("select count(A.rent_id)
+													from Rental A, CheckOut B
+													where A.rent_id = B.rent_id and 
+													B.item_Backid = :a");
+				$number_of_use->bindValue(':a', $display_array[$i]["item_Backid"], PDO::PARAM_INT);
+				$number_of_use->execute();
+				$number_of_use = $number_of_use->fetchAll();
+				$curr_number_of_use = $number_of_use[0][0];
+				
+				$curr_item_backid = $display_array[$i]["item_Backid"];
+				$curr_item_size = $display_array[$i]["item_size"];
+				$curr_inv_name = $display_array[$i]["inv_name"];
+				$curr_item_model = $display_array[$i]["item_modeltype"];
+				$curr_item_frontid = $display_array[$i]["item_Frontid"];
+				$curr_pub_use = $display_array[$i]["public"];
+				$curr_stat_info = $display_array[$i]["stat_name"];
+
+				$item_backid = (int)$curr_item_backid;
 			
-			
-			$objPHPExcel->getActiveSheet()->setCellValue('A' . $row_count, $curr_item_frontid);
-			$objPHPExcel->getActiveSheet()->setCellValue('B' . $row_count, $curr_item_size);
-			$objPHPExcel->getActiveSheet()->setCellValue('C' . $row_count, $curr_item_model);
-			$objPHPExcel->getActiveSheet()->setCellValue('D' . $row_count, $curr_inv_name);
-			$objPHPExcel->getActiveSheet()->setCellValue('E' . $row_count, $curr_pub_use);
-			$objPHPExcel->getActiveSheet()->setCellValue('F' . $row_count, $curr_stat_info);
-			$objPHPExcel->getActiveSheet()->setCellValue('G' . $row_count, $curr_number_of_use);
-			
-			$row_count++;
+				if($curr_pub_use == "1")
+				{
+					$curr_pub_use = "Yes";
+				}
+				else
+				{
+					$curr_pub_use = "No";
+				}
+				
+				if($curr_item_size == NULL)
+				{
+					$curr_item_size = "";
+				}
+				
+				$objPHPExcel->getActiveSheet()->setCellValue('A' . $row_count, $curr_item_frontid);
+				$objPHPExcel->getActiveSheet()->setCellValue('B' . $row_count, $curr_item_size);
+				$objPHPExcel->getActiveSheet()->setCellValue('C' . $row_count, $curr_item_model);
+				$objPHPExcel->getActiveSheet()->setCellValue('D' . $row_count, $curr_inv_name);
+				$objPHPExcel->getActiveSheet()->setCellValue('E' . $row_count, $curr_pub_use);
+				$objPHPExcel->getActiveSheet()->setCellValue('F' . $row_count, $curr_stat_info);
+				$objPHPExcel->getActiveSheet()->setCellValue('G' . $row_count, $curr_number_of_use);
+				
+				$row_count++;
+			}
 		}
 		$connctn = null;
 	}

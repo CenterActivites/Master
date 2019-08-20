@@ -477,8 +477,17 @@
 								var curr_date = d.getDate();
 								var curr_month = d.getMonth();
 								var curr_year = d.getFullYear();
+							
+								var current_date = new Date();
 								
-								due_date = d_names[curr_day] + ", " + curr_date + " " +  m_names[curr_month] + " " + curr_year;
+								if(d <= current_date)
+								{
+									due_date = d_names[curr_day] + ", " + curr_date + " " +  m_names[curr_month] + " " + curr_year + " Late";
+								}
+								else
+								{
+									due_date = d_names[curr_day] + ", " + curr_date + " " +  m_names[curr_month] + " " + curr_year;
+								}
 								
 								//Create a tr tag
 								var tr = document.createElement('tr');

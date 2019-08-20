@@ -33,7 +33,7 @@
 		<script type="text/javascript">
 		
 			//The Background picture. The jquery api allows the picture to stretch to however the user wants it without the picture getting messed up
-			$.backstretch("Images/humboldt-activities-center.jpg", {speed: 150});
+			$.backstretch("https://centeractivities.humboldt.edu/Content/Images/humboldtstate-hero-2.jpg", {speed: 150});
 			
 			//Little script to disable the 'enter' button from submitting the form
 			$(document).ready(function() {
@@ -68,6 +68,7 @@
 		require_once('/home/centerac/public_html/ItemselectionSection/ItemInfo.php');
 		require_once('/home/centerac/public_html/ItemselectionSection/EditItem.php');
 		require_once('/home/centerac/public_html/ItemselectionSection/editinventory.php');
+		require_once('/home/centerac/public_html/ItemselectionSection/tripblocker.php');
 		require_once('/home/centerac/public_html/CustomerselectionSection/CustomerSelectionMain.php');
 		require_once('/home/centerac/public_html/CustomerselectionSection/CustomerInfor.php');
 		require_once('/home/centerac/public_html/CustomerselectionSection/CustomerTransaction.php');
@@ -292,12 +293,12 @@
 						$remove->bindValue(':a', $ven_id, PDO::PARAM_INT);
 						//Execute the removal
 						$remove -> execute();
-						echo "</br>";
+						/*echo "</br>";
 						print $remove -> errorCode();
 						echo "\nPDO::errorInfo():\n";
 						print_r($remove->errorInfo());
 						echo "</br>";
-						echo "</br>";
+						echo "</br>";*/
 
 						//Close the connection
 						$conn = null;
@@ -1347,10 +1348,10 @@
 					{
 						Itemselection();
 					}
-					elseif(isset($_POST['refine']))
+					elseif(isset($_POST['blockout']))
 					{
 						// trying some new stuff since we have time
-						refine_search();
+						TripBlock();
 					}
 					else//A "catch all" thing where if there was ever a time a button has not been press and the page somehow moves on,
 						//We just move on back the main section page
