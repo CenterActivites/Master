@@ -146,8 +146,7 @@
 										}
 										
 										//The following two lines is for formatting reasons. Basically to make the date we get from the database more readable for users
-										$curr_due_date = strtotime($curr_due_date);
-										$curr_due_date = date('m/d/Y', $curr_due_date);
+										$curr_due_date = date("D, j M Y", strtotime($curr_due_date));
 ?>
 										<!-- Placing the data into their correct columns -->
 										<tr>
@@ -468,9 +467,27 @@
 								c_email = obj['c_email'];
 								due_date = obj['due_date'];
 								
-								due_date = due_date.split("-");
+								var d_names = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+
+								var m_names = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
 								
-								due_date = due_date[1] + "/" + due_date[2] + "/" +due_date[0];
+								var d = new Date(due_date.replace(/-/g, '\/'));
+								var curr_day = d.getDay();
+								var curr_month = d.getMonth();
+								var curr_date = d.getDate();
+								var curr_month = d.getMonth();
+								var curr_year = d.getFullYear();
+							
+								var current_date = new Date();
+								
+								if(d <= current_date)
+								{
+									due_date = d_names[curr_day] + ", " + curr_date + " " +  m_names[curr_month] + " " + curr_year + " Late";
+								}
+								else
+								{
+									due_date = d_names[curr_day] + ", " + curr_date + " " +  m_names[curr_month] + " " + curr_year;
+								}
 								
 								//Create a tr tag
 								var tr = document.createElement('tr');

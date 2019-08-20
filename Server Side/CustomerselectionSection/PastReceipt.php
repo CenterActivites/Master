@@ -21,9 +21,13 @@
 					  }
 					  #section_to_print {
 						position: absolute;
-						left: 150;
-						top: 75;
-						width: 60%
+						top: 10%;
+						width: 100%;
+						transform: scale(0.6, 0.6);
+						-ms-transform: scale(0.6, 0.6); /* IE 9 */
+						-webkit-transform: scale(0.6, 0.6); /* Safari and Chrome */
+						-o-transform: scale(0.6, 0.6); /* Opera */
+						-moz-transform: scale(0.6, 0.6); /* Firefox */
 					  }
 					}
 					

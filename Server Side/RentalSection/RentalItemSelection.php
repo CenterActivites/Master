@@ -47,8 +47,11 @@
 		
 		//Grabbing the list of items that have been reserved already to see if the current request dates will not come into conflict with each other
 		$list_of_reserve = $conn->prepare("select item_Backid, request_date, due_date
-										from Rental a, Reserve1 b
-										where a.rent_id = b.rent_id and a.return_date is null;");
+											from Rental a, Reserve1 b
+											where a.rent_id = b.rent_id and 
+													a.pick_up_date is null and 
+													(a.rental_status = 'On-Going' or 
+													a.rental_status = 'Trip')");
 		$list_of_reserve->execute();
 		$list_of_reserve = $list_of_reserve->fetchAll();
 		
@@ -524,14 +527,14 @@
 									item_Backid = obj['item_Backid'];
 									
 									//Check if the item is in conflict with this rental date range
-									if(conflict_list.includes(item_Backid) === false)
+									if(conflict_list.includes(item_Backid) == false)
 									{
 										//
 										//The next following lines checks if the item that is going diplayed is already in the cart
 										//
 										
 										//Does the check here. The if statement reads if current item that is about to be displayed is also in the cart, then return true else false
-										if(finished_filtered_cart_array.includes(item_Backid) === false)
+										if(finished_filtered_cart_array.includes(item_Backid) == false)
 										{
 											//Sets all the item data to its corresponding fields
 											item_size = obj['item_size'];
@@ -577,7 +580,7 @@
 									//
 									
 									//Does the check here. The if statement reads if current item that is about to be displayed is also in the cart, then return true else false
-									if(finished_filtered_cart_array.includes(item_Backid) === false)
+									if(finished_filtered_cart_array.includes(item_Backid) == false)
 									{
 										//Sets all the item data to its corresponding fields
 										item_size = obj['item_size'];

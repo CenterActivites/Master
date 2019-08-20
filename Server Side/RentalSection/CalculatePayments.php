@@ -66,6 +66,9 @@
 		
 		$sub_total = $calcuated['total_price'];
 		$total_deposit = $calcuated['total_deposit'];
+		$days = $calcuated['days'];
+		$weekends = $calcuated['weekends'];
+		$weeks = $calcuated['weeks'];
 	}
 	else
 	{
@@ -110,6 +113,9 @@
 		$sub_total = ""; 
 		$total = $price;
 		$displayput = "";
+		$days = 0;
+		$weekends = 0;
+		$weeks = 0;
 		
 		$pack_name = $conn->prepare("SELECT pack_name
 									FROM Packages
@@ -171,9 +177,38 @@
 			</tr>
 		
 		</table>
+		
+		<table id="cart_information">
+			<tr>
+				<th>
+					Days Calculated:
+				</th>
+				<td>
+					<input type="text" name="total_deposit"  id="total_deposit" value="<?= $days ?>" readonly />
+				</td>
+			</tr>
+			
+			<tr>
+				<th>
+					Weekends Calculated:
+				</th>
+				<td>
+					<input type="text" name="subtotalCost"  id="subtotalCost" value="<?= $weekends ?>" readonly />
+				</td>
+			</tr>
+			
+			<tr>
+				<th>
+					Weeks Calculated:
+				</th>
+				<td>
+					<input type="text" name="subtotalCost"  id="subtotalCost" value="<?= $weeks ?>" readonly />
+				</td>
+			</tr>
+		</table>
 
 		</br></br>
-		<div>
+		<div style="clear:right;">
 			<h3 style="margin-left:35px;">Please Read the Following Policy to Customer</h3>
 			<!-- Rental Policy, for the user to read to the customer -->
 			<p id="rental_policy_1" style="padding-left:15px; padding-right:15px;">

@@ -91,32 +91,21 @@ function Login()
 			<img src="https://centeractivities.humboldt.edu/Content/Images/humboldtstate-logo-rec.png">
 		</center>
 	</div>
-		
-<?php
-    // do you need to ask for username and password?
-
-    if ( ! array_key_exists("username", $_POST) )
-    {
-        // no username in $_POST? they need a login form!
-?>
-		</br>
-		</br>
-        <form method="post" action="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
-        <fieldset id="inner_box">
-			
+	
+	</br>
+	</br>
+    <form method="post" action="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
+		<fieldset id="inner_box">
 			<div style="text-align: center; color: black; font-size: 25px;">
 				<div style="float:left; width:45%; margin-left:5%;">
 					Username: 
 					<img src="../Images/username_icon.jpg" height="20px" width="20px">
-					<input type="text" name="username" id="username"
-						required="required"/>
+					<input type="text" name="username" id="username" required="required"/>
 				</div>
-
-				<div style="float:left; width:45%;">
+					<div style="float:left; width:45%;">
 					Password:
 					<img src="../Images/password_icon.jpg" height="20px" width="20px">
-					<input type="password" name="password" id="password"
-						required="required" />
+					<input type="password" name="password" id="password" required="required" />
 				</div>
 				
 				</br>
@@ -126,14 +115,30 @@ function Login()
 					<input type="submit" id="login" value="Login" />
 				</div>
 			</div>
-        </fieldset>
-        </form>
-	</center>
-		
-<?php
-	}
-?>
+		</fieldset>
+	</form>
 </div>
+
+<script>
+	var password = document.getElementById("password");
+	var username = document.getElementById("username");
+	username.addEventListener("keyup", function(event) 
+	{
+		if (event.keyCode === 13) 
+		{
+			event.preventDefault();
+			document.getElementById("login").click();
+		}
+	});
+	password.addEventListener("keyup", function(event) 
+	{
+		if (event.keyCode === 13) 
+		{
+		   event.preventDefault();
+		   document.getElementById("login").click();
+		}
+	});
+</script>
 <?php
 
 }
