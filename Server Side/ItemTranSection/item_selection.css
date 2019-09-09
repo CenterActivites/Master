@@ -45,7 +45,7 @@ table
 
 #item_table tbody tr:hover {background-color: ddd;}
 
-#Checkin,#back,#Checkout,#cancelReserve,#mod_rental,#cancel
+#Checkin,#back,#Checkout,#cancelReserve,#mod_rental,#cancel, #Checkout_trip
 {
     background-color: #008000;
     color: white;
@@ -65,7 +65,7 @@ table
     white-space: normal;
 }
 
-#Checkin:hover,#cancel:hover 
+#Checkin:hover, #cancel:hover, #back:hover, #Checkout:hover, #cancelReserve:hover, #mod_rental:hover, #Checkout_trip:hover
 {
 	background-color: #006400;
 }

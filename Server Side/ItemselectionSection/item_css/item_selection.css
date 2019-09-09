@@ -43,7 +43,7 @@ body{
     text-align: center;
 }
 
-#addinventory,#additem,#moreinfo, #excel_download {
+#addinventory,#additem,#moreinfo, #excel_download, #blockout {
     background-color: #008000;
     color: white;
     padding: 14px 20px;
@@ -63,7 +63,7 @@ body{
 }
 
 
-#addinventory:hover ,#additem:hover ,#moreinfo:hover , #excel_download:hover
+#addinventory:hover, #additem:hover, #moreinfo:hover, #excel_download:hover, #blockout:hover
 {
 	background-color: #006400;
 }

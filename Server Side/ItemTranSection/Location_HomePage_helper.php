@@ -46,6 +46,19 @@
 		
 		$display_array['reserve'] = $reserved_rentals;
 		
+		$trips = $connctn->prepare("SELECT note, c.rent_id, request_date
+									FROM Notes a, NotesRental b, Rental c
+									WHERE a.note_id = b.note_id and 
+											b.rent_id = c.rent_id and 
+											c.rental_status = 'Trip' and 
+											c.loc_id = :a
+									ORDER BY request_date");
+		$trips->bindValue(':a', $loc, PDO::PARAM_STR);
+		$trips->execute();
+		$trips = $trips->fetchAll();
+		
+		$display_array['trip'] = $trips;
+		
 		$connctn = null;
 		print json_encode($display_array);
 ?>

@@ -55,10 +55,12 @@
 		require_once('HomePage.php');
 		require_once('Login.php');
 		require_once('NavBar.php');
+		require_once('Adding_removing_background_div.php');
 		require_once('/home/centerac/public_html/VendorSection/MainVendor.php');  //Since the files are under a subdirectory, the require_once statement have to look like this
 		require_once('/home/centerac/public_html/VendorSection/AddVendor.php');
 		require_once('/home/centerac/public_html/VendorSection/EditVendor.php');
 		require_once('/home/centerac/public_html/ItemTranSection/Items_to_pick_up.php');
+		require_once('/home/centerac/public_html/ItemTranSection/Trips_pick_up.php');
 		require_once('/home/centerac/public_html/ItemTranSection/Items_to_return.php');
 		require_once('/home/centerac/public_html/ItemTranSection/Modify_Reserve.php');
 		require_once('/home/centerac/public_html/ItemTranSection/Receipt.php');
@@ -104,7 +106,7 @@
 
 			NavBar();
 ?>
-			<div class="background">
+			<div id="background" class="background">
 <?php
 			
 				$_SESSION['next_page'] = "HomePage";
@@ -133,7 +135,7 @@
 				NavBar();
 
 ?>
-				<div class="background">
+				<div id="background" class="background">
 <?php
 					if(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 					{
@@ -172,6 +174,12 @@
 					{
 						$_SESSION['next_page'] = "Report";
 						Report();
+					}
+					elseif(isset($_POST["AccountInfo"])) //Add Vendor button, sents users to the add vendor page.
+					{
+						$_SESSION['next_page'] = "Employee";
+						$_SESSION['account_access'] = $_SESSION['empl_id'];
+						EmployeeInfo();
 					}
 					elseif(isset($_POST["AVendor"])) //Add Vendor button, sents users to the add vendor page.
 					{
@@ -343,7 +351,7 @@
 			{
 				NavBar();
 ?>
-				<div class="background">
+				<div id="background"  class="background">
 <?php
 					if(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 					{
@@ -383,6 +391,12 @@
 						$_SESSION['next_page'] = "Report";
 						Report();
 					}
+					elseif(isset($_POST["AccountInfo"])) //Add Vendor button, sents users to the add vendor page.
+					{
+						$_SESSION['next_page'] = "Employee";
+						$_SESSION['account_access'] = $_SESSION['empl_id'];
+						EmployeeInfo();
+					}
 					
 					//If the user selects a customer from the late table, they are trying to return items so then we will sent them to the item return section
 					elseif($_POST['which_table'] == "Late")
@@ -400,8 +414,194 @@
 						//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
 						$_SESSION['refreshed'] = "none";
 						
-						ItemToPickUp();
+						//Connecting to the Database
+						$conn = db();
+						
+						$rent_id = strip_tags($_POST['rent_id']);
+						$_SESSION["rent_id"] = $rent_id;
+						
+						$trips_or_rental = $conn->prepare("select rental_status
+																from Rental
+																where rent_id = :a");
+						$trips_or_rental->bindValue(':a', $rent_id, PDO::PARAM_INT);
+						$trips_or_rental->execute();
+						$trips_or_rental = $trips_or_rental->fetchAll();
+						
+						if($trips_or_rental[0]['rental_status'] == "Trip")
+						{
+							TripsPickUps();
+						}
+						else
+						{
+							ItemToPickUp();
+						}
 					}
+					
+					elseif(isset($_POST["Checkout_trip"])) //Once the user is done selecting the item the customer is picking today, this button "Checkout" will push the user back to the Homepage with the following done
+					{
+						//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
+						if($_SESSION['refreshed'] != "Checkout")
+						{
+							//Set the refreshed check so that we don't do a duplicate insert, update, or whatever that might be bad to the bad if done twice
+							$_SESSION['refreshed'] = "Checkout";
+							
+							//Connecting to the Database
+							$conn = db();
+							
+							//Grabbing the comments made about the items, rental, or customer the user made when doing the item pick-up
+							$comments = strip_tags($_POST['comments']);
+							
+							//Grabbing the item array/list that were returned
+							$item_to_pick_up = $_POST["item_to_be_pick_up"];
+							$items_leftover = $_POST["item_to_be_return"];
+							$rent_id = $_SESSION["rent_id"];
+							
+							//Makes sure the array of items selected for pick-up isn't empty or null
+							if($item_to_pick_up != null || $item_to_pick_up != "")
+							{
+								$items_to_pick_up = explode(',', $item_to_pick_up); //Filtering throught the array/list. Dropping all empty spots
+
+								//Grabbing customer id and the employee's id
+								$cust_id = $_SESSION["cust_id"];
+								$empl_id = $_SESSION["empl_id"];
+								
+								//Create a timestamp of the current date and time
+								$current_date = date('Y-m-d H:i:s');
+								
+								//Starts off with a for loop, looping though the array of selected items.
+								foreach($items_to_pick_up as $item_id)
+								{
+									//Sets up insert statement for CheckOut
+									$insert = $conn->prepare("insert into CheckOut
+																(time_stamp, rent_id, item_Backid, empl_id)
+																values
+																(:a, :b, :c, :d)");
+									//Binding the vars along with their respected datatype
+									$insert->bindValue(':a', $current_date, PDO::PARAM_STR);
+									$insert->bindValue(':b', $rent_id, PDO::PARAM_INT);
+									$insert->bindValue(':c', $item_id, PDO::PARAM_INT);
+									$insert->bindValue(':d', $empl_id, PDO::PARAM_INT);
+									$insert->execute();
+									//DEBUGGING PURPOSE
+									//print $insert -> errorCode();
+									//echo "\nPDO::errorInfo():\n";
+									//print_r($insert->errorInfo());
+
+									//Once the item is in the CheckOut table, we update the status of the item to 'Check-out' to make sure no one else will select the item for another rental while its out
+									//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, 'In Wash' = 9, and 'In Storage' = 10 (This is mostly for HBAC)
+									$update = $conn->prepare("update Item
+																set stat_id = 3
+																where item_Backid = :item_id");
+									$update->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+									$update->execute(); //execute the query
+								}
+								
+								$update = $conn->prepare("update Rental
+															set pick_up_date = :a
+															where rent_id = :b");
+								$update->bindValue(':a', $current_date, PDO::PARAM_STR);
+								$update->bindValue(':b', $rent_id, PDO::PARAM_INT);
+								//print $update -> errorCode();
+								//echo "\nPDO::errorInfo():\n";
+								//print_r($update->errorInfo());
+								$update->execute(); //execute the query
+								
+								//Insert statement for Notes to record any comments or notes to do with the transaction or items
+								if($comments != "" && $comments != NULL)
+								{
+									//Grabs the employee's id, so that we can see who made the comment
+									$empl_id = $_SESSION['empl_id'];
+									
+									//Insert into the Notes table
+									$insert = $conn->prepare("insert into Notes
+																(note, timestamp, empl_id)
+																values
+																(:a, :b, :c)");
+									//Binding the vars along with their respected datatype
+									$insert->bindValue(':a', $comments, PDO::PARAM_STR);
+									$insert->bindValue(':b', $current_date, PDO::PARAM_STR);
+									$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
+									$insert->execute();
+									//echo "Error In Insert to Notes: ";
+									//print $insert -> errorCode();
+									//echo "\nPDO::errorInfo():\n";
+									//print_r($insert->errorInfo());
+									//echo "</br> </br>";
+									$note_id = $conn->lastInsertId();
+									
+									//Once the note have been inserted, we make the connect from the note to the rental itself by inserting both the rental id and note id into NotesRental
+									$insert = $conn->prepare("insert into NotesRental
+																(note_id, rent_id)
+																values
+																(:a, :b)");
+									//Binding the vars along with their respected datatype
+									$insert->bindValue(':a', $note_id, PDO::PARAM_STR);
+									$insert->bindValue(':b', $rent_id, PDO::PARAM_STR);
+									$insert->execute();
+									//echo "Error In Insert to Notes: ";
+									//print $insert -> errorCode();
+									//echo "\nPDO::errorInfo():\n";
+									//print_r($insert->errorInfo());
+									//echo "</br> </br>";
+								}
+							}
+							//Makes sure the array of items selected for pick-up isn't empty or null
+							if($items_leftover != null || $items_leftover != "")
+							{
+								$items_leftover = explode(',', $items_leftover); //Filtering throught the array/list. Dropping all empty spots
+
+								//Grabbing customer id and the employee's id
+								$cust_id = $_SESSION["cust_id"];
+								$empl_id = $_SESSION["empl_id"];
+								
+								//Starts off with a for loop, looping though the array of selected items.
+								foreach($items_to_pick_up as $item_id)
+								{
+									//Sets up insert statement for CheckOut
+									$delete = $conn->prepare("DELETE FROM Reserve1
+																WHERE rent_id = :a and
+																	item_Backid = :b");
+									//Binding the vars along with their respected datatype
+									$delete->bindValue(':a', $rent_id, PDO::PARAM_INT);
+									$delete->bindValue(':b', $item_id, PDO::PARAM_INT);
+									$delete->execute();
+									//DEBUGGING PURPOSE
+									//print $insert -> errorCode();
+									//echo "\nPDO::errorInfo():\n";
+									//print_r($insert->errorInfo());
+
+									//Once the item is in the CheckOut table, we update the status of the item to 'Check-out' to make sure no one else will select the item for another rental while its out
+									//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, 'In Wash' = 9, and 'In Storage' = 10 (This is mostly for HBAC)
+									$update = $conn->prepare("update Item
+																set stat_id = 1
+																where item_Backid = :item_id");
+									$update->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+									$update->execute(); //execute the query
+								}
+								
+								$update = $conn->prepare("update Rental
+															set pick_up_date = :a
+															where rent_id = :b");
+								$update->bindValue(':a', $current_date, PDO::PARAM_STR);
+								$update->bindValue(':b', $rent_id, PDO::PARAM_INT);
+								//print $update -> errorCode();
+								//echo "\nPDO::errorInfo():\n";
+								//print_r($update->errorInfo());
+								$update->execute(); //execute the query
+								
+								//Remember to always to disconnect the database connection
+								$conn = null;
+							}
+							else
+							{
+								//If ever the array of selected items are empty, we echo out a error to the screen, letting the user know that the pick up didn't work
+								echo"Error:: Something went wrong. Text me about it";
+							}
+						}
+						
+						HomePage();
+					}
+					
 					elseif(isset($_POST["Checkout"])) //Once the user is done selecting the item the customer is picking today, this button "Checkout" will push the user back to the Homepage with the following done
 					{
 						//Checks if the page have been refresh or not. Does this check so that we don't do duplicate anything to the database
@@ -418,7 +618,6 @@
 							
 							//Grabbing the item array/list that were returned
 							$item_to_pick_up = $_POST["item_to_be_pick_up"];
-							$items_leftover = $_POST["item_leftover"];
 							$rent_id = $_SESSION["rent_id"];
 							
 							//Makes sure the array of items selected for pick-up isn't empty or null
@@ -460,58 +659,80 @@
 																where item_Backid = :item_id");
 									$update->bindValue(':item_id', $item_id, PDO::PARAM_INT);
 									$update->execute(); //execute the query
+								}
+								
+								$item_list_in_checkout = $conn->prepare("select item_Backid
+																			from CheckOut a, Rental b
+																			where a.rent_id = b.rent_id and 
+																					return_date IS NULL and 
+																					rental_status = 'On-Going' and 
+																					a.rent_id = :a
+																			order by item_Backid");
+								$item_list_in_checkout->bindValue(':a', $rent_id, PDO::PARAM_INT);
+								$item_list_in_checkout->execute();
+								$item_list_in_checkout = $item_list_in_checkout->fetchAll();
+								
+								$item_list_in_reserved = $conn->prepare("select item_Backid
+																		from Reserve1 a, Rental b
+																		where a.rent_id = b.rent_id and 
+																				return_date IS NULL and 
+																				rental_status = 'On-Going' and 
+																				a.rent_id = :a
+																		order by item_Backid");
+								$item_list_in_reserved->bindValue(':a', $rent_id, PDO::PARAM_INT);
+								$item_list_in_reserved->execute();
+								$item_list_in_reserved = $item_list_in_reserved->fetchAll();
+								
+								if($item_list_in_checkout === $item_list_in_reserved)
+								{
+									$update = $conn->prepare("update Rental
+																set pick_up_date = :a
+																where rent_id = :b");
+									$update->bindValue(':a', $current_date, PDO::PARAM_STR);
+									$update->bindValue(':b', $rent_id, PDO::PARAM_INT);
+									//print $update -> errorCode();
+									//echo "\nPDO::errorInfo():\n";
+									//print_r($update->errorInfo());
+									$update->execute(); //execute the query
+								}
+								
+								//Insert statement for Notes to record any comments or notes to do with the transaction or items
+								if($comments != "" && $comments != NULL)
+								{
+									//Grabs the employee's id, so that we can see who made the comment
+									$empl_id = $_SESSION['empl_id'];
 									
-									//Check if all items were selected
-									if($items_leftover == '0') 
-									{
-										//If so, we update the rental's pick-up date to the current date.
-										$update = $conn->prepare("update Rental
-																	set pick_up_date = :a
-																	where rent_id = :b");
-										$update->bindValue(':a', $current_date, PDO::PARAM_INT);
-										$update->bindValue(':b', $rent_id, PDO::PARAM_INT);
-										$update->execute(); //execute the query
-									}
-									
-									//Insert statement for Notes to record any comments or notes to do with the transaction or items
-									if($comments != "" && $comments != NULL)
-									{
-										//Grabs the employee's id, so that we can see who made the comment
-										$empl_id = $_SESSION['empl_id'];
-										
-										//Insert into the Notes table
-										$insert = $conn->prepare("insert into Notes
+									//Insert into the Notes table
+									$insert = $conn->prepare("insert into Notes
 																(note, timestamp, empl_id)
 																values
 																(:a, :b, :c)");
-										//Binding the vars along with their respected datatype
-										$insert->bindValue(':a', $comments, PDO::PARAM_STR);
-										$insert->bindValue(':b', $current_date, PDO::PARAM_STR);
-										$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
-										$insert->execute();
-										//echo "Error In Insert to Notes: ";
-										//print $insert -> errorCode();
-										//echo "\nPDO::errorInfo():\n";
-										//print_r($insert->errorInfo());
-										//echo "</br> </br>";
-										$note_id = $conn->lastInsertId();
-										
-										//Once the note have been inserted, we make the connect from the note to the rental itself by inserting both the rental id and note id into NotesRental
-										$insert = $conn->prepare("insert into NotesRental
+									//Binding the vars along with their respected datatype
+									$insert->bindValue(':a', $comments, PDO::PARAM_STR);
+									$insert->bindValue(':b', $current_date, PDO::PARAM_STR);
+									$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
+									$insert->execute();
+									//echo "Error In Insert to Notes: ";
+									//print $insert -> errorCode();
+									//echo "\nPDO::errorInfo():\n";
+									//print_r($insert->errorInfo());
+									//echo "</br> </br>";
+									$note_id = $conn->lastInsertId();
+									
+									//Once the note have been inserted, we make the connect from the note to the rental itself by inserting both the rental id and note id into NotesRental
+									$insert = $conn->prepare("insert into NotesRental
 																(note_id, rent_id)
 																values
 																(:a, :b)");
-										//Binding the vars along with their respected datatype
-										$insert->bindValue(':a', $note_id, PDO::PARAM_STR);
-										$insert->bindValue(':b', $rent_id, PDO::PARAM_STR);
-										$insert->execute();
-										//echo "Error In Insert to Notes: ";
-										//print $insert -> errorCode();
-										//echo "\nPDO::errorInfo():\n";
-										//print_r($insert->errorInfo());
-										//echo "</br> </br>";
-									}
-								
+									//Binding the vars along with their respected datatype
+									$insert->bindValue(':a', $note_id, PDO::PARAM_STR);
+									$insert->bindValue(':b', $rent_id, PDO::PARAM_STR);
+									$insert->execute();
+									//echo "Error In Insert to Notes: ";
+									//print $insert -> errorCode();
+									//echo "\nPDO::errorInfo():\n";
+									//print_r($insert->errorInfo());
+									//echo "</br> </br>";
 								}
 								
 								//Remember to always to disconnect the database connection
@@ -712,7 +933,7 @@
 			{
 				NavBar();
 ?>
-				<div class="background">
+				<div id="background" class="background">
 <?php
 					if(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 					{
@@ -751,6 +972,12 @@
 					{
 						$_SESSION['next_page'] = "Report";
 						Report();
+					}
+					elseif(isset($_POST["AccountInfo"])) //Add Vendor button, sents users to the add vendor page.
+					{
+						$_SESSION['next_page'] = "Employee";
+						$_SESSION['account_access'] = $_SESSION['empl_id'];
+						EmployeeInfo();
 					}
 					elseif(isset($_POST["select"]) or isset($_POST["cancelOnReceipt"])) //After finding the customer, the "select" button push the user onto the next page
 																						//which is the item check-in page where the user will select which item they are returning today
@@ -907,7 +1134,7 @@
 						//Calls the receipt page
 						Receipt();
 ?>
-				<div class="background">
+				<div id="background" class="background">
 <?php
 					}
 					else //A "catch all" thing where if there was ever a time a button has not been press and the page somehow moves on,
@@ -943,7 +1170,7 @@
 			{
 				NavBar();
 ?>
-				<div class="background">
+				<div id="background" class="background">
 <?php
 					if(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 					{
@@ -982,6 +1209,12 @@
 					{
 						$_SESSION['next_page'] = "Report";
 						Report();
+					}
+					elseif(isset($_POST["AccountInfo"])) //Add Vendor button, sents users to the add vendor page.
+					{
+						$_SESSION['next_page'] = "Employee";
+						$_SESSION['account_access'] = $_SESSION['empl_id'];
+						EmployeeInfo();
 					}
 					elseif(isset($_POST["addinventory"])) //Add Item button on the Item Selection Main Menu page. Pushes users to the add item
 														//page
@@ -1380,7 +1613,7 @@
 			{
 				NavBar();
 ?>
-				<div class="background">
+				<div id="background" class="background">
 <?php
 				if(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 					{
@@ -1419,6 +1652,12 @@
 					{
 						$_SESSION['next_page'] = "Report";
 						Report();
+					}
+					elseif(isset($_POST["AccountInfo"])) //Add Vendor button, sents users to the add vendor page.
+					{
+						$_SESSION['next_page'] = "Employee";
+						$_SESSION['account_access'] = $_SESSION['empl_id'];
+						EmployeeInfo();
 					}
 					elseif(isset($_POST["custInfo"]) or isset($_POST["backOnCustTran"]) or isset($_POST["cancelOnEditCust"])) //Select button on the main customer/Back button on view transaction
 																														   // Cancel/Update Customer button on the Customer Edit Page
@@ -1514,7 +1753,7 @@
 <?php
 						PastReceipt();
 ?>
-				<div class="background">
+				<div id="background" class="background">
 <?php
 					}
 					elseif(isset($_POST["editCust"])) //Edit Customer button. Pushs users to the edit customer page.
@@ -1623,7 +1862,7 @@
 							//Grabbing all the information we need for the insert to ReserveHis, Reserve, and ItemReserve tables
 							$sel_cust = $_SESSION['sel_user'];
 							$total_price = $_POST['total_price_with_tax'];
-							$total_deposit = $_POST['total_deposit'];
+							$total_deposit = $_SESSION['total_deposit'];
 							$sub_total_price = $_POST['sub_total_price'];
 							$receipt_prices = $_SESSION['receipt_prices'];
 							
@@ -1633,7 +1872,6 @@
 							
 							$_SESSION['sub_total_price'] = $sub_total_price;
 							$_SESSION['total_price_with_tax'] = $total_price;
-							$_SESSION['total_deposit'] = $total_deposit;
 							
 							//The following "if" statement sees if the request date is the current date. If so then the customer probably is picking up the item right there and then.
 							//So if then the code will have to insert the current date instead of NULL as it usually is for a future date
@@ -1661,7 +1899,7 @@
 								$insert->bindValue(':curr_date', $current_date, PDO::PARAM_STR);
 							}
 							$insert->bindValue(':sub_total_cost', $sub_total_price, PDO::PARAM_INT);
-							$insert->bindValue(':total_cost', $total_price, PDO::PARAM_INT);
+							$insert->bindValue(':total_cost', $total_price, PDO::PARAM_STR); //There isn't a bind PDO::PARAM for floats or double. Have to use STR
 							$insert->bindValue(':deposit', $total_deposit, PDO::PARAM_INT);
 							$insert->bindValue(':cust_id', $sel_cust, PDO::PARAM_INT);
 							$insert->bindValue(':loc_id', $loc_id, PDO::PARAM_INT);
@@ -1774,7 +2012,7 @@
 <?php
 							Receipt();
 ?>
-				<div class="background">
+				<div id="background" class="background">
 <?php
 					}
 					elseif(isset($_POST["on_to_rental"])) //Select button on the Customer Selection page.
@@ -1834,7 +2072,7 @@
 			{
 				NavBar();
 ?>
-				<div class="background">
+				<div id="background" class="background">
 <?php
 					if(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 					{
@@ -1874,6 +2112,12 @@
 						$_SESSION['next_page'] = "Report";
 						Report();
 					}
+					elseif(isset($_POST["AccountInfo"])) //Add Vendor button, sents users to the add vendor page.
+					{
+						$_SESSION['next_page'] = "Employee";
+						$_SESSION['account_access'] = $_SESSION['empl_id'];
+						EmployeeInfo();
+					}
 					elseif(isset($_POST["emplInfo"]) or isset($_POST["backOnCustTran"]) or isset($_POST["cancelOnEditEmpl"])) //Select button on the main customer/Back button on view transaction
 																														   // Cancel/Update Customer button on the Customer Edit Page
 																														   // Pushs user to the the Customer's Information Page
@@ -1885,7 +2129,7 @@
 						//Connecting to the Database
 						$conn = db();
 						$empl_id = $_POST['selected_empl_id'];
-						echo $empl_id;
+						
 						$delete = $conn ->prepare("DELETE FROM Employee
 													WHERE empl_id = '$empl_id'");
 						$delete -> execute();	
@@ -1908,16 +2152,22 @@
 						$empl_email = strip_tags($_POST['empl_email']);
 						$title = strip_tags($_POST['title']);
 						$access_lvl = strip_tags($_POST['access_lvl']);
+						$username = strip_tags($_POST['user_n']);
+						$password = strip_tags($_POST['pass_w']);
 						$update = $conn ->prepare("UPDATE Employee
 													SET empl_fname = '$empl_fname',
 														empl_lname = '$empl_lname',
-														phone_num = '$phone_num',
-														empl_email = '$empl_email',
+														phone_num = '$phone_num', 
 														title = '$title',
-														access_lvl = '$access_lvl'
+														empl_email = '$empl_email',
+														access_lvl = '$access_lvl',
+														user_n = '$username',
+														pass_w = '$password'
 													WHERE empl_id = '$empl_id'");
 						$update ->execute();
 						$conn = null;
+						$_SESSION['empl_user'] = $username;
+						$_SESSION['empl_pass'] = $password;
 						//next inserts
 						EmployeeInfo();
 					}
@@ -2022,7 +2272,7 @@
 			{
 				NavBar();
 ?>
-				<div class="background">
+				<div id="background" class="background">
 <?php
 					if(isset($_POST["HomePage"])) //HomePage Button. When pressed sends users to the Home Page.
 					{
@@ -2061,6 +2311,12 @@
 					{
 						$_SESSION['next_page'] = "Report";
 						Report();
+					}
+					elseif(isset($_POST["AccountInfo"])) //Add Vendor button, sents users to the add vendor page.
+					{
+						$_SESSION['next_page'] = "Employee";
+						$_SESSION['account_access'] = $_SESSION['empl_id'];
+						EmployeeInfo();
 					}
 					else //A "catch all" thing where if there was ever a time a button has not been press and the page somehow moves on,
 						 //We just move on back the main section page
