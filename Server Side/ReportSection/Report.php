@@ -1032,7 +1032,7 @@
 									}
 									else
 									{
-										console.log("OOOOH NOOOO, Something went wrong in the Javascript");
+										console.log("OOOOH NOOOO, Something went Wrong");
 										
 									}
 									
@@ -1043,42 +1043,6 @@
 					});
 				});
 			</script>
-			
-			
-			<!--<script type="text/javascript">
-				$(function() 
-				{
-					$('#create_report').click(function() //Starts the script when the user click one of the option buttons on the side
-					{
-						//Start of the AJAX call
-						$.ajax(
-						{
-							url: "../ReportSection/Report_ExcelPrint.php", //The file where the php select query is at
-							type: "post",
-							data: 
-							{
-								'chosen_report': $('#chosen_report').val(),
-								'status': $('#status').val(),
-								'cat': $('#cat').val(),
-								'location': $('#location').val(),
-								'public': $('#public').val(),
-								'dbw': $('#dbw').val(),
-								'from_date': $('#from_date').val(),
-								'to_date': $('#to_date').val()
-							},
-							success: function(data) //When the AJAX call is successful, the script does the following
-							{
-								console.log("Export to Excel AJAX Call Successful"); //Tells the console log that the AJAX call was good
-							},
-							error: function(XMLHttpRequest, textStatus, errorThrown) 
-							{ 
-								console.log("Export to Excel went wrong");
-							}  
-						});
-					});
-				});
-			</script>-->
-			
 			
 			<script type = "text/javascript">
 				// this script calls a CSS class called .highlight in the CSS file

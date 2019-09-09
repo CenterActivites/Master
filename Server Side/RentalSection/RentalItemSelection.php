@@ -49,7 +49,7 @@
 		$list_of_reserve = $conn->prepare("select item_Backid, request_date, due_date
 											from Rental a, Reserve1 b
 											where a.rent_id = b.rent_id and 
-													a.pick_up_date is null and 
+													a.return_date is null and 
 													(a.rental_status = 'On-Going' or 
 													a.rental_status = 'Trip')");
 		$list_of_reserve->execute();

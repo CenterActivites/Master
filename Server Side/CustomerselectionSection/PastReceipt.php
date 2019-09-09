@@ -75,8 +75,8 @@
 				$loc_info = $loc_info->fetchAll();
 				
 				//Formating the date and time we got from the Transaction table into a more readable format for users
-				$his_request_date = date("F j, Y", strtotime($reserve_his_infor[0][0]));
-				$his_due_date = date("F j, Y", strtotime($reserve_his_infor[0][1]));
+				$his_request_date = date("F j, Y", strtotime($reserve_his_infor[0]['request_date']));
+				$his_due_date = date("F j, Y", strtotime($reserve_his_infor[0]['due_date']));
 ?>
 				<!-- Styling and structure are basically the same as the return tranaction receipt -->
 				<div class="container" id="section_to_print">
@@ -156,22 +156,22 @@
 											</td>
 											<td class="text-center">
 												<p>
-													<strong>$<?= $reserve_his_infor[0][3] ?></strong>
+													<strong>$<?= $reserve_his_infor[0]['sub_total_cost'] ?></strong>
 												</p>
 												<p>
-													<strong>$<?= $reserve_his_infor[0][2] - $reserve_his_infor[0][3] ?></strong>
+													<strong>$<?= $reserve_his_infor[0]['total_cost'] - $reserve_his_infor[0]['sub_total_cost'] ?></strong>
 												</p>
 											</td>
 										</tr>
 										<tr>
 											<td></td>
 											<td class="text-right"><h4><strong>Total:</strong></h4></td>
-											<td class="text-center text-danger"><h4><strong>$<?= $reserve_his_infor[0][2] ?></strong></h4></td>
+											<td class="text-center text-danger"><h4><strong>$<?= $reserve_his_infor[0]['total_cost'] ?></strong></h4></td>
 											
 											<td class="text-center">
 												<p>
 													<h4>
-														<strong class="text-center text-danger">$<?= $reserve_his_infor[0][5] ?></strong>
+														<strong class="text-center text-danger">$<?= $reserve_his_infor[0]['deposit'] ?></strong>
 													</h4>
 												</p>
 											</td>
@@ -186,11 +186,11 @@
 					</div>
 				</div>
 
-			<form method= "post" action ="../CustomerselectionSection/email_receipt.php">
+			<!-- <form method= "post" action ="../CustomerselectionSection/email_receipt.php">
 				<button>
 					Email
 				</button>
-			</form>
+			</form> -->
 			
 			</body>
 		</html>

@@ -17,13 +17,13 @@
 							Name: <input type = "text" name = "empl_name" id = "empl_name" maxlength="40" value ="" required/>
 						</td>
 						<td>
-							Title: <input type = "text" name = "title" id = "title" maxlength="15" value ="" required/>
+							Title: <input type = "text" name = "title" id = "title" maxlength="15" value =""/>
 						</td>
 					</tr>
 					
 					<tr>
 						<td>
-							Phone Number: <input type = "text" name = "Phone" id = "Phone" maxlength="12" value ="" required/>
+							Phone Number: <input type = "text" name = "Phone" id = "Phone" maxlength="12" value =""/>
 						</td>
 						<td>
 							<label for="access_lvl"> Level of Access Given: </label>
@@ -39,7 +39,7 @@
 					
 					<tr>
 						<td>
-							Email Address: <input type = "text" name = "email" id = "email" maxlength="50"  value ="" required/>
+							Email Address: <input type = "text" name = "email" id = "email" maxlength="50"  value =""/>
 						</td>
 						<td>
 							Username: <input type = "text" name = "user" id = "user" maxlength="20" minlength=3 value ="" required/>

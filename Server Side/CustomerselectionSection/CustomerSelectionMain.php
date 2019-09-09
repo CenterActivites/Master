@@ -210,9 +210,9 @@
 					</br>
 					<div id='input_dates' name='input_dates' style='display: block;'>
 						<!-- The "Pick up" and "Return" date inputs. Have it where users can not select past dates for rentals   min="<?php //echo date('Y-m-d'); ?>"-->
-						Pick up Date: <input type = "date" name = "pickUpDate" id = "pickUpDate" />
+						Pick up Date: <input type = "date" name = "pickUpDate" id = "pickUpDate" min="<?php echo date('Y-m-d'); ?>"/>
 						&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-						Return Date: <input type = "date" name = "returnDate" id = "returnDate" />
+						Return Date: <input type = "date" name = "returnDate" id = "returnDate" min="<?php echo date('Y-m-d'); ?>"/>
 					</div>
 					</br>
 					<input type="submit" name="on_to_rental" id="on_to_rental" value="Continue" /><br />
