@@ -2,13 +2,20 @@
 
 	function EmployeeInfo()
 	{
-		if(isset($_POST["empl_id"])) //Here for the update button on the edit customer view
+		if(isset($_POST["empl_id"]))
 		{
 			$empl_id = $_POST['empl_id'];
+			$back_button = "type = 'submit'";
+		}
+		elseif(isset($_SESSION["account_access"]))
+		{
+			$empl_id = $_SESSION['account_access'];
+			$back_button = "type = 'hidden'";
 		}
 		else
 		{
 			$empl_id = $_SESSION['selected_empl_id'];
+			$back_button = "type = 'submit'";
 		}
 ?>
 <html>
@@ -100,7 +107,7 @@
 				<!-- ******TODO***** Set up the Employee's Tranaction Page to view what actions or things the Employee have done
 				<input type="submit" name="viewAct" id="viewAct" value="View Employee's Actions" /><br /> -->
 				<input type="submit" name="editEmpl" id="editEmpl" value="Edit Employee" /><br />
-				<input type="submit" name="back" id="back" value="Back" /><br />
+				<input <?= $back_button ?> name="back" id="back" value="Back" /><br />
 			</fieldset>
 		</form>
 	</body>

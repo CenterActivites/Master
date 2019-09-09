@@ -88,6 +88,7 @@
 							<input type="submit" name="ViewVen" id="ViewVen" value="View/Edit Vendors" />
 							<input type="submit" name="ReturnI" id="ReturnI" value="Rental Return" />
 							<input type="submit" name="Report" id="Report" value="Report" />
+							<input type="submit" name="AccountInfo" id="AccountInfo" value="Account Information" />
 							<input <?= $lvl_4 ?>  name="Empl" id="Empl" value="Employees" <?= $disabled_4 ?> />
 							<input type="submit" name="LogOut" id="log_out" value="Log Out" />
 						</div>
