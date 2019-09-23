@@ -13,6 +13,8 @@
 
 </head>
 <body>
+
+	
 		<label for="rent_location"> Location: </label>
 		<select name="location" id="location">
 <?php
@@ -35,10 +37,68 @@
 		<div id="pageHeader" style="font-size: 35px; text-align: center;"> Home Page </div>
 		</br>
 		</br>
-<div>
+
+	<div id="com_log_div" style="float:left; width: 25%; margin-left:0.5%; margin-right:0.5%;">
+		<table id="communication_log_table">
+			<thead>
+				<tr>
+					<th id='hide_me'></th>
+					<th style="width:65%">Communication Log</th>
+					<th style="width:35%">Made By</th>
+				</tr>
+			</thead>
+			<tbody id="com_log_body">
 <?php
+				$date = date("Y-m-d");
+				$comm_log = $conn->prepare("select a.note, b.empl_fname, b.empl_lname, a.timestamp, d.log_id
+											from Notes a, Employee b, NotesComLog c, CommunicationLog d 
+											where a.empl_id = b.empl_id and 
+													a.note_id = c.note_id and 
+													c.log_id = d.log_id and 
+													d.expire_date > :a
+											order by timestamp desc");
+				$comm_log->bindValue(':a', $date, PDO::PARAM_STR);
+				$comm_log->execute();
+				$comm_log = $comm_log->fetchAll();
+				
+				if(!empty($comm_log))
+				{
+					foreach($comm_log as $row)
+					{
+						$note = $row["note"]; //each row is a object that has a f_name, l_name, cust_id, c_email, and a due_date
+						$curr_l_name = $row["empl_lname"];
+						$curr_f_name = $row["empl_fname"]; //each row is a object that has a f_name, l_name, cust_id, c_email, and a due_date
+						$time_stamp = $row["timestamp"];
+						$log_id = $row["log_id"];
+						
+						$time_stamp = date("D, j M g:i a", strtotime($time_stamp));
+						
+?>
+						<tr>
+							<td id = "hide_me"><input type="radio" id="radio" name="radio[]" value = "<?= $log_id ?>"/></td>
+							<td colspan="2"><?= $note ?></td>
+							<td><?= $curr_f_name . " " . $curr_l_name . "  " . $time_stamp ?></td>
+						</tr>
+<?php
+					}
+				}
+				else
+				{
+?>
+					<tr>
+						<td colspan="3"> No new log </td>
+					</tr>
+<?php
+				}
+?>
+			</tbody>
+		</table>
 		
- ?>
+		<input type="button" name="new_log" id="new_log" value="Add New Log" style="float:left;"/>
+		
+	</div>
+	
+	<div style="float:right; width:74%">
 		<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>" id='button' >
 			<div id='table_div'>
 				<fieldset style="border: none;">
@@ -93,7 +153,7 @@
 											$curr_due_date = date("D, j M Y", strtotime($curr_due_date));
 ?>
 											<tr>
-												<td id = "hide_me"><input type="radio" name="radio[]" value = "<?= $curr_cust_id ?>"/></td>
+												<td id = "hide_me"><input type="radio" id="radio" name="radio[]" value = "<?= $curr_cust_id ?>"/></td>
 												<td><?= $curr_f_name ?></td>
 												<td><?= $curr_l_name ?></td>
 												<td><?= $curr_c_email ?></td>
@@ -179,7 +239,7 @@
 											$curr_request_date = date("D, j M Y", strtotime($curr_request_date));
 ?>
 											<tr>
-												<td id = "hide_me"><input type="radio" name="radio[]" value = "<?= $curr_rent_id ?>"/></td>
+												<td id = "hide_me"><input type="radio" id="radio" name="radio[]" value = "<?= $curr_rent_id ?>"/></td>
 												<td><?= $curr_f_name ?></td>
 												<td><?= $curr_l_name ?></td>
 												<td><?= $curr_c_email ?></td>
@@ -201,7 +261,7 @@
 											$curr_request_date = date("D, j M Y", strtotime($curr_request_date));
 ?>
 											<tr>
-												<td id = "hide_me"><input type="radio" name="radio[]" value = "<?= $curr_rent_id ?>"/></td>
+												<td id = "hide_me"><input type="radio" id="radio" name="radio[]" value = "<?= $curr_rent_id ?>"/></td>
 												<td colspan="4"><?= $curr_trip ?></td>
 												<td><?= $curr_request_date ?></td>
 											</tr>
@@ -227,7 +287,7 @@
 												$curr_request_date = date("D, j M Y", strtotime($curr_request_date));
 ?>
 												<tr>
-													<td id = "hide_me"><input type="radio" name="radio[]" value = "<?= $curr_rent_id ?>"/></td>
+													<td id = "hide_me"><input type="radio" id="radio" name="radio[]" value = "<?= $curr_rent_id ?>"/></td>
 													<td colspan="4"><?= $curr_trip ?></td>
 													<td><?= $curr_request_date ?></td>
 												</tr>
@@ -254,7 +314,7 @@
 												$curr_request_date = date("D, j M Y", strtotime($curr_request_date));
 ?>
 												<tr>
-													<td id = "hide_me"><input type="radio" name="radio[]" value = "<?= $curr_rent_id ?>"/></td>
+													<td id = "hide_me"><input type="radio" id="radio" name="radio[]" value = "<?= $curr_rent_id ?>"/></td>
 													<td><?= $curr_f_name ?></td>
 													<td><?= $curr_l_name ?></td>
 													<td><?= $curr_c_email ?></td>
@@ -295,7 +355,24 @@
 			<input type="hidden" id="cust_id" name="cust_id" value="" />
 			<input type="hidden" id="rent_id" name="rent_id" value="" />
 		</form>
-</div>
+			<input type="hidden" id="empl_id" id="empl_id" value="<?= $_SESSION['empl_id'] ?>" />
+			<input type="hidden" id="log_id" name="log_id" value="" />
+			<input type="hidden" id="log_row" name="log_row" value="" />
+	</div>
+	<!-- Modal content. The box that appears when the "Rental" button is clicked -->
+	<div id="myModal" class="modal">
+		<div class="modal-content" name="new_log">
+			<textarea id="log_input" name="log_input" rows="10" placeholder="Please include as much detail as possible. This could be including dates, names, items with their id, etc..." style="margin-bottom:1.5%; width:85%; clear: both;"></textarea>
+			<div style="float left; margin-left:3%;">
+				<input type="button" id="log_add" id="log_add" value="Add" />
+			</div>
+			<div style="float right;">
+				Log's Expire Date: <input type="date" id="date_to_expire" id="date_to_expire" min="<?php echo date("Y-m-d", strtotime("+3 day")); ?>" value="<?php echo date("Y-m-d", strtotime("+2 week")); ?>"/>
+				</br>
+				(When you would like the log to auto disappear from the communication logs)
+			</div>
+		</div>
+	</div>
 </body>
 
 	<!-- JavaScript Starts here -->
@@ -305,6 +382,19 @@
 	<!-- Little script that checks if a customer have been selected for the next page -->
 	<script type="text/javascript">
 		$(document).ready(function(){
+			
+			$('#log_id').val('');
+			$('#cust_id').val('');
+			$('#rent_id').val('');
+			$('#log_row').val('');
+			
+			$('input[name=radio]').attr('checked',false);
+			
+			$('input[type="radio"]:checked').each(function()
+			{
+				console.log("it didn't worked");
+			});
+		
 			$("#select").click(function(){
 				if($('#cust_id').val() == "" && $('#rent_id').val() == "")
 				{
@@ -318,22 +408,7 @@
 	<!-- Function for saving the selected customer's id to the hidden input "cust_id" -->
 	<script type="text/javascript">
 	$(document).ready(function(){
-		$("#table_div").on('click', 'table tr', function()
-		{
-			$(this).find('td input:radio').prop('checked',true);
-			
-			$('input[type="radio"]:checked').each(function()
-			{
-				var box_value = $(this).val();
-				$('#cust_id').val(box_value);
-				$('#rent_id').val(box_value);
-				console.log("Selected id: " + $('#cust_id').val() + " " + $('#rent_id').val());
-			});
 		
-			$("#cust_table_info_late tr").removeClass("highlight");
-			$("#cust_table_info_pick tr").removeClass("highlight");
-			$(this).addClass("highlight");
-		});
 	});
 	</script>
 
@@ -345,14 +420,12 @@
 			$("#late_table_div").on('click', 'table tr', function()
 			{
 				$('#which_table').val("Late");
-				console.log("Late table was selected");
 			});	
 			
 			
 			$("#reserved_table_div").on('click', 'table tr', function()
 			{
 				$('#which_table').val("Pick");
-				console.log("Pick-up table was selected");
 			});	
 		});
 	</script>
@@ -634,6 +707,117 @@
 		});
 	</script>
 	
+	<script type="text/javascript">
+		//Ajax call that does the update for the status updates on the item selection table. The status dropdown on the item select table.  
+		$(function()
+		{
+			var modal = document.getElementById('myModal');
+		
+			$('#new_log').on('click', function() 
+			{
+				$('#log_input').val('');
+				modal.style.display = "block";
+				// When the user clicks anywhere outside of the modal, close it
+				window.onclick = function(event) 
+				{
+					if (event.target == modal) 
+					{
+						modal.style.display = "none";
+					}
+				}
+			});
+			
+			$("#table_div").on('click', 'table tr', function()
+			{
+				$('input[name=radio]').prop('checked',false);
+				
+				$(this).find('td input:radio').prop('checked',true);
+				
+				$('input[type="radio"]:checked').each(function()
+				{
+					$('#log_id').val('');
+					var box_value = $(this).val();
+					$('#cust_id').val(box_value);
+					$('#rent_id').val(box_value);
+					console.log("Selected id: " + $('#cust_id').val() + " " + $('#rent_id').val());
+				});
+			
+				$("#cust_table_info_late tr").removeClass("highlight");
+				$("#cust_table_info_pick tr").removeClass("highlight");
+				$("#communication_log_table tr").removeClass("highlight");
+				$(this).addClass("highlight");
+			});
+			
+			$("#com_log_div").on('click', 'table tr', function()
+			{
+				$('#log_row').val($(this).index());
+			
+				$('table_div table tr td input:radio').prop('checked',false);
+				
+				$(this).find('td input:radio').prop('checked',true);
+				
+				$('input[type="radio"]:checked').each(function()
+				{
+					$('#cust_id').val('');
+					$('#rent_id').val('');
+					$('#log_id').val($(this).val());
+					console.log('log id: ' + $('#log_id').val());
+					console.log('log row: ' + $('#log_row').val());
+				});
+			
+				$("#cust_table_info_late tr").removeClass("highlight");
+				$("#cust_table_info_pick tr").removeClass("highlight");
+				$("#communication_log_table tr").removeClass("highlight");
+				$(this).addClass("highlight");
+			});
+			
+			$('#log_add').on('click', function() 
+			{
+				modal.style.display = "none";
+				$.ajax(
+				{
+					url: "../ItemTranSection/Comm_Log_add_helper.php",
+					type: "post",
+					data:
+					{
+						'empl_id':$('#empl_id').val(),
+						'log':$('#log_input').val(),
+						'expire_date':$('#date_to_expire').val()
+					},
+					success:function(data)
+					{
+						console.log(data);
+						var json_object = JSON.parse(data); //Grabs the data that is in JSON format and parse it so it is usable
+						
+						if(document.getElementById("communication_log_table").rows[1].cells[0].innerHTML == ' No new log ')
+						{
+							document.getElementById("communication_log_table").deleteRow(1);
+						}
+						
+						var log_id = json_object['log_id'];
+						var empl_name = json_object['empl_name'];
+						var timestamp = json_object['timestamp'];
+						
+						var table = document.getElementById("com_log_body");
+						var row = table.insertRow(0);
+						var cell1 = row.insertCell(0);
+						var cell2 = row.insertCell(1);
+						var cell3 = row.insertCell(2);
+						cell1.id='hide_me';
+						cell1.innerHTML = "<input type ='radio' name='radio[]' value=" + log_id + "></input>";
+						cell1.colSpan = 2;
+						cell2.innerHTML = $('#log_input').val();
+						cell3.innerHTML = empl_name + " " + timestamp;
+						
+					},
+					error: function(XMLHttpRequest, textStatus, errorThrown) 
+					{ 
+						console.log("Something went wrong");
+					}       
+				});
+			});
+		});
+	</script>
 	
 </html>
 
