@@ -102,10 +102,11 @@
 	//else lets change that information according to the value of the status. 1-5
 	else
 	{
-		$select_item = $connctn->prepare("select item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
-				from Item A, Inventory B, Category C, Status D
-				where A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and D.stat_id = :a" . $dbw_val . $public_val . $loc_val . $cat_val . "
-				ORDER BY inv_name, item_modeltype, item_Frontid");
+		$select_item = $connctn->prepare("select A.item_Backid, item_size, item_modeltype, inv_name, cat_name, item_Frontid, public, D.stat_name
+				from Item A, Inventory B, Category C, Status D, StatusChange E
+				where A.inv_id = B.inv_id and B.cat_id = C.cat_id and A.stat_id = D.stat_id and E.item_Backid = A.item_Backid and D.stat_id = :a" . $dbw_val . $public_val . $loc_val . $cat_val . "
+				GROUP BY item_Backid
+				ORDER BY MAX(timestamp), inv_name, item_modeltype, item_Frontid");
 
 		$select_item->bindValue(':a', $stat_val, PDO::PARAM_INT);
 		$select_item->execute();

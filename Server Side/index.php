@@ -16,11 +16,13 @@
 			{
 				margin: 0px auto;
 				text-align: centered;
-				width: 80%;
+				width: 90%;
 				background-color: #f2f2f2;
 				border:1.5px solid #008000;
 				opacity: 0.98;
 				height: auto;
+				margin-bottom: 5%;
+				overflow: hidden
 			}
 		</style>
 

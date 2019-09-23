@@ -27,7 +27,7 @@
 		}
 		.grid-item:hover 
 		{
-			background: ddd; 
+			background-color: ddd; 
 		}
 		.div_for_selection
 		{
@@ -54,7 +54,7 @@
 			font-weight: bold;
 			font-size: 20px;
 		}
-		#block, #back
+		#block, #back, #clear
 		{
 			background-color: #008000;
 			color: white;
@@ -77,13 +77,13 @@
 		}
 		#block
 		{
-			margin-left: 42.5%;
+			margin-left: 38%;
 		}
-		#back
+		#back, #clear
 		{
 			margin-left: 2%;
 		}
-		#block:hover, #back:hover 
+		#block:hover, #back:hover, #clear:hover 
 		{
 			background-color: #006400;
 		}
@@ -92,7 +92,10 @@
 			background: #DCDCDC;
 			border-style: solid;
 			border-color: f2f2f2;
-
+		}
+		.inventory 
+		{ 
+			display: none;
 		}
 	</style>
 	
@@ -170,7 +173,7 @@
 ?>
 
 					<div class="grid-item" id="<?= $row['inv_id'] ?>">
-						<input type="checkbox" id="<?= $row['inv_id'] ?>" name="inventory[]" value="<?= $row['inv_id'] ?>">
+						<input type="checkbox" id="<?= $row['inv_id'] ?>" name="inventory[]" class="inventory" value="<?= $row['inv_id'] ?>">
 						</br>
 						<?= $row['inv_name'] ?>
 					</div>
@@ -195,6 +198,7 @@
 			<input type="hidden" name="inv_array" id="inv_array"/>
 			<input type="hidden" name="empl_id" id="empl_id" value="<?= $_SESSION['empl_id'] ?>"/>
 			<input type="button" id="block" name="block" value="Block"/>
+			<input type="button" id="clear" name="clear" value="Clear"/>
 			<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
 				<input type="submit" name="back" id="back" value="Back" /><br /> 
 			</form>
@@ -303,7 +307,6 @@
 			
 			$("#inv_select").click(function(e) 
 			{
-				console.log(e.target.id);
 				if($("input[type=checkbox][value=" + e.target.id + "]").is(':checked'))
 				{
 					$("input[type=checkbox][value=" + e.target.id + "]").prop("checked",false);
@@ -314,6 +317,13 @@
 					$("input[type=checkbox][value=" + e.target.id + "]").prop("checked",true);
 					$("#" + e.target.id).addClass("highlight");
 				}
+			});
+			
+			$("#clear").click(function() 
+			{
+				$('input[type=checkbox]').prop('checked',false);
+				$("#inv_select>div.highlight").removeClass("highlight");
+				$('input[type=radio]').prop('checked',false);
 			});
 			
 			$('#trip_list input[type=radio]').change(function()

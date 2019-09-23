@@ -21,13 +21,19 @@
 					  }
 					  #section_to_print {
 						position: absolute;
-						top: 10%;
+						
 						width: 100%;
-						transform: scale(0.6, 0.6);
-						-ms-transform: scale(0.6, 0.6); /* IE 9 */
-						-webkit-transform: scale(0.6, 0.6); /* Safari and Chrome */
-						-o-transform: scale(0.6, 0.6); /* Opera */
-						-moz-transform: scale(0.6, 0.6); /* Firefox */
+						height:100%;
+						position:absolute;
+						top:0px;
+						bottom:0px;
+						margin: auto;
+						margin-top: 0px !important;
+						
+						font-size: 12px;
+					  }
+					  #item_list{
+						font-size: 12px;
 					  }
 					}
 
@@ -63,7 +69,6 @@
 					
 					//Grabs the array of selected items that were returned 
 					$items_to_return = $_SESSION["item_array"];
-
 ?>
 					<!-- Most of the following code is just "style" purposes for receipt -->
 					<div class="container" id="section_to_print">
@@ -129,7 +134,7 @@
 												}
 ?>
 												<!-- Displaying each item information -->
-												<tr>
+												<tr id="item_list">
 													<td class="col-md-6"><em> <?= $item_display[0]['cat_name'] ?> </em></h4></td>
 													<td class="col-md-6" style="text-align: center"> <?= $item_display[0]['inv_name'] ?> </td>
 													<td class="col-md-6" style="text-align: center"> <?= $item_display[0]['item_modeltype'] ?> </td>
@@ -187,7 +192,6 @@
 					$loc_info->bindValue(':loc_id', $loc_id, PDO::PARAM_INT);
 					$loc_info->execute();
 					$loc_info = $loc_info->fetchAll();
-
 ?>
 					<!-- Styling and structure are basically the same as the return tranaction receipt -->
 					<div class="container" id="section_to_print">
@@ -248,7 +252,7 @@
 													else
 													{
 ?>
-														<tr>
+														<tr id="item_list">
 															<td class="col-md-6"><em> <?= $item['name'] ?> </em></h4></td>
 															<td class="col-md-1 text-center"> <?= $item['id'] ?> </td>
 															<td class="col-md-1 text-center"> $<?= $item['price'] ?> </td>
@@ -263,7 +267,7 @@
 													if($item['id'] != " ") 
 													{
 ?>
-														<tr>
+														<tr id="item_list">
 															<td class="col-md-6"><em> <?= $item['name'] ?> </em></h4></td>
 															<td class="col-md-1 text-center"> <?= $item['id'] ?> </td>
 															<td class="col-md-1 text-center"> $0 </td>
@@ -274,7 +278,7 @@
 													else
 													{
 ?>
-														<tr>
+														<tr id="item_list">
 															<td class="col-md-6"><em> <?= $item['name'] ?> </em></h4></td>
 															<td class="col-md-1 text-center"> <?= $item['id'] ?> </td>
 															<td class="col-md-1 text-center"> $<?= $item['price'] ?> </td>
@@ -288,7 +292,7 @@
 											else
 											{
 ?>
-												<tr>
+												<tr id="item_list">
 													<td class="col-md-6"><em> <?= $pack_name ?> </em></h4></td>
 													<td class="col-md-1 text-center"> </td>
 													<td class="col-md-1 text-center"> $<?= $total_price_with_tax ?> </td>
