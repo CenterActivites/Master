@@ -1,4 +1,8 @@
 #item_table tbody tr.highlight td { background:#89cff0;}
+#item_table tbody tr.remove_highlight{  
+	border-style: solid;
+	border-color: red;
+}
 
 #hide_me, #item_id
 {
@@ -45,7 +49,7 @@ table
 
 #item_table tbody tr:hover {background-color: ddd;}
 
-#Checkin,#back,#Checkout,#cancelReserve,#mod_rental,#cancel, #Checkout_trip
+#Checkin,#back,#Checkout,#cancelReserve,#mod_rental,#cancel, #Checkout_trip, #remove_from_trip, #toggle_removing
 {
     background-color: #008000;
     color: white;
@@ -65,7 +69,13 @@ table
     white-space: normal;
 }
 
-#Checkin:hover, #cancel:hover, #back:hover, #Checkout:hover, #cancelReserve:hover, #mod_rental:hover, #Checkout_trip:hover
+#Checkin:hover, #cancel:hover, #back:hover, #Checkout:hover, #cancelReserve:hover, #mod_rental:hover, #Checkout_trip:hover, #remove_from_trip:hover, #toggle_removing:hover
 {
 	background-color: #006400;
+}
+
+#toggle_removing
+{
+	float:right;
+	margin-right:20px;
 }

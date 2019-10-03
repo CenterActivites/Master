@@ -557,7 +557,7 @@
 								$empl_id = $_SESSION["empl_id"];
 								
 								//Starts off with a for loop, looping though the array of selected items.
-								foreach($items_to_pick_up as $item_id)
+								foreach($items_leftover as $item_id)
 								{
 									//Sets up insert statement for CheckOut
 									$delete = $conn->prepare("DELETE FROM Reserve1
@@ -603,6 +603,95 @@
 						
 						HomePage();
 					}
+					
+					elseif(isset($_POST["remove_from_trip"]))
+					{
+						//Connecting to the Database
+						$conn = db();
+							
+						//Grabbing the comments made about the items, rental, or customer the user made when doing the item pick-up
+						$comments = strip_tags($_POST['comments']);
+						
+						//Grabbing the item array/list that were returned
+						$item_to_pick_up = $_POST["item_to_be_pick_up"];
+						$items_leftover = $_POST["item_to_be_return"];
+						$rent_id = $_SESSION["rent_id"];
+						
+						//Makes sure the array of items selected for pick-up isn't empty or null
+						if($item_to_pick_up != null || $item_to_pick_up != "")
+						{
+							$item_to_pick_up = explode(',', $item_to_pick_up); //Filtering throught the array/list. Dropping all empty spots
+							//Grabbing customer id and the employee's id
+							$cust_id = $_SESSION["cust_id"];
+							$empl_id = $_SESSION["empl_id"];
+							
+							//Starts off with a for loop, looping though the array of selected items.
+							foreach($item_to_pick_up as $item_id)
+							{
+								//Sets up insert statement for CheckOut
+								$delete = $conn->prepare("DELETE FROM Reserve1
+															WHERE rent_id = :a and
+																item_Backid = :b");
+								//Binding the vars along with their respected datatype
+								$delete->bindValue(':a', $rent_id, PDO::PARAM_INT);
+								$delete->bindValue(':b', $item_id, PDO::PARAM_INT);
+								$delete->execute();
+								//DEBUGGING PURPOSE
+								//print $insert -> errorCode();
+								//echo "\nPDO::errorInfo():\n";
+								//print_r($insert->errorInfo());
+								//Once the item is in the CheckOut table, we update the status of the item to 'Check-out' to make sure no one else will select the item for another rental while its out
+								//Remember: 'Ready' = 1, 'Repair' = 2, 'Check-out' = 3, 'Check-in' = 4, 'Missing' = 5, 'Retire' = 6, 'Reserved' = 7, 'Drying' = 8, 'In Wash' = 9, and 'In Storage' = 10 (This is mostly for HBAC)
+								$update = $conn->prepare("update Item
+															set stat_id = 1
+															where item_Backid = :item_id");
+								$update->bindValue(':item_id', $item_id, PDO::PARAM_INT);
+								$update->execute(); //execute the query
+							}
+							
+							//Insert statement for Notes to record any comments or notes to do with the transaction or items
+							if($comments != "" && $comments != NULL)
+							{
+								//Grabs the employee's id, so that we can see who made the comment
+								$empl_id = $_SESSION['empl_id'];
+								
+								//Insert into the Notes table
+								$insert = $conn->prepare("insert into Notes
+															(note, timestamp, empl_id)
+															values
+															(:a, :b, :c)");
+								//Binding the vars along with their respected datatype
+								$insert->bindValue(':a', $comments, PDO::PARAM_STR);
+								$insert->bindValue(':b', $current_date, PDO::PARAM_STR);
+								$insert->bindValue(':c', $empl_id, PDO::PARAM_INT);
+								$insert->execute();
+								//echo "Error In Insert to Notes: ";
+								//print $insert -> errorCode();
+								//echo "\nPDO::errorInfo():\n";
+								//print_r($insert->errorInfo());
+								//echo "</br> </br>";
+								$note_id = $conn->lastInsertId();
+								
+								//Once the note have been inserted, we make the connect from the note to the rental itself by inserting both the rental id and note id into NotesRental
+								$insert = $conn->prepare("insert into NotesRental
+															(note_id, rent_id)
+															values
+															(:a, :b)");
+								//Binding the vars along with their respected datatype
+								$insert->bindValue(':a', $note_id, PDO::PARAM_STR);
+								$insert->bindValue(':b', $rent_id, PDO::PARAM_STR);
+								$insert->execute();
+								//echo "Error In Insert to Notes: ";
+								//print $insert -> errorCode();
+								//echo "\nPDO::errorInfo():\n";
+								//print_r($insert->errorInfo());
+								//echo "</br> </br>";
+							}
+						}
+						
+						HomePage();
+					}
+					
 					
 					elseif(isset($_POST["Checkout"])) //Once the user is done selecting the item the customer is picking today, this button "Checkout" will push the user back to the Homepage with the following done
 					{
