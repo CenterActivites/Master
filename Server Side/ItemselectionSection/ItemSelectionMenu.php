@@ -296,11 +296,13 @@
 				<input type="submit" name="moreinfo" id="moreinfo" value="Item Info" onclick="return is_blank()" /> &nbsp;&nbsp;
 				<input <?= $lvl_2 ?> name="additem" id="additem" value="Add Item" <?= $disabled_2 ?>/> &nbsp;&nbsp;
 				<input <?= $lvl_3 ?> name="addinventory" id="addinventory" value="Add Inventory" <?= $disabled_3 ?>/> &nbsp;&nbsp;
+				<input <?= $lvl_2 ?> name="blockout" id="blockout" value="Block Out"/> &nbsp;&nbsp;
 		</form>
 		
 		<!-- Button for downloading a excel sheet of the current item list in the table -->
 		<form method= "post" action="../ItemselectionSection/ExcelPrint.php">
 				<input type="hidden" id="status_hidden" name="status_hidden" value="0"/>
+				<input type="hidden" id="search_bar" name="search_bar" value=""/>
 				<input type="hidden" id="dbw_hidden" name="dbw_hidden" value="none"/>
 				<input type="hidden" id="public_hidden" name="public_hidden" value="none"/>
 				<input type="hidden" id="location_hidden" name="location_hidden" value="none"/>
@@ -308,7 +310,7 @@
 				<input type="submit" id="excel_download" id="excel_download" value="Download Excel" />
 			</fieldset>
 		</form>
-		
+	
 		<input type="hidden" id="empl_id" id="empl_id" value="<?= $_SESSION['empl_id'] ?>" />
 		
     </div>
@@ -324,6 +326,10 @@
 		$(function ()
 		{
 			$('input#searchItem').quicksearch('#table_info tbody tr'); //On key search for customer names here
+		});
+		
+		$('#searchItem').on('input',function(e){
+			$('#search_bar').val($('#searchItem').val());
 		});
 	</script>
 

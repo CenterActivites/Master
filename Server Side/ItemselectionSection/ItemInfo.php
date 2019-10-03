@@ -63,7 +63,6 @@
 						$curr_item_name = $row["item_modeltype"];
 						$curr_item_frontid = $row["item_Frontid"];
 						$curr_item_size = $row["item_size"];
-						$curr_item_status = $row["stat_name"];
 						$curr_item_location = $row["loc_name"];
 						$curr_item_pur_price = $row["pur_price"];
 						$curr_item_pur_date = $row["pur_date"];
@@ -80,21 +79,30 @@
 						$number_of_use = $number_of_use->fetchAll();
 						$curr_number_of_use = $number_of_use[0][0];
 						
-						/*$notes = $conn->prepare("SELECT timestamp, c.stat_name f, d.stat_name t, empl_fname, empl_lname    
-												FROM StatusChange a 
-												JOIN Status c
-												ON c.stat_id = a.change_from 
-												JOIN Status d 
-												ON d.stat_id = a.change_to
-												JOIN Employee b
-												ON a.empl_id = b.empl_id
-												WHERE timestamp = (select max(timestamp)
-																	from StatusChange
-																	where item_Backid = :a) and 
-														item_Backid = :a");
-						$notes->bindValue(':a', $item_backid, PDO::PARAM_INT);
-						$notes->execute();
-						$notes = $notes->fetchAll();*/
+						$status_infor = $conn->prepare("SELECT timestamp, c.stat_name f, d.stat_name t, empl_fname, empl_lname    
+														FROM StatusChange a 
+														JOIN Status c
+														ON c.stat_id = a.change_from 
+														JOIN Status d 
+														ON d.stat_id = a.change_to
+														JOIN Employee b
+														ON a.empl_id = b.empl_id
+														WHERE timestamp = (select max(timestamp)
+																			from StatusChange
+																			where item_Backid = :a) and 
+																item_Backid = :a");
+						$status_infor->bindValue(':a', $item_backid, PDO::PARAM_INT);
+						$status_infor->execute();
+						$status_infor = $status_infor->fetchAll();
+						
+						if($status_infor[0][0] == "" || $status_infor[0][0] == null)
+						{
+							$item_status = $row["stat_name"];;
+						}
+						else
+						{
+							$item_status = "'" . $status_infor[0]['f'] . "' to '" . $status_infor[0]['t'] . "' changed by " . $status_infor[0]['empl_fname'] . ' ' . $status_infor[0]['empl_lname'] . ' on ' . date("D, j M", strtotime($status_infor[0]['timestamp']));
+						}
 
 						if($curr_item_public == 1){
 							$curr_item_public = "Yes";
@@ -131,8 +139,8 @@
 										<td class="editcol"><?= $curr_item_size?></td>
 								</tr>
 								<tr>
-									<th>Current Status Of Item:</th>
-										<td class="editcol"><?= $curr_item_status?></td>
+									<th>Status Of Item:</th>
+										<td class="editcol"><?= $item_status?></td>
 								</tr>
 								<tr>
 									<th>Location Of Item:</th>
@@ -175,12 +183,13 @@
 					$comments = $comments->fetchAll();
 					
 					$customer = $conn->prepare("select pick_up_date, return_date, l_name, f_name
-												from Rental A, Customer B, CheckOut C
+												from Rental A, Customer B, Reserve1 C
 												where A.cust_id = B.cust_id and 
 														A.rent_id = C.rent_id and 
+														A.rental_status != 'Cancelled' and 
 														C.item_Backid = :a
-												group by time_stamp, l_name, f_name 
-												order by time_stamp");
+												group by request_date, l_name, f_name 
+												order by request_date");
 					$customer->bindValue(':a', $item_backid, PDO::PARAM_INT);
 					$customer->execute();
 					$customer = $customer->fetchAll();
@@ -236,14 +245,22 @@
 						{
 							echo "<tr>";
 							echo "<td>";
-							$pick_up_date_reformated = date("F d, Y", strtotime($customer[0]['pick_up_date']));
-							if($customer[0]['return_date'] == null || $customer[0]['return_date'] == "")
+							if($customer[0]['pick_up_date'] == null || $customer[0]['pick_up_date'] == "")
 							{
-								$return_date_reformated = "Current Rented Out";
+								$display_date = "Haven't picked up yet";
 							}
 							else
 							{
-								$return_date_reformated = date("F d, Y", strtotime($customer[0]['return_date']));
+								$pick_up_date_reformated = date("F d, Y", strtotime($customer[0]['pick_up_date']));
+								if($customer[0]['return_date'] == null || $customer[0]['return_date'] == "")
+								{
+									$return_date_reformated = "Current Rented Out";
+								}
+								else
+								{
+									$return_date_reformated = date("F d, Y", strtotime($customer[0]['return_date']));
+								}
+								$display_date = $pick_up_date_reformated . " - " . $return_date_reformated;
 							}
 							echo $pick_up_date_reformated . " - " . $return_date_reformated;
 							echo "</td>";
@@ -264,14 +281,22 @@
 						{
 							echo "<tr>";
 							echo "<td>";
-							$pick_up_date_reformated = date("F d, Y", strtotime($customer[1]['pick_up_date']));
-							if($customer[1]['return_date'] == null || $customer[1]['return_date'] == "")
+							if($customer[1]['pick_up_date'] == null || $customer[1]['pick_up_date'] == "")
 							{
-								$return_date_reformated = "Current Rented Out";
+								$display_date = "Haven't picked up yet";
 							}
 							else
 							{
-								$return_date_reformated = date("F d, Y", strtotime($customer[1]['return_date']));
+								$pick_up_date_reformated = date("F d, Y", strtotime($customer[1]['pick_up_date']));
+								if($customer[1]['return_date'] == null || $customer[1]['return_date'] == "")
+								{
+									$return_date_reformated = "Current Rented Out";
+								}
+								else
+								{
+									$return_date_reformated = date("F d, Y", strtotime($customer[1]['return_date']));
+								}
+								$display_date = $pick_up_date_reformated . " - " . $return_date_reformated;
 							}
 							echo $pick_up_date_reformated . " - " . $return_date_reformated;
 							echo "</td>";
@@ -284,16 +309,24 @@
 						{
 							echo "<tr>";
 							echo "<td>";
-							$pick_up_date_reformated = date("F d, Y", strtotime($customer[2]['pick_up_date']));
-							if($customer[2]['return_date'] == null || $customer[2]['return_date'] == "")
+							if($customer[2]['pick_up_date'] == null || $customer[2]['pick_up_date'] == "")
 							{
-								$return_date_reformated = "Current Rented Out";
+								$display_date = "Haven't picked up yet";
 							}
 							else
 							{
-								$return_date_reformated = date("F d, Y", strtotime($customer[2]['return_date']));
+								$pick_up_date_reformated = date("F d, Y", strtotime($customer[2]['pick_up_date']));
+								if($customer[2]['return_date'] == null || $customer[2]['return_date'] == "")
+								{
+									$return_date_reformated = "Current Rented Out";
+								}
+								else
+								{
+									$return_date_reformated = date("F d, Y", strtotime($customer[2]['return_date']));
+								}
+								$display_date = $pick_up_date_reformated . " - " . $return_date_reformated;
 							}
-							echo $pick_up_date_reformated . " - " . $return_date_reformated;
+							echo $display_date;
 							echo "</td>";
 							echo "<td>";
 							echo $customer[2]['f_name'] . " " . $customer[2]['l_name'];

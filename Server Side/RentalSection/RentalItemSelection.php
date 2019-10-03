@@ -6,8 +6,6 @@
 <html>
 <head>
 	<link rel="stylesheet" type="text/css" href="../RentalSection/rental_css.css"/>
-	<link rel="stylesheet" type="text/css" href="../CSS/toggle.css">
-	<link rel="stylesheet" type="text/css" href="../CSS/Mult_column_select.css">
 	
 </head>
 <body>
@@ -33,9 +31,9 @@
 		
 		$curr_date = Date("Y-m-d");
 		
-		//Creating the current customer's padding request and padding due dates for the later sql select
+		/*//Creating the current customer's padding request and padding due dates for the later sql select
 		$cust_padded_request_date = date('Y-m-d', strtotime($cust_request_date. ' - 2 days'));;
-		$cust_padded_due_date = date('Y-m-d', strtotime($cust_due_date. ' + 2 days'));
+		$cust_padded_due_date = date('Y-m-d', strtotime($cust_due_date. ' + 2 days'));*/
 	
 		//MYSQl select query to see if the selected customer is a student or not
 		$is_student = $conn->prepare("SELECT is_student
@@ -49,7 +47,7 @@
 		$list_of_reserve = $conn->prepare("select item_Backid, request_date, due_date
 											from Rental a, Reserve1 b
 											where a.rent_id = b.rent_id and 
-													a.pick_up_date is null and 
+													a.return_date is null and 
 													(a.rental_status = 'On-Going' or 
 													a.rental_status = 'Trip')");
 		$list_of_reserve->execute();
@@ -81,7 +79,7 @@
 			elseif($reserve_request_date < $cust_request_date)
 			{
 				//Add the 2 days needed for cleaning
-				$pad_reserve_due_date = date('Y-m-d', strtotime($reserve_due_date. ' + 2 days'));
+				$pad_reserve_due_date = date('Y-m-d', strtotime($reserve_due_date));
 				
 				//Does the check with the reserve due date with cleaning and customer's request date
 				if($pad_reserve_due_date > $cust_request_date or $pad_reserve_due_date == $cust_request_date)
@@ -97,7 +95,7 @@
 			else
 			{
 				//Add the 2 days needed for cleaning
-				$pad_cust_due_date = date('Y-m-d', strtotime($cust_due_date. ' + 2 days'));
+				$pad_cust_due_date = date('Y-m-d', strtotime($cust_due_date));
 				
 				//Does the check with the customer's due date with cleaning and reserve's request date
 				if($pad_cust_due_date > $reserve_request_date or $pad_cust_due_date == $reserve_request_date)
@@ -282,6 +280,8 @@
 	    <fieldset style="border:none;">
 			<input type="hidden" name="item_array" id="item_array"/>  <!-- input tag for the returning the list of selected items from Cart -->
 			<input type="hidden" id="loc_hidden" name="loc_hidden" value="<?= $curr_loc ?>"/>
+			<input type="hidden" id="request_date" name="request_date" value="<?= $cust_request_date ?>"/>
+			<input type="hidden" id="due_date" name="due_date" value="<?= $cust_due_date ?>"/>
             <input type="submit" name="calPay" id="calPay" value="Continue to Payments" style="float: left; margin-left:40%;"/>    <!-- Sends the user onto the next page, the CalculatePayments page -->
 	</form>
 	<form method= "post" action ="<?= htmlentities($_SERVER['PHP_SELF'], ENT_QUOTES) ?>">
@@ -307,70 +307,200 @@
 		
 		//Once user select an item on the selection item table
 		$("#div_for_selection").on('click', 'table tr', function(){
-			
-			//Check the hidden radio button so that we can grab the item id value that is set with the radio button
-			$(this).find('td input:radio').prop('checked',true);
-			
-			$('input[type="radio"]:checked').each(function(){
-				//Grab the item_id value of the selected item
-				var box_value = $(this).val();
-				
-				//Logs the item id into the console
-				console.log("Item id that was selected to add to the cart: " + $(this).val());
-				
-				var get_val = $("#item_array").val();  //Grabs current string values from the input tag "item_array"
-				var hidden_val = (get_val != "") ? get_val+"," : get_val; //Adds the item to the string with "," separating the items
-				$("#item_array").val(hidden_val + box_value); //Have the input tag "item_array" hold/keep the string
-				
-				//Logs the current values of the cart array
-				console.log("Current cart array: " + $("#item_array").val());
-				
-				//Grab the whatever is in the current cart
-				if_cart_is_empty = $("#delete_me").text();
-				if_cart_is_empty = if_cart_is_empty.replace(/\s/g, '');
-				
-				//Grabs the "tbody" select tag
-				var tbody = document.getElementById('cart_empty'); //Grabs the "tbody" select tag
-				
-				//Grab all the needed information to be added to the cart
-				item_id = $(this).closest("tr").find('td:nth-child(2)').text();
-				item_size = $(this).closest("tr").find('td:nth-child(3)').text();
-				item_model = $(this).closest("tr").find('td:nth-child(4)').text();
-				item_name = $(this).closest("tr").find('td:nth-child(5)').text();
-				
-				//Check the currenty cart to see if its empty or not
-				if(if_cart_is_empty == "CartEmpty")
+			var object = this;
+			$.ajax(
+			{
+				url: "../RentalSection/rental_conflict_helper.php", //The file where the php select query is at
+				type: "post",
+				data: 
 				{
-					//Remove the "Cart Empty" row because now there is a item in the cart
-					$('#cart_empty').empty();
+					'item_id': $(object).find('td input:radio').val().split('-')[1], //assigning the value of the selected package to "pack_value"
+					'request_date': $('#request_date').val(),
+					'due_date': $('#due_date').val()
+				},
+				success: function(data) //When the AJAX call is successful, the script does the following
+				{
+					var json_object = JSON.parse(data); //Grabs the data that is in JSON format and parse it so it is usable
 					
-					//Create a tr tag
-					var tr = document.createElement('tr');
-					
-					//Populate the tr tag
-					tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+box_value+"'/>" +"</td>" + 
-									"<td>" + item_id + "</td>"  + 
-									"<td>" + item_size + "</td>" +
-									"<td>" + item_model + "</td>" + 
-									"<td>" + item_name + "</td>";
+					if(json_object === undefined || json_object.length == 0)
+					{
+						//Check the hidden radio button so that we can grab the item id value that is set with the radio button
+						$(object).find('td input:radio').prop('checked',true);
+						
+						$('input[type="radio"]:checked').each(function()
+						{
+							//Grab the item_id value of the selected item
+							var box_value = $(this).val();
+							
+							//Logs the item id into the console
+							console.log("Item id that was selected to add to the cart: " + $(this).val());
+							
+							var get_val = $("#item_array").val();  //Grabs current string values from the input tag "item_array"
+							var hidden_val = (get_val != "") ? get_val+"," : get_val; //Adds the item to the string with "," separating the items
+							$("#item_array").val(hidden_val + box_value); //Have the input tag "item_array" hold/keep the string
+							
+							//Logs the current values of the cart array
+							console.log("Current cart array: " + $("#item_array").val());
+							
+							//Grab the whatever is in the current cart
+							if_cart_is_empty = $("#delete_me").text();
+							if_cart_is_empty = if_cart_is_empty.replace(/\s/g, '');
+							
+							//Grabs the "tbody" select tag
+							var tbody = document.getElementById('cart_empty'); //Grabs the "tbody" select tag
+							
+							//Grab all the needed information to be added to the cart
+							item_id = $(this).closest("tr").find('td:nth-child(2)').text();
+							item_size = $(this).closest("tr").find('td:nth-child(3)').text();
+							item_model = $(this).closest("tr").find('td:nth-child(4)').text();
+							item_name = $(this).closest("tr").find('td:nth-child(5)').text();
+							
+							//Check the currenty cart to see if its empty or not
+							if(if_cart_is_empty == "CartEmpty")
+							{
+								//Remove the "Cart Empty" row because now there is a item in the cart
+								$('#cart_empty').empty();
+								
+								//Create a tr tag
+								var tr = document.createElement('tr');
+								
+								//Populate the tr tag
+								tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+box_value+"'/>" +"</td>" + 
+												"<td>" + item_id + "</td>"  + 
+												"<td>" + item_size + "</td>" +
+												"<td>" + item_model + "</td>" + 
+												"<td>" + item_name + "</td>";
+												
+								//Add the tr tag to the tbody of the item selection list
+								tbody.appendChild(tr);
+							}
+							else
+							{
+								var tr = document.createElement('tr');
+								tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+box_value+"'/>" +"</td>" + 
+												"<td>" + item_id + "</td>"  + 
+												"<td>" + item_size + "</td>" +
+												"<td>" + item_model + "</td>" + 
+												"<td>" + item_name + "</td>";
+								tbody.appendChild(tr);
+							}
+						});
+						
+						//Remove the selected item from the selection list
+						$(object).remove();
+						console.log("No conflicts");
+					}
+					else
+					{
+						var pop_up_message = "This item have already been selected for a\n";
+						for(var i = 0; i < json_object.length; i++)
+						{
+							var obj = json_object[i]; //First it grabs the current item in the data
+				
+							request_date = obj['request_date'];
+							due_date = obj['due_date'];
+							rental_status = obj['rental_status'];
+							
+							var d_names = new Array("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat");
+
+							var m_names = new Array("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec");
+							
+							var d = new Date(due_date.replace(/-/g, '\/'));
+							var curr_day = d.getDay();
+							var curr_month = d.getMonth();
+							var curr_date = d.getDate();
+							
+							due_date = d_names[curr_day] + ", " + curr_date + " " +  m_names[curr_month];
+							
+							var d = new Date(request_date.replace(/-/g, '\/'));
+							var curr_day = d.getDay();
+							var curr_month = d.getMonth();
+							var curr_date = d.getDate();
+							
+							request_date = d_names[curr_day] + ", " + curr_date + " " +  m_names[curr_month];
+							
+							if(rental_status == "Trip")
+							{
+								pop_up_message = pop_up_message + "Previously made trip on " + request_date + " to " + due_date + "\n";
+							}
+							else
+							{
+								pop_up_message = pop_up_message + "Previously made rental on " + request_date + " to " + due_date + "\n";
+							}
+						}
+						pop_up_message = pop_up_message + "Please double check if the item may or may not have any conflicts with any of the dates above. Check with gear room schedule.\nSelect yes if there wouldn't be any conflict.";
+						
+						var yes_or_no = confirm(pop_up_message);
+						if (yes_or_no == true)
+						{
+							//Check the hidden radio button so that we can grab the item id value that is set with the radio button
+							$(object).find('td input:radio').prop('checked',true);
+							
+							$('input[type="radio"]:checked').each(function(){
+								//Grab the item_id value of the selected item
+								var box_value = $(this).val();
+								
+								//Logs the item id into the console
+								console.log("Item id that was selected to add to the cart: " + $(this).val());
+								
+								var get_val = $("#item_array").val();  //Grabs current string values from the input tag "item_array"
+								var hidden_val = (get_val != "") ? get_val+"," : get_val; //Adds the item to the string with "," separating the items
+								$("#item_array").val(hidden_val + box_value); //Have the input tag "item_array" hold/keep the string
+								
+								//Logs the current values of the cart array
+								console.log("Current cart array: " + $("#item_array").val());
+								
+								//Grab the whatever is in the current cart
+								if_cart_is_empty = $("#delete_me").text();
+								if_cart_is_empty = if_cart_is_empty.replace(/\s/g, '');
+								
+								//Grabs the "tbody" select tag
+								var tbody = document.getElementById('cart_empty'); //Grabs the "tbody" select tag
+								
+								//Grab all the needed information to be added to the cart
+								item_id = $(this).closest("tr").find('td:nth-child(2)').text();
+								item_size = $(this).closest("tr").find('td:nth-child(3)').text();
+								item_model = $(this).closest("tr").find('td:nth-child(4)').text();
+								item_name = $(this).closest("tr").find('td:nth-child(5)').text();
+								
+								//Check the currenty cart to see if its empty or not
+								if(if_cart_is_empty == "CartEmpty")
+								{
+									//Remove the "Cart Empty" row because now there is a item in the cart
+									$('#cart_empty').empty();
 									
-					//Add the tr tag to the tbody of the item selection list
-					tbody.appendChild(tr);
-				}
-				else
-				{
-					var tr = document.createElement('tr');
-					tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+box_value+"'/>" +"</td>" + 
-									"<td>" + item_id + "</td>"  + 
-									"<td>" + item_size + "</td>" +
-									"<td>" + item_model + "</td>" + 
-									"<td>" + item_name + "</td>";
-					tbody.appendChild(tr);
+									//Create a tr tag
+									var tr = document.createElement('tr');
+									
+									//Populate the tr tag
+									tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+box_value+"'/>" +"</td>" + 
+													"<td>" + item_id + "</td>"  + 
+													"<td>" + item_size + "</td>" +
+													"<td>" + item_model + "</td>" + 
+													"<td>" + item_name + "</td>";
+													
+									//Add the tr tag to the tbody of the item selection list
+									tbody.appendChild(tr);
+								}
+								else
+								{
+									var tr = document.createElement('tr');
+									tr.innerHTML = "<td id='hide_me'>" + "<input type='radio' id ='item_id' name='item_id[]' value = '"+box_value+"'/>" +"</td>" + 
+													"<td>" + item_id + "</td>"  + 
+													"<td>" + item_size + "</td>" +
+													"<td>" + item_model + "</td>" + 
+													"<td>" + item_name + "</td>";
+									tbody.appendChild(tr);
+								}
+							});
+							
+							//Remove the selected item from the selection list
+							$(this).remove();
+							console.log("User selected yes");
+						}
+					}
 				}
 			});
-			
-			//Remove the selected item from the selection list
-			$(this).remove();
 		});
 		
 	});

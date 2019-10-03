@@ -21,13 +21,19 @@
 					  }
 					  #section_to_print {
 						position: absolute;
-						top: 10%;
+						
 						width: 100%;
-						transform: scale(0.6, 0.6);
-						-ms-transform: scale(0.6, 0.6); /* IE 9 */
-						-webkit-transform: scale(0.6, 0.6); /* Safari and Chrome */
-						-o-transform: scale(0.6, 0.6); /* Opera */
-						-moz-transform: scale(0.6, 0.6); /* Firefox */
+						height:100%;
+						position:absolute;
+						top:0px;
+						bottom:0px;
+						margin: auto;
+						margin-top: 0px !important;
+						
+						font-size: 12px;
+					  }
+					  #item_list{
+						font-size: 12px;
 					  }
 					}
 					
@@ -75,8 +81,8 @@
 				$loc_info = $loc_info->fetchAll();
 				
 				//Formating the date and time we got from the Transaction table into a more readable format for users
-				$his_request_date = date("F j, Y", strtotime($reserve_his_infor[0][0]));
-				$his_due_date = date("F j, Y", strtotime($reserve_his_infor[0][1]));
+				$his_request_date = date("F j, Y", strtotime($reserve_his_infor[0]['request_date']));
+				$his_due_date = date("F j, Y", strtotime($reserve_his_infor[0]['due_date']));
 ?>
 				<!-- Styling and structure are basically the same as the return tranaction receipt -->
 				<div class="container" id="section_to_print">
@@ -135,7 +141,7 @@
 										for($i = 0; $i < count($item_display); $i++)
 										{	
 ?>
-											<tr>
+											<tr id="item_list">
 												<td class="col-md-6"><em> <?= $item_display[$i]['inv_name'] ?> </em></h4></td>
 												<td class="col-md-1 text-center"> <?= $item_display[$i]['item_Frontid'] ?> </td>
 												<td class="col-md-1 text-center"> <?= $item_display[$i]['cost_at_time'] ?> </td>
@@ -156,22 +162,22 @@
 											</td>
 											<td class="text-center">
 												<p>
-													<strong>$<?= $reserve_his_infor[0][3] ?></strong>
+													<strong>$<?= $reserve_his_infor[0]['sub_total_cost'] ?></strong>
 												</p>
 												<p>
-													<strong>$<?= $reserve_his_infor[0][2] - $reserve_his_infor[0][3] ?></strong>
+													<strong>$<?= $reserve_his_infor[0]['total_cost'] - $reserve_his_infor[0]['sub_total_cost'] ?></strong>
 												</p>
 											</td>
 										</tr>
 										<tr>
 											<td></td>
 											<td class="text-right"><h4><strong>Total:</strong></h4></td>
-											<td class="text-center text-danger"><h4><strong>$<?= $reserve_his_infor[0][2] ?></strong></h4></td>
+											<td class="text-center text-danger"><h4><strong>$<?= $reserve_his_infor[0]['total_cost'] ?></strong></h4></td>
 											
 											<td class="text-center">
 												<p>
 													<h4>
-														<strong class="text-center text-danger">$<?= $reserve_his_infor[0][5] ?></strong>
+														<strong class="text-center text-danger">$<?= $reserve_his_infor[0]['deposit'] ?></strong>
 													</h4>
 												</p>
 											</td>
@@ -186,11 +192,11 @@
 					</div>
 				</div>
 
-			<form method= "post" action ="../CustomerselectionSection/email_receipt.php">
+			<!-- <form method= "post" action ="../CustomerselectionSection/email_receipt.php">
 				<button>
 					Email
 				</button>
-			</form>
+			</form> -->
 			
 			</body>
 		</html>

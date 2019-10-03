@@ -339,7 +339,7 @@
 							$receipt_prices[$pack_id . $n] = array("id"=>" ", "name"=>$pack_price[0]['pack_name'], "price"=>$curr_item_total_pricing, "deposit"=>" ");
 						}
 					}
-					elseif($pack_id == '4' || $pack_id == '6')
+					elseif($pack_id == '4' || $pack_id == '6' || $pack_id == '1')
 					{
 						for($n = 0; $n < $multi_same_pack_check; $n++)
 						{

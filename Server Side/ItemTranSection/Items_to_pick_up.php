@@ -14,8 +14,7 @@
 		<body style="text-align: center;">
 <?php
 			//Grabbing the selected customer id and setting it in SESSION
-			$rent_id = strip_tags($_POST['rent_id']);
-			$_SESSION["rent_id"] = $rent_id;
+			$rent_id = $_SESSION["rent_id"];
 			
 			//Connecting to the Database
 			$connctn = db();
@@ -107,7 +106,6 @@
 					
 					<!-- Following are inputs that are either hidden or buttons -->
 					<input type="hidden" name="item_to_be_pick_up" id="item_to_be_pick_up"  />  <!-- Hidden input tag keep track of which items are selected to be picked up -->
-					<input type="hidden" name="item_leftover" id="item_leftover"  value='0'/>  <!-- Hidden input tag keep track if there are items that the customer isn't picking up -->
 					<input type="submit" name="Checkout" id="Checkout" value="Checkout" /> &nbsp; <!-- Checkout Button -->
 					<input type="submit" name="cancelReserve" id="cancelReserve" value="Cancel Reserve" /> &nbsp; <!-- Cancel Reserve Button. Which will cancel the Reserve entireally -->
 					<input type="submit" name="mod_rental" id="mod_rental" value="Modify Rental" /> &nbsp; <!-- Modify Button. Which will modify the Reserve -->
@@ -161,7 +159,7 @@
 						
 						$('#item_table').find('input[type="checkbox"]:not:checked').each(function () 
 						{
-							$("#item_to_be_pick_up").val('1');
+							$("#item_leftover").val('1');
 						});
 					});
 				});
