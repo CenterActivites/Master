@@ -1,6 +1,7 @@
 #cust_table_info tbody tr.highlight td { background:#89cff0;}
 #cust_table_info_late tbody tr.highlight td { background:#89cff0;}
 #cust_table_info_pick tbody tr.highlight td { background:#89cff0;}
+#communication_log_table tbody tr.highlight td { background:#89cff0;}
 
 #hide_me{
   display: none;
@@ -31,9 +32,17 @@ tbody {
     background: white;
 }
 
+#communication_log_table tbody {
+	display:block;
+    max-height:600px;
+    overflow-y:scroll;
+	overflow-x:hidden;
+    background: white;
+}
+
 #cust_table_info_pick tbody, #cust_table_info_late tbody {
 	display:block;
-    max-height:200px;
+    max-height:250px;
     overflow-y:scroll;
 	overflow-x:hidden;
     background: white;
@@ -62,7 +71,8 @@ table {
 	text-align: center;
 }
 
-#cust_table_info th, #cust_table_info_late th, #cust_table_info_pick th, #tran_infor_table th {
+
+#cust_table_info th, #cust_table_info_late th, #cust_table_info_pick th, #tran_infor_table th, #communication_log_table th{
     padding-top: 12px;
     width: 15%;
     padding-bottom: 12px;
@@ -73,7 +83,8 @@ table {
 #cust_table_info td, #cust_table_info th, 
 #cust_table_info_late td, #cust_table_info_late th, 
 #cust_table_info_pick td, #cust_table_info_pick th, 
-#tran_infor_table td, #tran_infor_table th {
+#tran_infor_table td, #tran_infor_table th, 
+#communication_log_table td, #communication_log_table th {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
@@ -104,6 +115,10 @@ table {
 
 #tran_infor_table tbody tr:hover {background-color: ddd;}
 
+#communication_log_table tr:nth-child(even){background-color: #f2f2f2;}
+#communication_log_table tr:nth-child(odd){background-color: white;}
+
+#communication_log_table tbody tr:hover {background-color: ddd;}
 
 #search_lable{
   font-family: "Times New Roman", Times, serif;
@@ -111,7 +126,7 @@ table {
 }
 
 
-#select,#custInfo,#rent,#newCust,#mainmenu,#viewReceipt,#backOnCustTran,#on_to_rental {
+#select,#custInfo,#rent,#newCust,#mainmenu,#viewReceipt,#backOnCustTran,#on_to_rental, #new_log, #remove_log {
     background-color: #008000;
     color: white;
     padding: 14px 20px;
@@ -130,7 +145,7 @@ table {
     white-space: normal;
 }
 
-#select:hover,#custInfo:hover,#rent:hover,#newCust:hover,#mainmenu:hover,#viewReceipt:hover,#backOnCustTran:hover, #on_to_rental:hover 
+#select:hover,#custInfo:hover,#rent:hover,#newCust:hover,#mainmenu:hover,#viewReceipt:hover,#backOnCustTran:hover, #on_to_rental:hover,#new_log:hover, #remove_log:hover 
 {
 	background-color: #006400;
 }
@@ -153,12 +168,16 @@ input[type=text], input[type=button]{
     margin-right: 60%;
 }
 
-
+#new_log, #remove_log {
+    font-size: 14px;
+    font-family: "Times New Roman", Times, serif;
+	margin-left: 4%;
+}
 
 /* CSS for the pop-up date selection part */
 
 /* The Modal (background) */
-.dates {
+.modal {
   display: none; /* Hidden by default */
   position: fixed; /* Stay in place */
   text-align: center;

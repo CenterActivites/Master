@@ -166,7 +166,8 @@
 					foreach($conn->query("SELECT a.inv_id, inv_name
 											FROM Inventory a, Item b
 											WHERE a.inv_id = b.inv_id and
-													b.loc_id = 1
+													b.loc_id = 1 and
+													a.inv_id NOT IN (54, 55, 56)
                                             GROUP BY inv_name
                                             ORDER BY inv_name") as $row)
 					{

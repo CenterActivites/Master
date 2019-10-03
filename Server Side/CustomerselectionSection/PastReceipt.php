@@ -21,13 +21,19 @@
 					  }
 					  #section_to_print {
 						position: absolute;
-						top: 10%;
+						
 						width: 100%;
-						transform: scale(0.6, 0.6);
-						-ms-transform: scale(0.6, 0.6); /* IE 9 */
-						-webkit-transform: scale(0.6, 0.6); /* Safari and Chrome */
-						-o-transform: scale(0.6, 0.6); /* Opera */
-						-moz-transform: scale(0.6, 0.6); /* Firefox */
+						height:100%;
+						position:absolute;
+						top:0px;
+						bottom:0px;
+						margin: auto;
+						margin-top: 0px !important;
+						
+						font-size: 12px;
+					  }
+					  #item_list{
+						font-size: 12px;
 					  }
 					}
 					
@@ -135,7 +141,7 @@
 										for($i = 0; $i < count($item_display); $i++)
 										{	
 ?>
-											<tr>
+											<tr id="item_list">
 												<td class="col-md-6"><em> <?= $item_display[$i]['inv_name'] ?> </em></h4></td>
 												<td class="col-md-1 text-center"> <?= $item_display[$i]['item_Frontid'] ?> </td>
 												<td class="col-md-1 text-center"> <?= $item_display[$i]['cost_at_time'] ?> </td>

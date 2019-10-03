@@ -40,7 +40,7 @@
 </head>
 <body>
 	<fieldset id='fieldset_label' style="border:none; text-align: center;">
-		<label id='header_for_table' style="font-size: 25px">  Edit <?= $$empl_infor_display[0]['empl_fname'] ?> <?= $$empl_infor_display[0]['empl_lname'] ?>'s Information </label>
+		<label id='header_for_table' style="font-size: 25px">  Edit <?= $empl_infor_display[0]['empl_fname'] . " " . $empl_infor_display[0]['empl_lname'] ?>'s Information </label>
 	</fieldset>
 	</br>
 
